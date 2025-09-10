@@ -1,0 +1,122 @@
+---
+title: "DICOM序列排序：从临床需求到三维重建的技术权衡"
+format:
+  html:
+    code-fold: false
+    toc: true
+jupyter: dicube-docs
+---
+
+## 为什么DICOM序列需要排序？
+
+当我们从医院PACS系统或者存储设备中获取一个DICOM检查序列时，面对的往往是数百个"散装"的2D切片文件。这些文件通常是无序存储的，文件名也可能毫无规律。要将这些2D图像正确地堆叠成完整的3D体积数据，我们遇到的第一个关键技术问题就是：**按什么顺序来排列这些切片？**
+
+这个看似简单的问题，背后实际上隐藏着临床工作流程、三维渲染引擎、AI算法处理等多个层面的需求冲突。每种排序方法都有其合理的技术依据和应用场景，但在特定的使用环境下可能会产生意想不到的问题。
+
+### 现实应用中的排序需求冲突
+
+在实际项目开发中，我们经常会遇到这样的矛盾场景：
+
+- **临床报告的需求**：医生在写诊断报告时，习惯于按照Instance Number来定位病灶，会在报告中写"病灶位于第X层切片"。这是因为绝大多数PACS系统在显示图像时，默认就是按照Instance Number来排序展示的，这已经成为了临床工作的标准流程。
+
+- **AI算法的标准化需求**：为了保证算法输入的一致性，很多深度学习模型会要求图像按照解剖学方向进行排序，比如严格按照"从头到脚"或者"从脚到头"的顺序来排列切片，一般会选择“SliceLocation” 或者 "ImagePatientPosition" 字段来进行排序。这样做的好处是算法可以学习到一致的解剖结构分布模式。我们通常假设绝大部分的CT和MR检查都是横断位扫描，所以"从头到脚"和"从脚到头"确实是非常自然和直观的排序选择，符合我们对人体解剖结构的认知。
+
+- **非标准扫描的挑战**：但现实总是更复杂的。有些图像是倾斜扫描的，比如心脏MR的四腔心切面扫描，或者对原始CT图像进行了冠状位重建。在这些情况下，Slice Location字段可能根本就不存在，Image Patient Position字段也让人困惑——你很难确定应该用哪个坐标分量来进行排序。
+
+- **三维渲染的技术约束**：如果我们要做三维可视化，比如使用VTK渲染引擎，那么就必须考虑到VTK默认使用的是右手坐标系，如果我们排序方法不正确，会导致渲染结果出现"镜像人"的现象。
+
+基于这些复杂的需求冲突，**我们推荐使用右手坐标系排序作为默认方案**。
+
+**为什么推荐右手系排序？**
+- **修改成本最小化**: 实际上，任何一种排序方式都有其技术合理性，只要我们能够忠实地记录并传递元数据信息，各个模块都可以根据自身需求进行方向转换。但是，不同模块的转换成本存在显著差异。对于算法处理和三维渲染模块而言，它们直接操作的是完整的3D数组结构，如果需要进行图像翻转或重新排列，就必须对大块的连续内存进行读写操作，这种操作的计算开销相当可观。相比之下，PACS查看器的处理方式更为灵活——它本质上将图像序列视为一个2D图像的列表集合，因此只需要调整索引映射关系就能实现不同的显示顺序，而无需移动实际的图像数据。从系统整体的性能优化角度考虑，让计算密集型的算法和渲染模块使用标准化的右手系排序，而让显示模块承担轻量级的索引转换工作，这种设计思路能够最大化地降低系统的整体修改成本。
+
+
+**右手系排序的技术实现**
+
+右手系排序的算法原理其实很直观：我们读取DICOM文件中的Image Patient Orientation字段，这个字段会告诉我们图像平面的X方向（前三个数字）和Y方向（后三个数字）。通过对这两个方向向量进行叉乘运算，我们可以得到垂直于图像平面的法向量。然后，将每张图像的Image Patient Position投影到这个法向量上，按照投影值从小到大排列，这样得到的切片序列就保证是右手坐标系的。
+
+**现实问题**
+
+理论上来说，只要我们保证坐标系是右手的，那么无论患者在扫描时是怎么躺的，或者扫描序列是怎么"歪着扫"的（比如心脏MR的四腔心切面），导致三个坐标轴并不完全对应标准的LPS方向，渲染时使用者都可以通过三维旋转操作，将图像调整到标准的LPS显示方向。
+
+但是有极少的医疗设备厂商并不严格遵守DICOM的LPS坐标系准则，在进行世界坐标系标定时，采用的本身就是左手坐标系。这种情况下，即使我们按照推荐的右手系排序方法进行DICOM堆叠，仍然会出现"镜像人"的问题。好在这种情况相对比较少见，但一旦遇到，就只能通过更复杂的图像分析算法来检测和纠正异常，因为从DICOM的元数据信息中是无法判断出这种标定错误的。
+
+
+
+## 排序方法的可视化验证
+
+让我们通过三视图的方式来直观地观察和验证右手坐标系排序的效果。通过查看横断面、冠状面和矢状面的图像，我们可以清楚地了解图像的空间排列是否正确：
+
+```{python}
+import dicube
+from dicube import SortMethod
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 加载示例DICOM数据
+dirname = 'sample_data/sample_200_0'
+
+# 使用右手坐标系排序方法加载图像数据
+img_rh = dicube.load_from_dicom_folder(dirname, sort_method=SortMethod.POSITION_RIGHT_HAND)
+
+print("=== 右手坐标系排序的图像数据信息 ===")
+print(f"图像数据形状: {img_rh.raw_image.shape}")
+print(f"排序方法: POSITION_RIGHT_HAND")
+
+# 获取中心切片
+def get_center_slices(image_data):
+    """获取三个方向的中心切片"""
+    z_center = image_data.shape[0] // 2
+    y_center = image_data.shape[1] // 2  
+    x_center = image_data.shape[2] // 2
+    
+    return {
+        'axial': image_data[z_center, :, :],      # 横断面
+        'coronal': image_data[:, y_center, :],    # 冠状面  
+        'sagittal': image_data[:, :, x_center]    # 矢状面
+    }
+
+slices_rh = get_center_slices(img_rh.get_fdata())
+
+# 创建三个独立的图
+# 1. Axial View (横断面)
+fig1, ax1 = plt.subplots(1, 1, figsize=(8, 6))
+im1 = ax1.imshow(slices_rh['axial'], cmap='gray', origin='lower')
+ax1.set_title(f'Axial View - Slice along Z-axis (slice {img_rh.raw_image.shape[0]//2} of {img_rh.raw_image.shape[0]})', fontsize=14)
+ax1.set_xlabel('Axis 2 (X): Right → Left', fontsize=12)
+ax1.set_ylabel('Axis 1 (Y): Anterior → Posterior', fontsize=12)
+
+plt.tight_layout()
+plt.show()
+
+# 2. Coronal View (冠状面)
+fig2, ax2 = plt.subplots(1, 1, figsize=(8, 6))
+im2 = ax2.imshow(slices_rh['coronal'], cmap='gray', origin='lower')
+ax2.set_title(f'Coronal View - Slice along Y-axis (slice {img_rh.raw_image.shape[1]//2} of {img_rh.raw_image.shape[1]})', fontsize=14)
+ax2.set_xlabel('Axis 2 (X): Right → Left', fontsize=12)
+ax2.set_ylabel('Axis 0 (Z): Inferior → Superior', fontsize=12)
+plt.tight_layout()
+plt.show()
+
+# 3. Sagittal View (矢状面)
+fig3, ax3 = plt.subplots(1, 1, figsize=(8, 6))
+im3 = ax3.imshow(slices_rh['sagittal'], cmap='gray', origin='lower')
+ax3.set_title(f'Sagittal View - Slice along X-axis (slice {img_rh.raw_image.shape[2]//2} of {img_rh.raw_image.shape[2]})', fontsize=14)
+ax3.set_xlabel('Axis 1 (Y): Posterior → Anterior', fontsize=12)
+ax3.set_ylabel('Axis 0 (Z): Inferior → Superior', fontsize=12)
+plt.tight_layout()
+plt.show()
+```
+
+## 排序方法的最佳实践建议
+
+基于我们在实际项目中的经验积累和技术考量，**我们强烈推荐使用右手坐标系排序作为默认的DICOM切片排序方案**。这个建议背后有以下几个重要的技术和实用性考虑：
+
+### 技术兼容性优势
+
+- **渲染引擎兼容性**：VTK、ITK等主流医学影像处理和渲染引擎都默认采用右手坐标系，直接使用右手系排序可以避免额外的坐标系转换
+- **标准合规性**：完全符合DICOM LPS+坐标系标准，确保与国际医学影像标准的兼容性
+- **AI算法稳定性**：在深度学习模型训练和推理过程中，避免因坐标系不一致导致的"镜像人"问题，提高算法的鲁棒性
+- **计算效率**：减少运行时的坐标系转换计算，降低处理开销
+
+

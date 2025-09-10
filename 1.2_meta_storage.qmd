@@ -1,0 +1,173 @@
+---
+title: "DICOM元数据存储优化"
+format:
+  html:
+    code-fold: false
+    toc: true
+jupyter: dicube-docs
+---
+
+## DICOM元数据的冗余问题
+
+传统DICOM格式的一个核心问题是元数据冗余。一个CT序列包含数百个文件，每个文件都重复存储相同的患者信息、检查参数等元数据。
+
+```{python}
+import pydicom
+import os
+from pathlib import Path
+
+# 检查DICOM序列中的元数据冗余
+dicom_dir = "sample_data/sample_200_0"
+dicom_files = list(Path(dicom_dir).glob("*"))[:3]
+
+# 检查关键字段的重复情况
+ds1 = pydicom.dcmread(dicom_files[0], stop_before_pixels=True)
+ds2 = pydicom.dcmread(dicom_files[1], stop_before_pixels=True)
+
+patient_same = ds1.PatientName == ds2.PatientName
+series_same = ds1.SeriesDescription == ds2.SeriesDescription
+instance_same = ds1.InstanceNumber == ds2.InstanceNumber
+
+print(f"PatientName 相同: {patient_same}")
+print(f"SeriesDescription 相同: {series_same}")
+print(f"InstanceNumber 相同: {instance_same}")
+print(f"文件大小: {os.path.getsize(dicom_files[0])/1024:.1f}KB")
+```
+
+## DICOM JSON标准
+
+DICOM标准委员会在PS3.18中引入了[DICOM JSON](https://dicom.nema.org/medical/dicom/current/output/html/part18.html#chapter_F)格式，提供了标准化的JSON表示方法。
+
+```{python}
+import json
+
+# PyDICOM直接支持转换为DICOM JSON
+ds = pydicom.dcmread(dicom_files[0], stop_before_pixels=True)
+dicom_json = ds.to_json()
+
+# 解析并显示部分内容
+json_data = json.loads(dicom_json)
+key_fields = ["00100010", "00080020", "00200013"]  # PatientName, StudyDate, InstanceNumber
+
+for field in key_fields:
+    if field in json_data:
+        print(f"{field}: {json_data[field]}")
+```
+
+## DiCube的共享元数据机制
+
+DiCube引入了shared/non-shared元数据分离机制：
+
+- **Shared元数据**: 序列中相同的数据（患者信息、检查参数等）
+- **Non-shared元数据**: 每个切片不同的数据（位置、实例编号等）
+
+```{python}
+import dicube
+
+# 转换DICOM序列为DiCube格式
+dcb_image = dicube.load_from_dicom_folder(dicom_dir)
+dicube.save(dcb_image, "temp_demo.dcbs")
+
+# 读取元数据并检查共享状态
+meta = dicube.load_meta("temp_demo.dcbs")
+
+# 检查共享元数据
+from dicube.dicom import CommonTags
+patient_name = meta.get_shared_value(CommonTags.PatientName)
+is_shared = meta.is_shared(CommonTags.PatientName)
+print(f"PatientName: {patient_name} (共享: {is_shared})")
+
+# 检查非共享元数据
+instance_numbers = meta.get_values(CommonTags.InstanceNumber)
+print(f"InstanceNumber数量: {len(instance_numbers)}")
+print(f"范围: {min(instance_numbers)} - {max(instance_numbers)}")
+```
+
+## Zstandard压缩
+
+DiCube使用Zstandard (zstd)压缩JSON元数据，相比gzip具有更好的压缩比和解压速度，它极为适合压缩 Json 格式的 meta 信息。
+
+```{python}
+# 计算DICOM头文件大小（总文件大小减去pixel_array大小）
+dicom_header_total_size = 0
+all_files = list(Path(dicom_dir).glob("*"))
+
+for dcm_file in all_files:
+    # 获取文件总大小
+    total_size = os.path.getsize(dcm_file)
+    
+    # 读取DICOM文件获取pixel_array大小
+    ds = pydicom.dcmread(dcm_file)
+    if hasattr(ds, 'pixel_array'):
+        pixel_size = ds.pixel_array.nbytes
+    else:
+        pixel_size = 0
+    
+    # 头文件大小 = 总大小 - pixel_array大小
+    header_size = total_size - pixel_size
+    dicom_header_total_size += header_size
+
+# 获取DiCube压缩后的元数据大小
+meta_json = meta.to_json()
+import zstandard as zstd
+compressor = zstd.ZstdCompressor()
+compressed_meta = compressor.compress(meta_json.encode('utf-8'))
+dicube_meta_size = len(compressed_meta)
+
+print(f"DICOM头文件总大小: {dicom_header_total_size/1024/1024:.2f} MB")
+print(f"DiCube压缩元数据大小: {dicube_meta_size/1024/1024:.2f} MB")
+print(f"元数据压缩比: {dicom_header_total_size/dicube_meta_size:.1f}x")
+```
+
+## CommonTags枚举
+
+DiCube提供了CommonTags枚举类，避免记忆DICOM标签的十六进制代码：
+
+```{python}
+# 使用CommonTags访问元数据
+instance_numbers = meta.get_values(CommonTags.InstanceNumber)
+positions = meta.get_values(CommonTags.ImagePositionPatient)
+
+print(f"实例编号范围: {min(instance_numbers)} - {max(instance_numbers)}")
+print(f"位置范围: Z轴 {positions[0][2]:.1f} 到 {positions[-1][2]:.1f}")
+```
+
+## 性能对比
+
+对比传统DICOM和DiCube读取元数据的性能：
+
+```{python}
+import time
+
+# 传统DICOM方式
+start_time = time.time()
+dicom_instance_numbers = []
+all_files = list(Path(dicom_dir).glob("*"))
+for dcm_file in all_files:
+    ds = pydicom.dcmread(dcm_file, stop_before_pixels=True)
+    dicom_instance_numbers.append(int(ds.InstanceNumber))
+dicom_time = time.time() - start_time
+
+# DiCube方式
+start_time = time.time()
+dicube_meta = dicube.load_meta("temp_demo.dcbs")
+dicube_instance_numbers = dicube_meta.get_values(CommonTags.InstanceNumber)
+dicube_time = time.time() - start_time
+
+print(f"传统DICOM: {dicom_time:.4f}秒")
+print(f"DiCube: {dicube_time:.4f}秒")
+print(f"性能提升: {dicom_time/dicube_time:.1f}倍")
+
+# 清理
+os.remove("temp_demo.dcbs")
+```
+
+## 总结
+
+DiCube的元数据管理方案的核心优势：
+
+1. **智能共享** - 消除重复元数据，减少存储空间
+2. **标准兼容** - 基于DICOM JSON标准，确保互操作性  
+3. **性能提升** - 元数据读取速度显著提升
+
+这些改进使得医学影像处理更加高效，特别适用于需要频繁访问元数据的应用场景。

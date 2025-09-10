@@ -1,0 +1,210 @@
+---
+title: "NIfTI vs DiCube 格式对比"
+format:
+  html:
+    code-fold: false
+    toc: true
+jupyter: dicube-docs
+---
+
+## NIfTI格式的优势与问题
+
+NIfTI是神经影像领域广泛使用的格式，相比传统DICOM有明显优势：
+
+- **单文件存储** - 整个3D图像存储在一个`.nii.gz`文件中
+- **压缩支持** - 内置gzip压缩
+- **空间信息** - 包含仿射变换矩阵
+- **工具支持** - FSL、AFNI、SPM等主流工具支持
+
+但NIfTI也存在一些问题，特别是坐标系统的复杂性。
+
+## 坐标系统问题
+
+不同库读取NIfTI文件时可能产生不同的坐标结果：
+
+```{python}
+import nibabel as nib
+import SimpleITK as sitk
+import numpy as np
+
+# 用不同库读取同一个NIfTI文件
+nifti_file = 'sample_data/CT_Philips.nii.gz'
+
+# Nibabel方式
+nib_image = nib.load(nifti_file)
+nib_origin = nib_image.affine[:3, 3]
+nib_shape = nib_image.get_fdata().shape
+
+# SimpleITK方式  
+sitk_image = sitk.ReadImage(nifti_file)
+sitk_origin = sitk_image.GetOrigin()
+sitk_size = sitk_image.GetSize()
+
+print(f"Nibabel - Origin: {nib_origin}")
+print(f"SimpleITK - Origin: {sitk_origin}")
+print(f"Nibabel - Shape: {nib_shape}")
+print(f"SimpleITK - Size: {sitk_size}")
+```
+
+两个库读取的原点坐标完全不同，这是因为nibabel使用RAS+坐标系，而SimpleITK使用LPS+坐标系。
+
+## qform与sform混淆
+
+NIfTI包含两个仿射变换矩阵：qform和sform，容易混淆使用：
+
+```{python}
+qform_affine = nib_image.get_qform(coded=False)
+sform_affine = nib_image.get_sform(coded=False)
+
+print("qform (相对于世界坐标):")
+print(qform_affine)
+print("\nsform (相对于模板坐标):")
+print(sform_affine)
+```
+
+## DICOM元数据丢失
+
+NIfTI转换过程中会丢失大量DICOM元数据。让我们验证这个问题：
+
+```{python}
+import SimpleITK as sitk
+import pydicom
+import os
+
+# 读取DICOM序列并转换为NIfTI
+dicom_dir = 'sample_data/sample_200_0'
+series_reader = sitk.ImageSeriesReader()
+series_reader.SetFileNames(series_reader.GetGDCMSeriesFileNames(dicom_dir))
+sitk_image = series_reader.Execute()
+
+# 保存为NIfTI
+nifti_path = 'sample_data/converted.nii.gz'
+sitk.WriteImage(sitk_image, nifti_path)
+
+# 检查原始DICOM的元数据
+original_dcm = pydicom.dcmread(os.path.join(dicom_dir, os.listdir(dicom_dir)[0]))
+print(f"原始DICOM元数据字段数: {len(original_dcm)}")
+print(f"患者姓名: {original_dcm.get('PatientName', 'N/A')}")
+print(f"检查日期: {original_dcm.get('StudyDate', 'N/A')}")
+print(f"序列描述: {original_dcm.get('SeriesDescription', 'N/A')}")
+
+# NIfTI只保留基本空间信息
+nifti_reloaded = sitk.ReadImage(nifti_path)
+print(f"\nNIfTI保留信息:")
+print(f"尺寸: {nifti_reloaded.GetSize()}")
+print(f"间距: {nifti_reloaded.GetSpacing()}")
+print(f"原点: {nifti_reloaded.GetOrigin()}")
+```
+
+## 压缩格式限制
+
+NIfTI主要使用gzip压缩，对医学图像的压缩效率不高，且不符合DICOM标准。
+
+```{python}
+import os
+
+# 比较文件大小
+dicom_size = sum(os.path.getsize(os.path.join(dicom_dir, f)) 
+                for f in os.listdir(dicom_dir))
+nifti_size = os.path.getsize(nifti_path)
+
+print(f"DICOM文件总大小: {dicom_size/1024/1024:.1f} MB")
+print(f"NIfTI文件大小: {nifti_size/1024/1024:.1f} MB")
+print(f"NIfTI压缩比: {dicom_size/nifti_size:.1f}x")
+```
+
+## DiCube的解决方案
+
+DiCube针对这些问题提供了更好的解决方案：
+
+### 统一的坐标系统
+
+```{python}
+import dicube
+
+# DiCube使用统一的LPS+坐标系
+dcb_image = dicube.load_from_nifti(nifti_path)
+space = dcb_image.space
+
+print("DiCube空间信息:")
+print(f"原点: {space.origin}")
+print(f"方向: {space.x_orientation}")
+print(f"方向: {space.y_orientation}")
+print(f"方向: {space.z_orientation}")
+print(f"间距: {space.spacing}")
+```
+
+### 完整的元数据保留
+
+```{python}
+# 从DICOM加载并保存为DiCube格式
+dcb_image = dicube.load_from_dicom_folder(dicom_dir)
+dicube.save(dcb_image, 'sample_data/test.dcbs')
+
+# 验证元数据完整性
+dicube.save_to_dicom_folder(dcb_image, 'sample_data/roundtrip_test')
+
+# 检查往返转换后的元数据
+roundtrip_dcm = pydicom.dcmread('sample_data/roundtrip_test/slice_0000.dcm')
+print(f"往返转换后DICOM字段数: {len(roundtrip_dcm)}")
+print(f"患者姓名保留: {roundtrip_dcm.get('PatientName', 'N/A')}")
+print(f"检查日期保留: {roundtrip_dcm.get('StudyDate', 'N/A')}")
+print(f"序列描述保留: {roundtrip_dcm.get('SeriesDescription', 'N/A')}")
+```
+
+### 更高的压缩效率
+
+```{python}
+# 比较压缩效果
+dcb_size = os.path.getsize('sample_data/test.dcbs')
+
+print(f"\n压缩效果对比:")
+print(f"原始DICOM: {dicom_size/1024/1024:.1f} MB")
+print(f"NIfTI: {nifti_size/1024/1024:.1f} MB (压缩比: {dicom_size/nifti_size:.1f}x)")
+print(f"DiCube: {dcb_size/1024/1024:.1f} MB (压缩比: {dicom_size/dcb_size:.1f}x)")
+
+# 清理临时文件
+os.remove(nifti_path)
+os.remove('sample_data/test.dcbs')
+```
+
+## 性能对比
+
+```{python}
+import time
+
+# 重新创建测试文件
+dcb_image = dicube.load_from_dicom_folder(dicom_dir)
+dicube.save(dcb_image, 'sample_data/test.dcbs')
+sitk.WriteImage(sitk_image, nifti_path)
+
+# NIfTI加载性能
+start_time = time.time()
+nifti_loaded = sitk.ReadImage(nifti_path)
+nifti_time = time.time() - start_time
+
+# DiCube加载性能
+start_time = time.time()
+dcb_loaded = dicube.load('sample_data/test.dcbs')
+dcb_time = time.time() - start_time
+
+print(f"加载时间对比:")
+print(f"NIfTI: {nifti_time:.4f}秒")
+print(f"DiCube: {dcb_time:.4f}秒")
+
+# 清理文件
+os.remove(nifti_path)
+os.remove('sample_data/test.dcbs')
+```
+
+## 总结
+
+| 特性 | NIfTI | DiCube |
+|------|-------|---------|
+| **坐标系统** | 多种坐标系混乱 | 统一LPS+坐标系 |
+| **元数据保留** | 大量丢失 | 完整保留 |
+| **压缩效率** | gzip，效率一般 | HTJ2K，高效率 |
+| **DICOM兼容** | 需要重新转换 | 原生兼容 |
+| **工作流集成** | 神经影像专用 | 通用医学影像 |
+
+DiCube在保持NIfTI单文件优势的同时，解决了其在临床环境中的主要问题，更适合需要完整元数据保留和DICOM兼容性的应用场景。
