@@ -54,7 +54,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 加载示例DICOM数据
-dirname = 'sample_data/sample_200_0'
+dirname = 'dicube-testdata/dicom/sample_200'
 
 # 使用右手坐标系排序方法加载图像数据
 img_rh = dicube.load_from_dicom_folder(dirname, sort_method=SortMethod.POSITION_RIGHT_HAND)

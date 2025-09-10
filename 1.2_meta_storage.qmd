@@ -17,7 +17,7 @@ import os
 from pathlib import Path
 
 # 检查DICOM序列中的元数据冗余
-dicom_dir = "sample_data/sample_200_0"
+dicom_dir = "dicube-testdata/dicom/sample_200"
 dicom_files = list(Path(dicom_dir).glob("*"))[:3]
 
 # 检查关键字段的重复情况

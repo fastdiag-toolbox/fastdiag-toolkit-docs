@@ -24,12 +24,12 @@ import dicube
 from dicube.dicom import DcbStreamingReader
 
 # 初始化流式读取器
-dcb_file = 'sample_data/sample_10.dcbs'
+dcb_file = 'dicube-testdata/sample_10.dcbs'
 dcb_stream = DcbStreamingReader(dcb_file)
 
 # 按需提取指定帧的DICOM数据
 slice_0 = dcb_stream.get_dicom_for_frame(0)
-with open('sample_data/sample_10_0.dcm', 'wb') as f:
+with open('dicube-testdata/sample_10_0.dcm', 'wb') as f:
     f.write(slice_0)
 print(f"✅ 成功生成DICOM数据，大小: {len(slice_0)} 字节")
 ```

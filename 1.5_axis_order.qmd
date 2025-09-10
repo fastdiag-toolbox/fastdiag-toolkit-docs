@@ -16,7 +16,7 @@ jupyter: dicube-docs
 
 ```{python}
 import SimpleITK as sitk
-dirname = "sample_data/sample_200_0"
+dirname = "dicube-testdata/dicom/sample_200"
 
 reader = sitk.ImageSeriesReader()
 dicom_names = reader.GetGDCMSeriesFileNames(dirname)

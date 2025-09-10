@@ -1,0 +1,3 @@
+[submodule "dicube-testdata"]
+	path = dicube-testdata
+	url = git@github.com:fastdiag-toolbox/dicube-testdata.git

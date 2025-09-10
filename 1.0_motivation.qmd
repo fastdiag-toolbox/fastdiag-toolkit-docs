@@ -64,7 +64,7 @@ import os
 import time
 import multiprocessing as mp
 
-dirname = 'sample_data/sample_200_0'
+dirname = 'dicube-testdata/dicom/sample_200'
 
 def read_dicom_sequence(dirname, metadata_only=False):
     """读取DICOM序列"""
@@ -140,11 +140,11 @@ from dicube.dicom import CommonTags
 
 # 转换DICOM序列为DiCube格式
 dcb_image = dicube.load_from_dicom_folder(dirname)
-dicube.save(dcb_image, 'sample_data/test_sequence.dcbs')
+dicube.save(dcb_image, 'dicube-testdata/test_sequence.dcbs')
 
 # 测试DiCube加载性能
 start_time = time.time()
-loaded_image = dicube.load('sample_data/test_sequence.dcbs')
+loaded_image = dicube.load('dicube-testdata/test_sequence.dcbs')
 dcb_load_time = time.time() - start_time
 
 print(f"DiCube加载时间: {dcb_load_time:.3f}秒")
@@ -163,7 +163,7 @@ DiCube使用智能的JSON架构来分离这两类元数据：
 ```{python}
 # 快速加载元数据（不含像素数据）
 start_time = time.time()
-meta = dicube.load_meta('sample_data/test_sequence.dcbs')
+meta = dicube.load_meta('dicube-testdata/test_sequence.dcbs')
 meta_time = time.time() - start_time
 
 print(f"仅元数据加载: {meta_time:.4f}秒")
@@ -214,7 +214,7 @@ DiCube采用保守但有效的编解码策略。我们选择HTJ2K (High Throughp
 # 比较文件大小
 original_size = sum(os.path.getsize(os.path.join(dirname, f)) 
                    for f in os.listdir(dirname))
-dcb_size = os.path.getsize('sample_data/test_sequence.dcbs')
+dcb_size = os.path.getsize('dicube-testdata/test_sequence.dcbs')
 
 print(f"\n存储效率对比:")
 print(f"原始DICOM: {original_size/1024/1024:.1f} MB")
@@ -222,7 +222,7 @@ print(f"DiCube: {dcb_size/1024/1024:.1f} MB")
 print(f"压缩比: {original_size/dcb_size:.1f}x")
 
 # 清理测试文件
-os.remove('sample_data/test_sequence.dcbs')
+os.remove('dicube-testdata/test_sequence.dcbs')
 ```
 
 ## 并发访问性能的根本改善
@@ -234,7 +234,7 @@ DiCube的单文件设计从根本上解决了这个问题。由于整个序列�
 ```{python}
 # 重新创建测试文件
 dcb_image = dicube.load_from_dicom_folder(dirname)
-dicube.save(dcb_image, 'sample_data/test_sequence.dcbs')
+dicube.save(dcb_image, 'dicube-testdata/test_sequence.dcbs')
 
 # 定义全局函数以便multiprocessing可以序列化
 def load_dcb_meta(filepath):
@@ -258,7 +258,7 @@ def dcb_concurrent_test(dcb_file, num_processes=5):
     
     return concurrent_time
 
-dcb_concurrent_time = dcb_concurrent_test('sample_data/test_sequence.dcbs')
+dcb_concurrent_time = dcb_concurrent_test('dicube-testdata/test_sequence.dcbs')
 
 print(f"\n并发访问性能对比:")
 print(f"DICOM并发读取: {concurrent_time:.3f}秒")
@@ -266,7 +266,7 @@ print(f"DiCube并发读取: {dcb_concurrent_time:.3f}秒")
 print(f"DiCube并发性能提升: {concurrent_time/dcb_concurrent_time:.1f}倍")
 
 # 清理
-os.remove('sample_data/test_sequence.dcbs')
+os.remove('dicube-testdata/test_sequence.dcbs')
 ```
 
 ## 完整的DICOM往返兼容性
@@ -283,15 +283,15 @@ os.remove('sample_data/test_sequence.dcbs')
 ```{python}
 # 验证往返转换
 original_dcb = dicube.load_from_dicom_folder(dirname)
-dicube.save(original_dcb, 'sample_data/roundtrip_test.dcbs')
+dicube.save(original_dcb, 'dicube-testdata/roundtrip_test.dcbs')
 
 # 转换回DICOM
-loaded_dcb = dicube.load('sample_data/roundtrip_test.dcbs')
-dicube.save_to_dicom_folder(loaded_dcb, 'sample_data/roundtrip_dicom')
+loaded_dcb = dicube.load('dicube-testdata/roundtrip_test.dcbs')
+dicube.save_to_dicom_folder(loaded_dcb, 'dicube-testdata/roundtrip_dicom')
 
 # 验证元数据完整性
 original_dcm = pydicom.dcmread(os.path.join(dirname, os.listdir(dirname)[0]))
-roundtrip_dcm = pydicom.dcmread('sample_data/roundtrip_dicom/slice_0000.dcm')
+roundtrip_dcm = pydicom.dcmread('dicube-testdata/roundtrip_dicom/slice_0000.dcm')
 
 print("往返转换验证:")
 print(f"原始患者姓名: {original_dcm.get('PatientName', 'N/A')}")
@@ -299,7 +299,7 @@ print(f"转换后患者姓名: {roundtrip_dcm.get('PatientName', 'N/A')}")
 print(f"元数据字段数量: {len(original_dcm)} → {len(roundtrip_dcm)}")
 
 # 清理测试文件
-os.remove('sample_data/roundtrip_test.dcbs')
+os.remove('dicube-testdata/roundtrip_test.dcbs')
 ```
 
 ## 总结：从痛点到解决方案

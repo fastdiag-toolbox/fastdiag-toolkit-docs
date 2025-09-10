@@ -19,7 +19,7 @@ from dicube import get_dicom_status, read_dicom_dir, DicomStatus
 from dicube.dicom import CommonTags
 
 # 读取示例数据
-dirname = 'sample_data/sample_200_0'
+dirname = 'dicube-testdata/dicom/sample_200'
 meta, _ = read_dicom_dir(dirname)
 status = get_dicom_status(meta)
 

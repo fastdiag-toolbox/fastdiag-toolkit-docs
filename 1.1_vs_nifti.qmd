@@ -28,7 +28,7 @@ import SimpleITK as sitk
 import numpy as np
 
 # 用不同库读取同一个NIfTI文件
-nifti_file = 'sample_data/CT_Philips.nii.gz'
+nifti_file = 'dicube-testdata/nifti/CT_Philips.nii.gz'
 
 # Nibabel方式
 nib_image = nib.load(nifti_file)
@@ -72,13 +72,13 @@ import pydicom
 import os
 
 # 读取DICOM序列并转换为NIfTI
-dicom_dir = 'sample_data/sample_200_0'
+dicom_dir = 'dicube-testdata/dicom/sample_200'
 series_reader = sitk.ImageSeriesReader()
 series_reader.SetFileNames(series_reader.GetGDCMSeriesFileNames(dicom_dir))
 sitk_image = series_reader.Execute()
 
 # 保存为NIfTI
-nifti_path = 'sample_data/converted.nii.gz'
+nifti_path = 'dicube-testdata/converted.nii.gz'
 sitk.WriteImage(sitk_image, nifti_path)
 
 # 检查原始DICOM的元数据
@@ -139,13 +139,13 @@ print(f"间距: {space.spacing}")
 ```{python}
 # 从DICOM加载并保存为DiCube格式
 dcb_image = dicube.load_from_dicom_folder(dicom_dir)
-dicube.save(dcb_image, 'sample_data/test.dcbs')
+dicube.save(dcb_image, 'dicube-testdata/test.dcbs')
 
 # 验证元数据完整性
-dicube.save_to_dicom_folder(dcb_image, 'sample_data/roundtrip_test')
+dicube.save_to_dicom_folder(dcb_image, 'dicube-testdata/roundtrip_test')
 
 # 检查往返转换后的元数据
-roundtrip_dcm = pydicom.dcmread('sample_data/roundtrip_test/slice_0000.dcm')
+roundtrip_dcm = pydicom.dcmread('dicube-testdata/roundtrip_test/slice_0000.dcm')
 print(f"往返转换后DICOM字段数: {len(roundtrip_dcm)}")
 print(f"患者姓名保留: {roundtrip_dcm.get('PatientName', 'N/A')}")
 print(f"检查日期保留: {roundtrip_dcm.get('StudyDate', 'N/A')}")
@@ -156,7 +156,7 @@ print(f"序列描述保留: {roundtrip_dcm.get('SeriesDescription', 'N/A')}")
 
 ```{python}
 # 比较压缩效果
-dcb_size = os.path.getsize('sample_data/test.dcbs')
+dcb_size = os.path.getsize('dicube-testdata/test.dcbs')
 
 print(f"\n压缩效果对比:")
 print(f"原始DICOM: {dicom_size/1024/1024:.1f} MB")
@@ -165,7 +165,7 @@ print(f"DiCube: {dcb_size/1024/1024:.1f} MB (压缩比: {dicom_size/dcb_size:.1f
 
 # 清理临时文件
 os.remove(nifti_path)
-os.remove('sample_data/test.dcbs')
+os.remove('dicube-testdata/test.dcbs')
 ```
 
 ## 性能对比
@@ -175,7 +175,7 @@ import time
 
 # 重新创建测试文件
 dcb_image = dicube.load_from_dicom_folder(dicom_dir)
-dicube.save(dcb_image, 'sample_data/test.dcbs')
+dicube.save(dcb_image, 'dicube-testdata/test.dcbs')
 sitk.WriteImage(sitk_image, nifti_path)
 
 # NIfTI加载性能
@@ -185,7 +185,7 @@ nifti_time = time.time() - start_time
 
 # DiCube加载性能
 start_time = time.time()
-dcb_loaded = dicube.load('sample_data/test.dcbs')
+dcb_loaded = dicube.load('dicube-testdata/test.dcbs')
 dcb_time = time.time() - start_time
 
 print(f"加载时间对比:")
@@ -194,7 +194,7 @@ print(f"DiCube: {dcb_time:.4f}秒")
 
 # 清理文件
 os.remove(nifti_path)
-os.remove('sample_data/test.dcbs')
+os.remove('dicube-testdata/test.dcbs')
 ```
 
 ## 总结
