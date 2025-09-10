@@ -24,7 +24,11 @@ import dicube
 from dicube.dicom import DcbStreamingReader
 
 # 初始化流式读取器
+dicom_dir = 'dicube-testdata/dicom/sample_10'
 dcb_file = 'dicube-testdata/sample_10.dcbs'
+
+dcb_image = dicube.load_from_dicom_folder(dicom_dir)
+dicube.save(dcb_image, dcb_file)
 dcb_stream = DcbStreamingReader(dcb_file)
 
 # 按需提取指定帧的DICOM数据
