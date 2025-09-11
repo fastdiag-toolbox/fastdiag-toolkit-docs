@@ -1,435 +1,329 @@
+
 ---
-title: "MedMask压缩技术：Binary vs Multi-label性能对比"
+title: "Medmask 的压缩效率"
 format:
   html:
     code-fold: false
     toc: true
 jupyter: dicube-docs
 ---
+## 摘要
 
-## 压缩技术概述
+医学图像分割掩膜通常是高度稀疏的，这为专门的压缩算法提供了优化空间。本文旨在对比 **MedMask** 格式与常用的 **NIfTI (.nii.gz)** 和 **NumPy (.npz)** 格式在存储二值（Binary）和多标签（Multi-label）掩膜时的压缩效率、编码及解码速度。最后，我们将深入探究 MedMask 的核心技术——**PackBits 预处理结合 Zstandard 压缩**——为何能针对稀疏掩膜实现卓越的压缩性能。
 
-MedMask针对医学图像分割掩膜的稀疏特性，采用了专门优化的压缩策略。与传统的gzip压缩相比，MedMask通过PackBits预处理 + Zstandard主压缩的组合，显著提升了二值掩膜的压缩效率。
+## 1\. 统一基准测试框架
 
-### 数据准备
-
-首先分析测试数据的有效性。TotalSegmentator的s0000样例中，117个文件并非全部包含有效数据：
+为了避免代码重复并确保测试的公平性，我们首先定义一个统一的基准测试框架。该框架可以处理不同的数据格式，并返回标准化的性能指标（文件大小、编码时间、解码时间）。
 
 ```{python}
 import os
 import time
+import gzip
+import tempfile
 import numpy as np
 import nibabel as nib
+import zstandard as zstd
 from pathlib import Path
+from medmask import SegmentationMask
+from spacetransformer import Space
+import pandas as pd
 
-# 读取有效文件列表
+# --- 统一的基准测试函数 ---
+def run_benchmark(format_type, data, space=None, label_mapping=None, original_path=None):
+    """
+    对指定格式运行压缩和解压基准测试。
+
+    Args:
+        format_type (str): 'nifti', 'npz', 'medmask'
+        data (np.ndarray): 掩膜数据
+        space (Space, optional): MedMask/NIfTI所需的空间信息.
+        label_mapping (dict, optional): MedMask所需的多标签映射.
+        original_path (Path, optional): NIfTI格式的原始路径，用于直接获取文件大小.
+
+    Returns:
+        dict: 包含 size, encode_time, decode_time 的字典.
+    """
+    stats = {'size': 0, 'encode_time': 0, 'decode_time': 0}
+    
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir) / f"tempfile.{format_type.split('_')[0]}"
+
+        # --- 编码过程 ---
+        encode_start = time.time()
+        if format_type == 'nifti':
+            if original_path:
+                stats['size'] = original_path.stat().st_size
+            else: # 用于创建新的多标签 NIfTI 文件
+                affine =  np.eye(4)
+                nii_img = nib.Nifti1Image(data.astype(np.uint8), affine)
+                tmp_path_nii = tmp_path.with_suffix('.nii.gz')
+                nib.save(nii_img, tmp_path_nii)
+                stats['size'] = tmp_path_nii.stat().st_size
+            # NIfTI 的编码/解码时间通常包含在加载过程中，这里不单独测量以简化对比
+            pass 
+        elif format_type == 'npz':
+            np.savez_compressed(tmp_path, mask=data)
+            stats['size'] = tmp_path.stat().st_size
+        elif format_type == 'medmask':
+            mask_obj = SegmentationMask(data, label_mapping, space=space)
+            mask_obj.save(tmp_path)
+            stats['size'] = tmp_path.stat().st_size
+        stats['encode_time'] = (time.time() - encode_start) * 1000  # ms
+
+        # --- 解码过程 ---
+        if stats['size'] > 0: # 仅在成功编码后解码
+            decode_start = time.time()
+            if format_type == 'nifti':
+                 # 为保持一致性，不单独测量 NIfTI 的解码时间
+                 pass
+            elif format_type == 'npz':
+                _ = np.load(tmp_path)['mask']
+            elif format_type == 'medmask':
+                loaded_mask = SegmentationMask.load(tmp_path)
+                # 模拟实际使用，提取所有标签
+                if label_mapping:
+                    for name in label_mapping.keys():
+                        _ = loaded_mask.get_binary_mask_by_names(name)
+            stats['decode_time'] = (time.time() - decode_start) * 1000 # ms
+            
+    return stats
+
+# --- 数据加载 ---
 mask_dir = Path('dicube-testdata/mask/s0000')
 with open(mask_dir / 'nonzero_masks.txt', 'r') as f:
     valid_files = [line.strip() for line in f.readlines()]
-
-print(f"有效掩膜文件: {len(valid_files)} / 117")
-print("有效文件列表:")
-for i, fname in enumerate(valid_files, 1):
-    fpath = mask_dir / fname
-    img = nib.load(fpath)
-    nonzero_count = np.count_nonzero(img.get_fdata())
-    file_size = fpath.stat().st_size / 1024  # KB
-    print(f"{i:2d}. {fname:<25} - {nonzero_count:6d} 非零像素, {file_size:5.1f} KB")
+print(f"加载了 {len(valid_files)} 个有效的掩膜文件用于测试。")
 ```
 
-### Binary Mask 压缩对比
+## 2\. 二值掩膜（Binary Mask）性能对比
 
-选择几个代表性的二值掩膜进行压缩性能测试，对比NIfTI(.nii.gz)、NumPy(.npz)和MedMask三种格式：
+在此部分，我们测试单个器官掩膜的压缩性能。这类掩膜只包含一个标签，是典型的二值稀疏数据。
+
+### 测试配置与执行
+
+我们选择一系列大小和稀疏度各不相同的掩膜文件进行测试。
 
 ```{python}
-import gzip
-import pickle
-import tempfile
-from medmask import SegmentationMask
-from spacetransformer import Space
-
-# 选择测试文件 - 选择不同大小的掩膜以测试压缩效果
-test_files = [
-    'urinary_bladder.nii.gz',      # 大掩膜 (68016 非零像素)
-    'gluteus_maximus_right.nii.gz', # 大掩膜 (150852 非零像素)
-    'colon.nii.gz',                # 中等掩膜 (59305 非零像素)
-    'iliopsoas_left.nii.gz',       # 中等掩膜 (20865 非零像素)
-    'iliac_artery_left.nii.gz',    # 小掩膜 (1155 非零像素)
-    'small_bowel.nii.gz'           # 极小掩膜 (244 非零像素)
+# 选择测试文件
+binary_test_files = [
+    'gluteus_maximus_right.nii.gz', # 大掩膜
+    'urinary_bladder.nii.gz',       # 大掩膜
+    'colon.nii.gz',                 # 中等掩膜
+    'iliopsoas_left.nii.gz',        # 中等掩膜
+    'iliac_artery_left.nii.gz',     # 小掩膜
+    'small_bowel.nii.gz'            # 极小掩膜
 ]
 
-print("Binary Mask 压缩性能测试\n" + "="*60)
+binary_results = []
 
-results = []
-
-for test_file in test_files:
-    print(f"\n测试文件: {test_file}")
-    
-    # 加载原始数据
-    original_path = mask_dir / test_file
+for fname in binary_test_files:
+    original_path = mask_dir / fname
     nii_img = nib.load(original_path)
     mask_data = nii_img.get_fdata().astype(np.uint8)
     space = Space.from_nifti(nii_img)
+    organ_name = fname.replace('.nii.gz', '')
     
-    # 原始NIfTI大小
-    nifti_size = original_path.stat().st_size
+    nifti_stats = run_benchmark('nifti', data=mask_data, original_path=original_path)
+    npz_stats = run_benchmark('npz', data=mask_data)
+    medmask_stats = run_benchmark('medmask', data=mask_data, space=space, label_mapping={organ_name: 1})
     
-    # 1. NPZ格式测试
-    npz_start = time.time()
-    with tempfile.NamedTemporaryFile(suffix='.npz', delete=False) as tmp:
-        np.savez_compressed(tmp.name, mask=mask_data)
-        npz_encode_time = time.time() - npz_start
-        npz_size = Path(tmp.name).stat().st_size
-        
-        # NPZ读取测试
-        npz_read_start = time.time()
-        loaded_npz = np.load(tmp.name)
-        npz_data = loaded_npz['mask']
-        npz_decode_time = time.time() - npz_read_start
-        
-        os.unlink(tmp.name)
-    
-    # 2. MedMask格式测试
-    medmask_start = time.time()
-    organ_name = test_file.replace('.nii.gz', '')
-    mask_obj = SegmentationMask(mask_data, {organ_name: 1}, space=space)
-    
-    with tempfile.NamedTemporaryFile(suffix='.msk', delete=False) as tmp:
-        mask_obj.save(tmp.name)
-        medmask_encode_time = time.time() - medmask_start
-        medmask_size = Path(tmp.name).stat().st_size
-        
-        # MedMask读取测试
-        medmask_read_start = time.time()
-        loaded_mask = SegmentationMask.load(tmp.name)
-        medmask_data = loaded_mask.get_binary_mask_by_names(organ_name)
-        medmask_decode_time = time.time() - medmask_read_start
-        
-        os.unlink(tmp.name)
-    
-    # 验证数据一致性
-    data_consistent = np.array_equal(mask_data > 0, npz_data > 0) and np.array_equal(mask_data > 0, medmask_data > 0)
-    
-    # 记录结果
-    result = {
-        'file': test_file,
-        'nonzero_pixels': np.count_nonzero(mask_data),
-        'nifti_size': nifti_size,
-        'npz_size': npz_size,
-        'medmask_size': medmask_size,
-        'npz_encode_time': npz_encode_time,
-        'medmask_encode_time': medmask_encode_time,
-        'npz_decode_time': npz_decode_time,
-        'medmask_decode_time': medmask_decode_time,
-        'data_consistent': data_consistent
-    }
-    results.append(result)
-    
-    print(f"  非零像素: {result['nonzero_pixels']:6d}")
-    print(f"  压缩效果:")
-    print(f"    NIfTI:  {nifti_size/1024:6.1f} KB (基准)")
-    print(f"    NPZ:    {npz_size/1024:6.1f} KB (压缩比 {nifti_size/npz_size:.1f}:1)")
-    print(f"    MedMask:{medmask_size/1024:6.1f} KB (压缩比 {nifti_size/medmask_size:.1f}:1)")
-    print(f"  编码时间:")
-    print(f"    NPZ:    {npz_encode_time*1000:6.1f} ms")
-    print(f"    MedMask:{medmask_encode_time*1000:6.1f} ms")
-    print(f"  解码时间:")
-    print(f"    NPZ:    {npz_decode_time*1000:6.1f} ms")
-    print(f"    MedMask:{medmask_decode_time*1000:6.1f} ms")
-    print(f"  数据一致性: {'✓' if data_consistent else '✗'}")
+    binary_results.append({
+        '文件名': fname.replace('.nii.gz', ''),
+        '非零像素': np.count_nonzero(mask_data),
+        'NIfTI (KB)': nifti_stats['size'] / 1024,
+        'NPZ (KB)': npz_stats['size'] / 1024,
+        'MedMask (KB)': medmask_stats['size'] / 1024,
+        'NPZ 编码 (ms)': npz_stats['encode_time'],
+        'MedMask 编码 (ms)': medmask_stats['encode_time'],
+        'NPZ 解码 (ms)': npz_stats['decode_time'],
+        'MedMask 解码 (ms)': medmask_stats['decode_time']
+    })
+
+df_binary = pd.DataFrame(binary_results)
+
+# --- 增加平均值行 ---
+if not df_binary.empty:
+    avg_row = df_binary.select_dtypes(include=np.number).mean()
+    avg_row['文件名'] = 'Average'
+    avg_row = avg_row.reindex(df_binary.columns, fill_value='-')
+    df_binary = pd.concat([df_binary, pd.DataFrame([avg_row])], ignore_index=True)
+
+df_binary['MedMask压缩比 (vs NIfTI)'] = df_binary['NIfTI (KB)'] / df_binary['MedMask (KB)']
+df_binary['NPZ压缩比 (vs NIfTI)'] = df_binary['NIfTI (KB)'] / df_binary['NPZ (KB)']
+
+print("--- 二值掩膜压缩性能对比 ---")
+display(df_binary.style.format({
+    'NIfTI (KB)': '{:.1f}', 'NPZ (KB)': '{:.1f}', 'MedMask (KB)': '{:.1f}',
+    'NPZ 编码 (ms)': '{:.1f}', 'MedMask 编码 (ms)': '{:.1f}',
+    'NPZ 解码 (ms)': '{:.1f}', 'MedMask 解码 (ms)': '{:.1f}',
+    'MedMask压缩比 (vs NIfTI)': '{:.1f}x', 'NPZ压缩比 (vs NIfTI)': '{:.1f}x',
+    '非零像素': '{:,.0f}'
+}).hide(axis="index"))
 ```
 
-### Binary Mask 性能汇总
+### 二值掩膜结论
+
+从上表可以清晰地看出：
+
+1.  **压缩效率**: MedMask 的压缩效率显著优于 NPZ 和 NIfTI。如 `Average` 行所示，MedMask 的平均文件大小远低于其他两者。对于稀疏程度高的小目标（如 `iliac_artery_left`），MedMask 的压缩比优势尤为突出。数据越稀疏，其优势越明显。
+2.  **存储大小**: 总体而言，MedMask 能有效降低文件大小，通常能达到数倍乃至数十倍的压缩效果，将文件体积从几十KB量级降低到几KB甚至更低。
+3.  **处理速度**: MedMask 的编解码速度与 NPZ 相当，有时甚至更快，完全满足高性能应用的需求。
+
+## 3\. 多标签掩膜（Multi-label Mask）性能对比
+
+在实际应用中，常需要将多个器官掩膜存储在同一个文件中。我们构建一个包含多个标签的数组，然后对比 NIfTI、NPZ 和 MedMask 格式在存储这**同一个多标签数组**时的性能差异。
+
+### 测试配置与执行
+
+我们将相关的器官掩膜组合成逻辑分组，并融合成一个多标签数组进行测试。
 
 ```{python}
-# 汇总统计
-print("\nBinary Mask 压缩性能汇总\n" + "="*80)
-
-total_nifti = sum(r['nifti_size'] for r in results)
-total_npz = sum(r['npz_size'] for r in results)  
-total_medmask = sum(r['medmask_size'] for r in results)
-
-avg_npz_encode = np.mean([r['npz_encode_time'] for r in results]) * 1000
-avg_medmask_encode = np.mean([r['medmask_encode_time'] for r in results]) * 1000
-avg_npz_decode = np.mean([r['npz_decode_time'] for r in results]) * 1000
-avg_medmask_decode = np.mean([r['medmask_decode_time'] for r in results]) * 1000
-
-print(f"总存储大小对比:")
-print(f"  NIfTI:   {total_nifti/1024:7.1f} KB")
-print(f"  NPZ:     {total_npz/1024:7.1f} KB (压缩比 {total_nifti/total_npz:.1f}:1)")
-print(f"  MedMask: {total_medmask/1024:7.1f} KB (压缩比 {total_nifti/total_medmask:.1f}:1)")
-
-print(f"\n平均处理时间:")
-print(f"  编码时间 - NPZ: {avg_npz_encode:.1f}ms, MedMask: {avg_medmask_encode:.1f}ms")
-print(f"  解码时间 - NPZ: {avg_npz_decode:.1f}ms, MedMask: {avg_medmask_decode:.1f}ms")
-
-print(f"\nMedMask相对于NPZ的优势:")
-print(f"  存储空间节省: {(1 - total_medmask/total_npz)*100:.1f}%")
-print(f"  编码速度: {avg_npz_encode/avg_medmask_encode:.1f}x {'更快' if avg_medmask_encode < avg_npz_encode else '更慢'}")
-print(f"  解码速度: {avg_npz_decode/avg_medmask_decode:.1f}x {'更快' if avg_medmask_decode < avg_npz_decode else '更慢'}")
-```
-
-## Multi-label Mask 压缩测试
-
-由于s0000样例中肋骨和脊椎数据大多为空，我们使用现有的有效数据构建multi-label测试：
-
-```{python}
-print("Multi-label Mask 压缩测试\n" + "="*60)
-
-# 构建测试组合
 test_groups = [
     {
-        'name': 'gluteus_muscles',
+        'name': '臀肌群',
         'files': ['gluteus_maximus_left.nii.gz', 'gluteus_maximus_right.nii.gz', 
-                 'gluteus_medius_left.nii.gz', 'gluteus_medius_right.nii.gz'],
-        'description': '臀肌群组合'
+                  'gluteus_medius_left.nii.gz', 'gluteus_medius_right.nii.gz'],
     },
     {
-        'name': 'femur_and_hip',
+        'name': '股骨与髋骨',
         'files': ['femur_left.nii.gz', 'femur_right.nii.gz', 
-                 'hip_left.nii.gz', 'hip_right.nii.gz'],
-        'description': '股骨和髋骨组合'
+                  'hip_left.nii.gz', 'hip_right.nii.gz'],
     },
     {
-        'name': 'pelvic_organs',
+        'name': '盆腔器官',
         'files': ['urinary_bladder.nii.gz', 'colon.nii.gz', 'small_bowel.nii.gz'],
-        'description': '盆腔器官组合'
     }
 ]
 
 multilabel_results = []
 
 for group in test_groups:
-    print(f"\n测试组: {group['name']} ({group['description']})")
-    
-    # 加载并合并多个掩膜
-    first_file = mask_dir / group['files'][0]
-    ref_img = nib.load(first_file)
-    space = Space.from_nifti(ref_img)
-    
-    # 方法1: 分别存储 (传统方法)
-    individual_nifti_size = 0
-    individual_npz_size = 0
-    individual_encode_time = 0
-    individual_decode_time = 0
+    # 1. 创建多标签数据
+    first_img = nib.load(mask_dir / group['files'][0])
+    space = Space.from_nifti(first_img)
+    multilabel_array = np.zeros(first_img.shape, dtype=np.uint8)
+    label_mapping = {}
     
     for i, fname in enumerate(group['files']):
         fpath = mask_dir / fname
-        if fpath.exists():
-            individual_nifti_size += fpath.stat().st_size
-            
-            # NPZ单独存储测试
-            img = nib.load(fpath)
-            data = img.get_fdata().astype(np.uint8)
-            
-            start_time = time.time()
-            with tempfile.NamedTemporaryFile(suffix='.npz', delete=False) as tmp:
-                np.savez_compressed(tmp.name, mask=data)
-                individual_encode_time += time.time() - start_time
-                individual_npz_size += Path(tmp.name).stat().st_size
-                
-                start_time = time.time()
-                loaded = np.load(tmp.name)
-                _ = loaded['mask']
-                individual_decode_time += time.time() - start_time
-                
-                os.unlink(tmp.name)
-    
-    # 方法2: MedMask multi-label存储
-    combined_mask = SegmentationMask.lazy_init(bit_depth=8, space=space)
-    
-    medmask_start = time.time()
-    for i, fname in enumerate(group['files']):
-        fpath = mask_dir / fname
-        if fpath.exists():
-            img = nib.load(fpath)
-            mask_data = img.get_fdata() > 0
-            organ_name = fname.replace('.nii.gz', '')
-            combined_mask.add_label(mask_data, i + 1, organ_name)
-    
-    with tempfile.NamedTemporaryFile(suffix='.msk', delete=False) as tmp:
-        combined_mask.save(tmp.name)
-        medmask_encode_time = time.time() - medmask_start
-        medmask_size = Path(tmp.name).stat().st_size
+        if not fpath.exists(): continue
         
-        # MedMask解码测试
-        medmask_decode_start = time.time()
-        loaded_combined = SegmentationMask.load(tmp.name)
-        # 解码所有标签
-        for fname in group['files']:
-            organ_name = fname.replace('.nii.gz', '')
-            try:
-                _ = loaded_combined.get_binary_mask_by_names(organ_name)
-            except:
-                pass  # 某些文件可能不存在
-        medmask_decode_time = time.time() - medmask_decode_start
+        data = nib.load(fpath).get_fdata().astype(np.uint8)
         
-        os.unlink(tmp.name)
+        # 构建多标签数组
+        label_value = i + 1
+        organ_name = fname.replace('.nii.gz', '')
+        multilabel_array[data > 0] = label_value
+        label_mapping[organ_name] = label_value
+
+    # 2. 对同一个多标签数组，用不同格式进行基准测试
+    nifti_stats = run_benchmark('nifti', data=multilabel_array, space=space)
+    npz_stats = run_benchmark('npz', data=multilabel_array)
+    medmask_stats = run_benchmark('medmask', data=multilabel_array, space=space, label_mapping=label_mapping)
     
-    # 记录结果
-    result = {
-        'group_name': group['name'],
-        'num_files': len(group['files']),
-        'individual_nifti_size': individual_nifti_size,
-        'individual_npz_size': individual_npz_size,
-        'medmask_size': medmask_size,
-        'individual_encode_time': individual_encode_time,
-        'medmask_encode_time': medmask_encode_time,
-        'individual_decode_time': individual_decode_time,
-        'medmask_decode_time': medmask_decode_time
-    }
-    multilabel_results.append(result)
-    
-    print(f"  文件数: {result['num_files']}")
-    print(f"  存储大小:")
-    print(f"    分别存储(NIfTI): {individual_nifti_size/1024:6.1f} KB")
-    print(f"    分别存储(NPZ):   {individual_npz_size/1024:6.1f} KB (压缩比 {individual_nifti_size/individual_npz_size:.1f}:1)")
-    print(f"    MedMask合并:     {medmask_size/1024:6.1f} KB (压缩比 {individual_nifti_size/medmask_size:.1f}:1)")
-    print(f"  处理时间:")
-    print(f"    分别处理编码: {individual_encode_time*1000:6.1f} ms")
-    print(f"    MedMask编码:  {medmask_encode_time*1000:6.1f} ms")
-    print(f"    分别处理解码: {individual_decode_time*1000:6.1f} ms") 
-    print(f"    MedMask解码:  {medmask_decode_time*1000:6.1f} ms")
-```
-
-### Multi-label 性能汇总
-
-```{python}
-print("\nMulti-label Mask 压缩性能汇总\n" + "="*80)
-
-total_groups = len(multilabel_results)
-total_individual_nifti = sum(r['individual_nifti_size'] for r in multilabel_results)
-total_individual_npz = sum(r['individual_npz_size'] for r in multilabel_results)
-total_medmask = sum(r['medmask_size'] for r in multilabel_results)
-
-avg_individual_encode = np.mean([r['individual_encode_time'] for r in multilabel_results]) * 1000
-avg_medmask_encode = np.mean([r['medmask_encode_time'] for r in multilabel_results]) * 1000
-avg_individual_decode = np.mean([r['individual_decode_time'] for r in multilabel_results]) * 1000
-avg_medmask_decode = np.mean([r['medmask_decode_time'] for r in multilabel_results]) * 1000
-
-print(f"总体对比 ({total_groups}个测试组):")
-print(f"  存储大小:")
-print(f"    分别存储(NIfTI): {total_individual_nifti/1024:7.1f} KB")
-print(f"    分别存储(NPZ):   {total_individual_npz/1024:7.1f} KB (压缩比 {total_individual_nifti/total_individual_npz:.1f}:1)")
-print(f"    MedMask合并:     {total_medmask/1024:7.1f} KB (压缩比 {total_individual_nifti/total_medmask:.1f}:1)")
-
-print(f"\n  平均处理时间:")
-print(f"    编码 - 分别处理: {avg_individual_encode:.1f}ms, MedMask: {avg_medmask_encode:.1f}ms")
-print(f"    解码 - 分别处理: {avg_individual_decode:.1f}ms, MedMask: {avg_medmask_decode:.1f}ms")
-
-print(f"\n  MedMask优势:")
-print(f"    存储效率: 相比NPZ节省 {(1-total_medmask/total_individual_npz)*100:.1f}%")
-print(f"    文件管理: {sum(r['num_files'] for r in multilabel_results)} 个文件 → {total_groups} 个文件")
-print(f"    编码效率: {avg_individual_encode/avg_medmask_encode:.1f}x {'提升' if avg_medmask_encode < avg_individual_encode else '下降'}")
-print(f"    解码效率: {avg_individual_decode/avg_medmask_decode:.1f}x {'提升' if avg_medmask_decode < avg_individual_decode else '下降'}")
-```
-
-## 关键技术特性分析
-
-### PackBits预处理的威力
-
-MedMask对二值掩膜的优化主要来自PackBits预处理，它专门针对稀疏二值数据进行行程编码：
-
-```{python}
-print("PackBits预处理效果分析\n" + "="*50)
-
-# 选择一个代表性的稀疏掩膜进行详细分析
-test_mask = 'iliac_artery_left.nii.gz'  # 小血管，高度稀疏
-img = nib.load(mask_dir / test_mask)
-data = img.get_fdata().astype(np.uint8)
-
-total_voxels = data.size
-nonzero_voxels = np.count_nonzero(data)
-sparsity = (total_voxels - nonzero_voxels) / total_voxels
-
-print(f"测试掩膜: {test_mask}")
-print(f"总体素数: {total_voxels:,}")
-print(f"非零体素: {nonzero_voxels:,}")
-print(f"稀疏度: {sparsity:.1%}")
-
-# 分析不同压缩方法的效果
-raw_size = data.nbytes
-gzip_compressed = gzip.compress(data.tobytes())
-npz_temp = tempfile.NamedTemporaryFile(suffix='.npz', delete=False)
-np.savez_compressed(npz_temp.name, mask=data)
-npz_size = Path(npz_temp.name).stat().st_size
-os.unlink(npz_temp.name)
-
-print(f"\n压缩效果对比:")
-print(f"  原始大小:     {raw_size/1024:6.1f} KB")
-print(f"  gzip压缩:     {len(gzip_compressed)/1024:6.1f} KB (压缩比 {raw_size/len(gzip_compressed):.1f}:1)")
-print(f"  NPZ(gzip):    {npz_size/1024:6.1f} KB (压缩比 {raw_size/npz_size:.1f}:1)")
-
-# MedMask的压缩结果
-mask_obj = SegmentationMask(data, {'test': 1}, Space.from_nifti(img))
-medmask_temp = tempfile.NamedTemporaryFile(suffix='.msk', delete=False)
-mask_obj.save(medmask_temp.name)
-medmask_size = Path(medmask_temp.name).stat().st_size
-os.unlink(medmask_temp.name)
-
-print(f"  MedMask:      {medmask_size/1024:6.1f} KB (压缩比 {raw_size/medmask_size:.1f}:1)")
-print(f"\nMedMask相比NPZ的改进: {npz_size/medmask_size:.1f}x压缩比提升")
-```
-
-### 压缩算法适应性
-
-```{python}
-print("\n压缩算法适应性分析\n" + "="*50)
-
-# 按稀疏度分类测试结果
-sparsity_analysis = []
-
-for result in results:
-    fname = result['file']
-    img = nib.load(mask_dir / fname)
-    data = img.get_fdata()
-    total_voxels = data.size
-    nonzero_voxels = np.count_nonzero(data)
-    sparsity = (total_voxels - nonzero_voxels) / total_voxels
-    
-    medmask_advantage = result['npz_size'] / result['medmask_size']
-    
-    sparsity_analysis.append({
-        'file': fname,
-        'sparsity': sparsity,
-        'medmask_advantage': medmask_advantage,
-        'nonzero_pixels': nonzero_voxels
+    multilabel_results.append({
+        '测试组': group['name'],
+        '标签数': len(group['files']),
+        'NIfTI (KB)': nifti_stats['size'] / 1024,
+        'NPZ (KB)': npz_stats['size'] / 1024,
+        'MedMask (KB)': medmask_stats['size'] / 1024,
+        'NPZ 编码 (ms)': npz_stats['encode_time'],
+        'MedMask 编码 (ms)': medmask_stats['encode_time'],
+        'NPZ 解码 (ms)': npz_stats['decode_time'],
+        'MedMask 解码 (ms)': medmask_stats['decode_time']
     })
 
-# 按稀疏度排序
-sparsity_analysis.sort(key=lambda x: x['sparsity'], reverse=True)
+df_multi = pd.DataFrame(multilabel_results)
 
-print("稀疏度 vs MedMask压缩优势:")
-print("文件名                    稀疏度    非零像素   MedMask优势")
-print("-" * 65)
-for item in sparsity_analysis:
-    print(f"{item['file']:<25} {item['sparsity']:6.1%}   {item['nonzero_pixels']:8d}   {item['medmask_advantage']:6.1f}x")
+# --- 增加平均值行 ---
+if not df_multi.empty:
+    avg_row = df_multi.select_dtypes(include=np.number).mean()
+    avg_row['测试组'] = 'Average'
+    avg_row = avg_row.reindex(df_multi.columns, fill_value='-')
+    df_multi = pd.concat([df_multi, pd.DataFrame([avg_row])], ignore_index=True)
 
-# 相关性分析
-sparsities = [item['sparsity'] for item in sparsity_analysis]
-advantages = [item['medmask_advantage'] for item in sparsity_analysis]
-correlation = np.corrcoef(sparsities, advantages)[0, 1]
+df_multi['MedMask压缩比 (vs NIfTI)'] = df_multi['NIfTI (KB)'] / df_multi['MedMask (KB)']
+df_multi['NPZ压缩比 (vs NIfTI)'] = df_multi['NIfTI (KB)'] / df_multi['NPZ (KB)']
 
-print(f"\n稀疏度与压缩优势的相关系数: {correlation:.3f}")
-print("结论: 数据越稀疏，MedMask的压缩优势越明显")
+print("--- 多标签掩膜压缩性能对比 ---")
+display(df_multi.style.format({
+    '独立NIfTI (KB)': '{:.1f}', '独立NPZ (KB)': '{:.1f}', 'MedMask合并 (KB)': '{:.1f}',
+    'NIfTI (KB)': '{:.1f}', 'NPZ (KB)': '{:.1f}', 'MedMask (KB)': '{:.1f}',
+    'NPZ 编码 (ms)': '{:.1f}', 'MedMask 编码 (ms)': '{:.1f}',
+    'NPZ 解码 (ms)': '{:.1f}', 'MedMask 解码 (ms)': '{:.1f}',
+    'MedMask压缩比 (vs NIfTI)': '{:.1f}x', 'NPZ压缩比 (vs NIfTI)': '{:.1f}x'
+}).hide(axis="index"))
 ```
 
-## 总结
+### 多标签掩膜结论
+在处理包含多个标签的单一掩膜文件时，MedMask 同样展现出卓越的压缩性能。从上表可以看出，存储相同的多标签数据，MedMask 格式生成的文件体积显著小于 NIfTI 和 NPZ。
 
-基于实际测试数据的分析表明：
 
-### Binary Mask优势
+### 4\. 核心技术探究：PackBits + Zstandard 的威力
 
-1. **显著的压缩比提升**: MedMask相比传统NPZ格式平均获得2-5倍的压缩比改进
-2. **稀疏数据特别优化**: 对于高度稀疏的掩膜(如血管、小器官)，压缩优势可达10倍以上
-3. **处理速度优化**: 编解码速度与NPZ相当或更优
+MedMask 的高压缩率源于其针对不同掩膜类型的双层压缩策略。对于**二值掩膜（Binary Mask）**，它采用 **PackBits + Zstandard (Zstd)** 的组合；而对于多标签掩膜，则直接使用 Zstd。本节将重点探究为何 PackBits 预处理能为二值掩膜带来显著的性能提升。
 
-### Multi-label Mask优势
+#### PackBits 预处理机制
 
-1. **文件管理简化**: 多个分散文件整合为单一文件，减少文件系统开销
-2. **额外压缩收益**: 多标签合并存储相比分别存储获得进一步的压缩比提升
-3. **语义一致性**: 确保相关掩膜的版本一致性和原子操作
+MedMask 中使用的 PackBits 是一种针对二值稀疏数据的**位打包（Bit Packing）**技术，而非传统的游程编码（Run-Length Encoding）。其核心思想是将多个布尔值（在数组中通常以 `uint8` 的 `0` 或 `1` 存储）压缩到单个字节的位（bit）中。由于一个 `uint8` 字节包含8个位，该算法可以：
 
-### 技术关键
+1.  将8个连续的 `uint8` 类型的掩膜像素值（每个占用1字节）打包成一个 `uint8`（占用1字节）。
+2.  每个原始像素（`0` 或 `1`）映射到新字节中的一个位（`0` 或 `1`）。
 
-**PackBits + Zstandard双层压缩**是MedMask压缩优势的核心，特别适合医学图像分割掩膜的稀疏特性，为现代医学图像分析工作流提供了高效的存储解决方案。
+**工作示例：**
+假设有8个连续的像素值 `[0, 1, 0, 0, 0, 0, 0, 1]`。在内存中，它们占用8个字节。经过 PackBits 处理后，它们会被编码成单个字节。该字节的二进制表示为 `10000010`（注：位的顺序取决于具体实现），在十进制中为 `130`。这样，仅此一步就实现了理论上接近8:1的数据压缩。
+
+这种机制决定了 PackBits 预处理**仅适用于二值数据**。对于多标签掩膜，像素值可以大于1（例如 `2, 3, 4, ...`），无法用单个位来表示，因此 MedMask 会跳过此步骤，直接对原始多标签数组应用 Zstd 压缩。这也解释了为何 MedMask 在处理二值掩膜时的压缩比通常优于处理多标签掩膜。
+
+为了量化 PackBits 预处理的有效性，我们对比**纯 Zstd** 压缩和 **MedMask (PackBits + Zstd)** 在处理同一个二值掩膜时的效果。
+
+```{python}
+# 加载中等大小的掩膜数据
+mask_path = mask_dir / 'urinary_bladder.nii.gz'
+img = nib.load(mask_path)
+data = img.get_fdata()>0
+data_bytes = data.tobytes()
+data_packbit_bytes = np.packbits(data).tobytes()
+
+# 1. 原始大小
+raw_size = len(data_bytes)
+packbit_size = len(data_packbit_bytes)
+
+# 2. 纯 Gzip 压缩 (NIfTI/NPZ 使用)
+gzip_size = len(gzip.compress(data_bytes))
+
+# 3. 纯 Zstandard 压缩
+zstd_size = len(zstd.ZstdCompressor().compress(data_bytes))
+
+# 4. MedMask (PackBits + Zstd) 压缩
+packbit_zstd_size = len(zstd.ZstdCompressor().compress(data_packbit_bytes))
+
+
+# 结果汇总
+packbits_analysis = {
+    "方法": ["原始数据 (Bytes)","Packbits数据 (Bytes)", "纯 Gzip", "纯 Zstandard", "MedMask (PackBits + Zstd)"],
+    "大小 (KB)": [raw_size / 1024, packbit_size/1024, gzip_size / 1024, zstd_size / 1024, packbit_zstd_size / 1024],
+    "压缩比 (vs 原始)": [1.0, raw_size/packbit_size, raw_size / gzip_size, raw_size / zstd_size, raw_size / packbit_zstd_size]
+}
+df_packbits = pd.DataFrame(packbits_analysis)
+
+print("--- 压缩策略对稀疏数据的效果对比 ---")
+print(f"测试对象: {mask_path.name}, 稀疏度: {1 - np.count_nonzero(data) / data.size:.2%}")
+display(df_packbits.style.format({
+    "大小 (KB)": "{:.2f}",
+    "压缩比 (vs 原始)": "{:.1f}x"
+}).hide(axis="index"))
+```
+
+
+### 结论
+
+综合以上分析，MedMask 之所以能成为一种高效的医学分割掩膜存储格式，其核心在于它**根据数据特性采用的自适应双层压缩策略**。
+
+1.  **对于二值掩膜**，MedMask 采用 `PackBits 预处理 + Zstandard 压缩` 的模式。
+    * **PackBits** 作为一种位打包预处理，首先消除了用整个字节（`uint8`）存储单个布尔值所带来的结构性冗余，实现了第一重压缩。
+    * 经过预处理的紧凑数据流，再由高效的 **Zstandard** 算法进行第二重压缩。这种针对性的组合策略，使其压缩比远超仅依赖 Gzip (DEFLATE) 的 NIfTI 和 NPZ 格式，且性能与数据稀疏度正相关。
+
+2.  **对于多标签掩膜**，由于无法进行位打包，MedMask 直接应用 **Zstandard** 进行压缩。虽然缺少了 PackBits 带来的巨额增益，但 Zstandard 本身的性能依然优于传统的 DEFLATE 算法，因此 MedMask 在存储多标签数据时仍比 NIfTI 和 NPZ 更具空间效率。
+
+总而言之，MedMask 的设计精髓在于**它并非简单应用通用压缩，而是通过领域特定的预处理（位打包）来最大化后续通用压缩算法（Zstd）的效率**。这种设计使其在显著降低存储空间的同时，保持了高性能的读写速度，为医学图像分析工作流提供了切实的优化。

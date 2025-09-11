@@ -1,5 +1,5 @@
 ---
-title: "DiCube与DICOM互操作性：流式读取与编码兼容性分析"
+title: "流式读取与兼容性"
 format:
   html:
     code-fold: false

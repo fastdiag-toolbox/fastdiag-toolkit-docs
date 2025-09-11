@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DICOM序列排序：从临床需求到三维重建的技术权衡 – FastDiag Toolkit 文档</title>
+<title>Dicube的轴序” – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -199,7 +199,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.5_axis_order.html">DICOM序列排序：从临床需求到三维重建的技术权衡</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.5_axis_order.html">Dicube的轴序”</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -241,37 +241,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">NIfTI vs DiCube 格式对比</span></a>
+ <span class="menu-text">DiCube vs NifTi</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM元数据存储优化</span></a>
+ <span class="menu-text">DicomMeta</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM状态检查：确保三维医学图像的空间一致性</span></a>
+ <span class="menu-text">DICOM Status</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+ <span class="menu-text">DICOM 排序</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+ <span class="menu-text">Dicube的轴序”</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DiCube与DICOM互操作性：流式读取与编码兼容性分析</span></a>
+ <span class="menu-text">流式读取与兼容性</span></a>
   </div>
 </li>
       </ul>
@@ -294,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask压缩技术：Binary vs Multi-label性能对比</span></a>
+ <span class="menu-text">Medmask 的压缩效率</span></a>
   </div>
 </li>
       </ul>
@@ -324,9 +324,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.5_axis_order.html">DICOM序列排序：从临床需求到三维重建的技术权衡</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.5_axis_order.html">Dicube的轴序”</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">DICOM序列排序：从临床需求到三维重建的技术权衡</h1>
+<h1 class="title">Dicube的轴序”</h1>
 </div>
 
 
@@ -347,7 +347,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="问题描述simpleitk的轴序不一致">1. 问题描述：SimpleITK的轴序不一致</h2>
 <p>在使用SimpleITK处理医学影像时，一个常见的问题是<code>SimpleITK.Image</code>对象和它转换成的NumPy数组在轴的顺序上不一致。具体来说，<code>image.GetSize()</code>返回的维度顺序是 <code>(X, Y, Z)</code>，而<code>sitk.GetArrayFromImage(image)</code>返回的NumPy数组的 <code>shape</code> 属性却是 <code>(Z, Y, X)</code>。</p>
 <p>下面的代码演示了这个问题：</p>
-<div id="b396bdf1" class="cell" data-execution_count="1">
+<div id="44fd81c1" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dirname <span class="op">=</span> <span class="st">"dicube-testdata/dicom/sample_200"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -382,7 +382,7 @@ array.shape -&gt; (200, 512, 512) (Z, Y, X)</code></pre>
 <h2 class="anchored" data-anchor-id="技术原理零拷贝转换及其后果">3. 技术原理：零拷贝转换及其后果</h2>
 <p>当调用<code>sitk.GetArrayFromImage()</code>时，SimpleITK为了最大化效率，采用了**零拷贝（Zero-Copy）**机制。它不会在内存中重新排列数据来适应NumPy的行优先标准，而是直接将ITK管理的内存块暴露给NumPy，同时提供一套新的“解读规则”（即<code>shape</code>和<code>strides</code>元数据），让NumPy能以行优先的方式去理解这段原本按列优先存储的数据。</p>
 <p>我们可以用NumPy模拟这个过程。对于同一段线性数据，可以通过不同的<code>strides</code>（步长）信息，将其解释为不同的多维结构。</p>
-<div id="fa767b6c" class="cell" data-execution_count="2">
+<div id="e4992317" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -436,7 +436,7 @@ F-order Strides: (8, 40)</code></pre>
 <h3 class="anchored" data-anchor-id="手动修正的性能代价">4.2. 手动修正的性能代价</h3>
 <p>一个直接的想法是获取数组后立即使用 <code>.transpose(2, 1, 0)</code> 将其手动转换为 <code>(X, Y, Z)</code> 顺序，然后所有的 python 代码也在 <code>(X, Y, Z)</code> 上进行，这样全部与simpleitk 的生态保持一致。然而，这个操作并非没有代价。</p>
 <p><strong>1. 创建非连续数组</strong> 首先，我们创建一个模拟真实图像的连续数组。</p>
-<div id="8c980d37" class="cell" data-execution_count="3">
+<div id="1874ed59" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建一个200x300x400的连续数组 (ZYX)</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>large_array_zyx <span class="op">=</span> np.random.rand(<span class="dv">399</span>, <span class="dv">400</span>, <span class="dv">401</span>).astype(np.float32)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始数组 C-contiguous: </span><span class="sc">{</span>large_array_zyx<span class="sc">.</span>flags[<span class="st">'C_CONTIGUOUS'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
@@ -445,7 +445,7 @@ F-order Strides: (8, 40)</code></pre>
 </div>
 </div>
 <p><code>.transpose()</code> 操作本身很快，因为它不移动数据，只改变<code>strides</code>信息。但它会产生一个**非连续（Non-Contiguous）**的数组视图。</p>
-<div id="2f6fe352" class="cell" data-execution_count="4">
+<div id="b9855d19" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 转置操作 (ZYX -&gt; XYZ)</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>transposed_view_xyz <span class="op">=</span> large_array_zyx.transpose(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"转置后视图 C-contiguous: </span><span class="sc">{</span>transposed_view_xyz<span class="sc">.</span>flags[<span class="st">'C_CONTIGUOUS'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
@@ -454,7 +454,7 @@ F-order Strides: (8, 40)</code></pre>
 </div>
 </div>
 <p><strong>2. 非连续数组的计算性能</strong> 在非连续数组上进行运算时，由于数据在内存中是跳跃访问的，会降低CPU缓存命中率，导致计算性能下降。</p>
-<div id="c0956f95" class="cell" data-execution_count="5">
+<div id="e3d62d33" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> benchmark_operation(arr, name):</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.time()</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    _ <span class="op">=</span> np.<span class="bu">sum</span>(arr[<span class="dv">60</span>:<span class="dv">100</span>] <span class="op">*</span> <span class="fl">2.0</span> <span class="op">+</span> <span class="fl">1.0</span>)</span>
@@ -467,9 +467,9 @@ F-order Strides: (8, 40)</code></pre>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>view_time <span class="op">=</span> benchmark_operation(transposed_view_xyz, <span class="st">"在转置视图(非连续)上计算"</span>)</span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  性能差异: 转置视图计算慢约 </span><span class="sc">{</span>(view_time<span class="op">/</span>original_time<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  在原始连续数组上计算: 20.47 ms
-  在转置视图(非连续)上计算: 16.04 ms
-  性能差异: 转置视图计算慢约 -21.6%</code></pre>
+<pre><code>  在原始连续数组上计算: 20.20 ms
+  在转置视图(非连续)上计算: 14.72 ms
+  性能差异: 转置视图计算慢约 -27.1%</code></pre>
 </div>
 </div>
 <p><strong>3. 外部库的连续性要求</strong> 问题进一步复杂化的是，许多外部库和工具明确要求输入数组必须是C连续的（C-contiguous）：</p>
@@ -481,7 +481,7 @@ F-order Strides: (8, 40)</code></pre>
 </ul>
 <p>这意味着在将转置后的非连续数组传递给这些库之前，必须先进行连续化处理。</p>
 <p><strong>4. 恢复连续性的开销</strong> 要解决性能问题和兼容性问题，需要调用<code>np.ascontiguousarray()</code>，但这会触发一次完整的内存拷贝，消耗额外的时间和一倍的内存。</p>
-<div id="8986f3d4" class="cell" data-execution_count="6">
+<div id="7a6bd0da" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>contiguous_copy_xyz <span class="op">=</span> np.ascontiguousarray(transposed_view_xyz)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>contiguous_time <span class="op">=</span> (time.time() <span class="op">-</span> start_time) <span class="op">*</span> <span class="dv">1000</span></span>
@@ -490,7 +490,7 @@ F-order Strides: (8, 40)</code></pre>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"新数组 C-contiguous: </span><span class="sc">{</span>contiguous_copy_xyz<span class="sc">.</span>flags[<span class="st">'C_CONTIGUOUS'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"额外内存占用: </span><span class="sc">{</span>contiguous_copy_xyz<span class="sc">.</span>nbytes <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> MB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>强制连续化(内存拷贝)耗时: 157.8 ms
+<pre><code>强制连续化(内存拷贝)耗时: 211.4 ms
 新数组 C-contiguous: True
 额外内存占用: 244.1 MB</code></pre>
 </div>
@@ -509,7 +509,7 @@ F-order Strides: (8, 40)</code></pre>
 </ol>
 <p>这样，用户从DiCube获取的数据和元数据在轴序上是完全统一的，可以直接用于Python生态中的其他库。</p>
 <p>下面的代码对比了DiCube和SimpleITK的输出：</p>
-<div id="a347926a" class="cell" data-execution_count="7">
+<div id="1630cbb6" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用DiCube加载同一份数据</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dirname, sort_method<span class="op">=</span>dicube.SortMethod.POSITION_RIGHT_HAND)</span>

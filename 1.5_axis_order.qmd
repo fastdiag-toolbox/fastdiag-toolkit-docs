@@ -1,5 +1,5 @@
 ---
-title: "DICOM序列排序：从临床需求到三维重建的技术权衡"
+title: Dicube的轴序"
 format:
   html:
     code-fold: false

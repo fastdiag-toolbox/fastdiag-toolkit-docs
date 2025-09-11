@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DiCube与DICOM互操作性：流式读取与编码兼容性分析 – FastDiag Toolkit 文档</title>
+<title>流式读取与兼容性 – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -199,7 +199,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.6_dicom_compatibility_simple.html">DiCube与DICOM互操作性：流式读取与编码兼容性分析</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.6_dicom_compatibility_simple.html">流式读取与兼容性</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -241,37 +241,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">NIfTI vs DiCube 格式对比</span></a>
+ <span class="menu-text">DiCube vs NifTi</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM元数据存储优化</span></a>
+ <span class="menu-text">DicomMeta</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM状态检查：确保三维医学图像的空间一致性</span></a>
+ <span class="menu-text">DICOM Status</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+ <span class="menu-text">DICOM 排序</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+ <span class="menu-text">Dicube的轴序”</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">DiCube与DICOM互操作性：流式读取与编码兼容性分析</span></a>
+ <span class="menu-text">流式读取与兼容性</span></a>
   </div>
 </li>
       </ul>
@@ -294,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask压缩技术：Binary vs Multi-label性能对比</span></a>
+ <span class="menu-text">Medmask 的压缩效率</span></a>
   </div>
 </li>
       </ul>
@@ -328,9 +328,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.6_dicom_compatibility_simple.html">DiCube与DICOM互操作性：流式读取与编码兼容性分析</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.6_dicom_compatibility_simple.html">流式读取与兼容性</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">DiCube与DICOM互操作性：流式读取与编码兼容性分析</h1>
+<h1 class="title">流式读取与兼容性</h1>
 </div>
 
 
@@ -357,7 +357,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="基本使用接口" class="level3">
 <h3 class="anchored" data-anchor-id="基本使用接口">2.1 基本使用接口</h3>
 <p>DiCube的流式读取器提供了简洁的API接口，支持按帧索引动态生成DICOM数据：</p>
-<div id="a58bb902" class="cell" data-execution_count="1">
+<div id="86dd5727" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> DcbStreamingReader</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -382,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="数据处理与可视化分析" class="level3">
 <h3 class="anchored" data-anchor-id="数据处理与可视化分析">2.2 数据处理与可视化分析</h3>
 <p>流式读取器生成的DICOM数据完全符合标准规范，可以直接被PyDICOM等主流库处理：</p>
-<div id="3db6920f" class="cell" data-execution_count="2">
+<div id="f06d60a6" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>

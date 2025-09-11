@@ -8,6 +8,8 @@
 # Quarto 渲染过程中生成的临时文件
 **/*_files/
 *_files/
+# 但保留最终网站输出中的图片文件
+!_site/*/figure-html/
 
 # Quarto freeze 缓存（包含执行结果）
 _freeze/
@@ -102,3 +104,10 @@ build/
 # ==========================================
 .cache/
 .pytest_cache/
+
+
+dicube
+spacetransformer
+medmask
+DicubePaper
+hdd

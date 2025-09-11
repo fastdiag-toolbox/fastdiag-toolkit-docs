@@ -22,6 +22,36 @@ pre {
   border-right: 1px solid #e9ecef;
 }
 
+/* 侧边栏导航项间距 */
+.sidebar .sidebar-section .sidebar-item {
+  margin-bottom: 8px;
+}
+
+.sidebar .sidebar-section .sidebar-item .sidebar-item-text {
+  padding: 8px 12px;
+  display: block;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar .sidebar-section .sidebar-item .sidebar-item-text:hover {
+  background-color: #f8f9fa;
+}
+
+/* 侧边栏章节标题间距 */
+.sidebar .sidebar-section > .h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.8em;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 0.3em;
+}
+
+.sidebar .sidebar-section:first-child > .h6 {
+  margin-top: 1em;
+}
+
 /* 卡片样式 */
 .card {
   border: none;

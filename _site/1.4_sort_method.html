@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DICOM序列排序：从临床需求到三维重建的技术权衡 – FastDiag Toolkit 文档</title>
+<title>DICOM 排序 – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -199,7 +199,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">DICOM序列排序：从临床需求到三维重建的技术权衡</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">DICOM 排序</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -241,37 +241,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">NIfTI vs DiCube 格式对比</span></a>
+ <span class="menu-text">DiCube vs NifTi</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM元数据存储优化</span></a>
+ <span class="menu-text">DicomMeta</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM状态检查：确保三维医学图像的空间一致性</span></a>
+ <span class="menu-text">DICOM Status</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+ <span class="menu-text">DICOM 排序</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+ <span class="menu-text">Dicube的轴序”</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DiCube与DICOM互操作性：流式读取与编码兼容性分析</span></a>
+ <span class="menu-text">流式读取与兼容性</span></a>
   </div>
 </li>
       </ul>
@@ -294,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask压缩技术：Binary vs Multi-label性能对比</span></a>
+ <span class="menu-text">Medmask 的压缩效率</span></a>
   </div>
 </li>
       </ul>
@@ -324,9 +324,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">DICOM序列排序：从临床需求到三维重建的技术权衡</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">DICOM 排序</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">DICOM序列排序：从临床需求到三维重建的技术权衡</h1>
+<h1 class="title">DICOM 排序</h1>
 </div>
 
 
@@ -368,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="排序方法的可视化验证" class="level2">
 <h2 class="anchored" data-anchor-id="排序方法的可视化验证">排序方法的可视化验证</h2>
 <p>让我们通过三视图的方式来直观地观察和验证右手坐标系排序的效果。通过查看横断面、冠状面和矢状面的图像，我们可以清楚地了解图像的空间排列是否正确：</p>
-<div id="f8fad32e" class="cell" data-execution_count="1">
+<div id="8370bac3" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube <span class="im">import</span> SortMethod</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -423,7 +423,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>fig3, ax3 <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>im3 <span class="op">=</span> ax3.imshow(slices_rh[<span class="st">'sagittal'</span>], cmap<span class="op">=</span><span class="st">'gray'</span>, origin<span class="op">=</span><span class="st">'lower'</span>)</span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>ax3.set_title(<span class="ss">f'Sagittal View - Slice along X-axis (slice </span><span class="sc">{</span>img_rh<span class="sc">.</span>raw_image<span class="sc">.</span>shape[<span class="dv">2</span>]<span class="op">//</span><span class="dv">2</span><span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span>img_rh<span class="sc">.</span>raw_image<span class="sc">.</span>shape[<span class="dv">2</span>]<span class="sc">}</span><span class="ss">)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>ax3.set_xlabel(<span class="st">'Axis 1 (Y): Posterior → Anterior'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>ax3.set_xlabel(<span class="st">'Axis 1 (Y): Anterior →  Posterior'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>ax3.set_ylabel(<span class="st">'Axis 0 (Z): Inferior → Superior'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>

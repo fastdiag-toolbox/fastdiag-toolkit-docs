@@ -1,5 +1,5 @@
 ---
-title: "DICOM序列排序：从临床需求到三维重建的技术权衡"
+title: "DICOM 排序"
 format:
   html:
     code-fold: false
@@ -102,7 +102,7 @@ plt.show()
 fig3, ax3 = plt.subplots(1, 1, figsize=(8, 6))
 im3 = ax3.imshow(slices_rh['sagittal'], cmap='gray', origin='lower')
 ax3.set_title(f'Sagittal View - Slice along X-axis (slice {img_rh.raw_image.shape[2]//2} of {img_rh.raw_image.shape[2]})', fontsize=14)
-ax3.set_xlabel('Axis 1 (Y): Posterior → Anterior', fontsize=12)
+ax3.set_xlabel('Axis 1 (Y): Anterior →  Posterior', fontsize=12)
 ax3.set_ylabel('Axis 0 (Z): Inferior → Superior', fontsize=12)
 plt.tight_layout()
 plt.show()
