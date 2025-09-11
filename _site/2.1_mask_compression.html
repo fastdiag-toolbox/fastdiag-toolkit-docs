@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.21">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>MedMask压缩技术：Binary vs Multi-label性能对比 – FastDiag Toolkit 文档</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ea1d7ac60288e0f1efdbc993fd8432ae.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-af53e07c3e3c7930d59d423e0ac82114.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">FastDiag Toolkit 文档</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="搜索"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">首页</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-dicube-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">DiCube 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-dicube-教程">    
+        <li>
+    <a class="dropdown-item" href="./1.0_motivation.html">
+ <span class="dropdown-text">设计动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.1_vs_nifti.html">
+ <span class="dropdown-text">与NIfTI格式对比</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.2_meta_storage.html">
+ <span class="dropdown-text">元数据存储</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.3_dicom_status.html">
+ <span class="dropdown-text">DICOM状态分析</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.4_sort_method.html">
+ <span class="dropdown-text">排序方法</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.5_axis_order.html">
+ <span class="dropdown-text">轴序约定</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.6_dicom_compatibility_simple.html">
+ <span class="dropdown-text">DICOM兼容性</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-medmask-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">MedMask 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-medmask-教程">    
+        <li>
+    <a class="dropdown-item" href="./2.0_mask.html">
+ <span class="dropdown-text">掩膜处理基础</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2.1_mask_compression.html">
+ <span class="dropdown-text">掩膜压缩技术</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text">GitHub</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.1_mask_compression.html">MedMask压缩技术：Binary vs Multi-label性能对比</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">DiCube 核心技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">为什么需要DiCube？</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NIfTI vs DiCube 格式对比</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM元数据存储优化</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM状态检查：确保三维医学图像的空间一致性</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DiCube与DICOM互操作性：流式读取与编码兼容性分析</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">MedMask 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">MedMask压缩技术：Binary vs Multi-label性能对比</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">该页面内容</h2>
+   
+  <ul>
+  <li><a href="#压缩技术概述" id="toc-压缩技术概述" class="nav-link active" data-scroll-target="#压缩技术概述">压缩技术概述</a>
+  <ul class="collapse">
+  <li><a href="#数据准备" id="toc-数据准备" class="nav-link" data-scroll-target="#数据准备">数据准备</a></li>
+  <li><a href="#binary-mask-压缩对比" id="toc-binary-mask-压缩对比" class="nav-link" data-scroll-target="#binary-mask-压缩对比">Binary Mask 压缩对比</a></li>
+  <li><a href="#binary-mask-性能汇总" id="toc-binary-mask-性能汇总" class="nav-link" data-scroll-target="#binary-mask-性能汇总">Binary Mask 性能汇总</a></li>
+  </ul></li>
+  <li><a href="#multi-label-mask-压缩测试" id="toc-multi-label-mask-压缩测试" class="nav-link" data-scroll-target="#multi-label-mask-压缩测试">Multi-label Mask 压缩测试</a>
+  <ul class="collapse">
+  <li><a href="#multi-label-性能汇总" id="toc-multi-label-性能汇总" class="nav-link" data-scroll-target="#multi-label-性能汇总">Multi-label 性能汇总</a></li>
+  </ul></li>
+  <li><a href="#关键技术特性分析" id="toc-关键技术特性分析" class="nav-link" data-scroll-target="#关键技术特性分析">关键技术特性分析</a>
+  <ul class="collapse">
+  <li><a href="#packbits预处理的威力" id="toc-packbits预处理的威力" class="nav-link" data-scroll-target="#packbits预处理的威力">PackBits预处理的威力</a></li>
+  <li><a href="#压缩算法适应性" id="toc-压缩算法适应性" class="nav-link" data-scroll-target="#压缩算法适应性">压缩算法适应性</a></li>
+  </ul></li>
+  <li><a href="#总结" id="toc-总结" class="nav-link" data-scroll-target="#总结">总结</a>
+  <ul class="collapse">
+  <li><a href="#binary-mask优势" id="toc-binary-mask优势" class="nav-link" data-scroll-target="#binary-mask优势">Binary Mask优势</a></li>
+  <li><a href="#multi-label-mask优势" id="toc-multi-label-mask优势" class="nav-link" data-scroll-target="#multi-label-mask优势">Multi-label Mask优势</a></li>
+  <li><a href="#技术关键" id="toc-技术关键" class="nav-link" data-scroll-target="#技术关键">技术关键</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.1_mask_compression.html">MedMask压缩技术：Binary vs Multi-label性能对比</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">MedMask压缩技术：Binary vs Multi-label性能对比</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="压缩技术概述" class="level2">
+<h2 class="anchored" data-anchor-id="压缩技术概述">压缩技术概述</h2>
+<p>MedMask针对医学图像分割掩膜的稀疏特性，采用了专门优化的压缩策略。与传统的gzip压缩相比，MedMask通过PackBits预处理 + Zstandard主压缩的组合，显著提升了二值掩膜的压缩效率。</p>
+<section id="数据准备" class="level3">
+<h3 class="anchored" data-anchor-id="数据准备">数据准备</h3>
+<p>首先分析测试数据的有效性。TotalSegmentator的s0000样例中，117个文件并非全部包含有效数据：</p>
+<div id="f96bd350" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nibabel <span class="im">as</span> nib</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 读取有效文件列表</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>mask_dir <span class="op">=</span> Path(<span class="st">'dicube-testdata/mask/s0000'</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(mask_dir <span class="op">/</span> <span class="st">'nonzero_masks.txt'</span>, <span class="st">'r'</span>) <span class="im">as</span> f:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    valid_files <span class="op">=</span> [line.strip() <span class="cf">for</span> line <span class="kw">in</span> f.readlines()]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"有效掩膜文件: </span><span class="sc">{</span><span class="bu">len</span>(valid_files)<span class="sc">}</span><span class="ss"> / 117"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"有效文件列表:"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, fname <span class="kw">in</span> <span class="bu">enumerate</span>(valid_files, <span class="dv">1</span>):</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    fpath <span class="op">=</span> mask_dir <span class="op">/</span> fname</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> nib.load(fpath)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    nonzero_count <span class="op">=</span> np.count_nonzero(img.get_fdata())</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    file_size <span class="op">=</span> fpath.stat().st_size <span class="op">/</span> <span class="dv">1024</span>  <span class="co"># KB</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>i<span class="sc">:2d}</span><span class="ss">. </span><span class="sc">{</span>fname<span class="sc">:&lt;25}</span><span class="ss"> - </span><span class="sc">{</span>nonzero_count<span class="sc">:6d}</span><span class="ss"> 非零像素, </span><span class="sc">{</span>file_size<span class="sc">:5.1f}</span><span class="ss"> KB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>有效掩膜文件: 21 / 117
+有效文件列表:
+ 1. colon.nii.gz              -  59305 非零像素,  55.8 KB
+ 2. femur_left.nii.gz         -  69349 非零像素,  60.2 KB
+ 3. femur_right.nii.gz        -  73391 非零像素,  60.4 KB
+ 4. gluteus_maximus_left.nii.gz - 138606 非零像素,  67.1 KB
+ 5. gluteus_maximus_right.nii.gz - 150852 非零像素,  72.2 KB
+ 6. gluteus_medius_left.nii.gz -  21745 非零像素,  48.8 KB
+ 7. gluteus_medius_right.nii.gz -  34847 非零像素,  52.4 KB
+ 8. gluteus_minimus_left.nii.gz -   9462 非零像素,  47.5 KB
+ 9. gluteus_minimus_right.nii.gz -  11818 非零像素,  48.4 KB
+10. hip_left.nii.gz           -  42124 非零像素,  57.1 KB
+11. hip_right.nii.gz          -  48727 非零像素,  58.7 KB
+12. iliac_artery_left.nii.gz  -   1155 非零像素,  44.2 KB
+13. iliac_artery_right.nii.gz -    630 非零像素,  43.9 KB
+14. iliac_vena_left.nii.gz    -   1635 非零像素,  44.5 KB
+15. iliac_vena_right.nii.gz   -   1028 非零像素,  44.0 KB
+16. iliopsoas_left.nii.gz     -  20865 非零像素,  49.5 KB
+17. iliopsoas_right.nii.gz    -  27575 非零像素,  50.3 KB
+18. rib_right_12.nii.gz       -     13 非零像素,  43.3 KB
+19. sacrum.nii.gz             -   3804 非零像素,  45.0 KB
+20. small_bowel.nii.gz        -    244 非零像素,  43.4 KB
+21. urinary_bladder.nii.gz    -  68016 非零像素,  54.8 KB</code></pre>
+</div>
+</div>
+</section>
+<section id="binary-mask-压缩对比" class="level3">
+<h3 class="anchored" data-anchor-id="binary-mask-压缩对比">Binary Mask 压缩对比</h3>
+<p>选择几个代表性的二值掩膜进行压缩性能测试，对比NIfTI(.nii.gz)、NumPy(.npz)和MedMask三种格式：</p>
+<div id="599c906c" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gzip</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask <span class="im">import</span> SegmentationMask</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer <span class="im">import</span> Space</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择测试文件 - 选择不同大小的掩膜以测试压缩效果</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>test_files <span class="op">=</span> [</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'urinary_bladder.nii.gz'</span>,      <span class="co"># 大掩膜 (68016 非零像素)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gluteus_maximus_right.nii.gz'</span>, <span class="co"># 大掩膜 (150852 非零像素)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'colon.nii.gz'</span>,                <span class="co"># 中等掩膜 (59305 非零像素)</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'iliopsoas_left.nii.gz'</span>,       <span class="co"># 中等掩膜 (20865 非零像素)</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'iliac_artery_left.nii.gz'</span>,    <span class="co"># 小掩膜 (1155 非零像素)</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'small_bowel.nii.gz'</span>           <span class="co"># 极小掩膜 (244 非零像素)</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Binary Mask 压缩性能测试</span><span class="ch">\n</span><span class="st">"</span> <span class="op">+</span> <span class="st">"="</span><span class="op">*</span><span class="dv">60</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> []</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> test_file <span class="kw">in</span> test_files:</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">测试文件: </span><span class="sc">{</span>test_file<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 加载原始数据</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    original_path <span class="op">=</span> mask_dir <span class="op">/</span> test_file</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    nii_img <span class="op">=</span> nib.load(original_path)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    mask_data <span class="op">=</span> nii_img.get_fdata().astype(np.uint8)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> Space.from_nifti(nii_img)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 原始NIfTI大小</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    nifti_size <span class="op">=</span> original_path.stat().st_size</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. NPZ格式测试</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    npz_start <span class="op">=</span> time.time()</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> tempfile.NamedTemporaryFile(suffix<span class="op">=</span><span class="st">'.npz'</span>, delete<span class="op">=</span><span class="va">False</span>) <span class="im">as</span> tmp:</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>        np.savez_compressed(tmp.name, mask<span class="op">=</span>mask_data)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        npz_encode_time <span class="op">=</span> time.time() <span class="op">-</span> npz_start</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        npz_size <span class="op">=</span> Path(tmp.name).stat().st_size</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>        <span class="co"># NPZ读取测试</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>        npz_read_start <span class="op">=</span> time.time()</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>        loaded_npz <span class="op">=</span> np.load(tmp.name)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>        npz_data <span class="op">=</span> loaded_npz[<span class="st">'mask'</span>]</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        npz_decode_time <span class="op">=</span> time.time() <span class="op">-</span> npz_read_start</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        os.unlink(tmp.name)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. MedMask格式测试</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    medmask_start <span class="op">=</span> time.time()</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    organ_name <span class="op">=</span> test_file.replace(<span class="st">'.nii.gz'</span>, <span class="st">''</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    mask_obj <span class="op">=</span> SegmentationMask(mask_data, {organ_name: <span class="dv">1</span>}, space<span class="op">=</span>space)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> tempfile.NamedTemporaryFile(suffix<span class="op">=</span><span class="st">'.msk'</span>, delete<span class="op">=</span><span class="va">False</span>) <span class="im">as</span> tmp:</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>        mask_obj.save(tmp.name)</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>        medmask_encode_time <span class="op">=</span> time.time() <span class="op">-</span> medmask_start</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>        medmask_size <span class="op">=</span> Path(tmp.name).stat().st_size</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>        <span class="co"># MedMask读取测试</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>        medmask_read_start <span class="op">=</span> time.time()</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>        loaded_mask <span class="op">=</span> SegmentationMask.load(tmp.name)</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>        medmask_data <span class="op">=</span> loaded_mask.get_binary_mask_by_names(organ_name)</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>        medmask_decode_time <span class="op">=</span> time.time() <span class="op">-</span> medmask_read_start</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>        os.unlink(tmp.name)</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 验证数据一致性</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    data_consistent <span class="op">=</span> np.array_equal(mask_data <span class="op">&gt;</span> <span class="dv">0</span>, npz_data <span class="op">&gt;</span> <span class="dv">0</span>) <span class="kw">and</span> np.array_equal(mask_data <span class="op">&gt;</span> <span class="dv">0</span>, medmask_data <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 记录结果</span></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> {</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>        <span class="st">'file'</span>: test_file,</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>        <span class="st">'nonzero_pixels'</span>: np.count_nonzero(mask_data),</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>        <span class="st">'nifti_size'</span>: nifti_size,</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>        <span class="st">'npz_size'</span>: npz_size,</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>        <span class="st">'medmask_size'</span>: medmask_size,</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>        <span class="st">'npz_encode_time'</span>: npz_encode_time,</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>        <span class="st">'medmask_encode_time'</span>: medmask_encode_time,</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>        <span class="st">'npz_decode_time'</span>: npz_decode_time,</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>        <span class="st">'medmask_decode_time'</span>: medmask_decode_time,</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>        <span class="st">'data_consistent'</span>: data_consistent</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>    results.append(result)</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  非零像素: </span><span class="sc">{</span>result[<span class="st">'nonzero_pixels'</span>]<span class="sc">:6d}</span><span class="ss">"</span>)</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  压缩效果:"</span>)</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    NIfTI:  </span><span class="sc">{</span>nifti_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (基准)"</span>)</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    NPZ:    </span><span class="sc">{</span>npz_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>nifti_size<span class="op">/</span>npz_size<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    MedMask:</span><span class="sc">{</span>medmask_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>nifti_size<span class="op">/</span>medmask_size<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  编码时间:"</span>)</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    NPZ:    </span><span class="sc">{</span>npz_encode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    MedMask:</span><span class="sc">{</span>medmask_encode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  解码时间:"</span>)</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    NPZ:    </span><span class="sc">{</span>npz_decode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    MedMask:</span><span class="sc">{</span>medmask_decode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  数据一致性: </span><span class="sc">{</span><span class="st">'✓'</span> <span class="cf">if</span> data_consistent <span class="cf">else</span> <span class="st">'✗'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Binary Mask 压缩性能测试
+============================================================
+
+测试文件: urinary_bladder.nii.gz
+  非零像素:  68016
+  压缩效果:
+    NIfTI:    54.8 KB (基准)
+    NPZ:      15.0 KB (压缩比 3.6:1)
+    MedMask:   8.4 KB (压缩比 6.5:1)
+  编码时间:
+    NPZ:      45.8 ms
+    MedMask:  79.1 ms
+  解码时间:
+    NPZ:      25.1 ms
+    MedMask:   5.6 ms
+  数据一致性: ✓
+
+测试文件: gluteus_maximus_right.nii.gz
+  非零像素: 150852
+  压缩效果:
+    NIfTI:    72.2 KB (基准)
+    NPZ:      25.5 KB (压缩比 2.8:1)
+    MedMask:  15.9 KB (压缩比 4.5:1)
+  编码时间:
+    NPZ:      47.7 ms
+    MedMask:  64.6 ms
+  解码时间:
+    NPZ:      22.7 ms
+    MedMask:   2.6 ms
+  数据一致性: ✓
+
+测试文件: colon.nii.gz
+  非零像素:  59305
+  压缩效果:
+    NIfTI:    55.8 KB (基准)
+    NPZ:      16.4 KB (压缩比 3.4:1)
+    MedMask:  10.2 KB (压缩比 5.4:1)
+  编码时间:
+    NPZ:      41.5 ms
+    MedMask:  66.6 ms
+  解码时间:
+    NPZ:      26.1 ms
+    MedMask:   6.9 ms
+  数据一致性: ✓
+
+测试文件: iliopsoas_left.nii.gz
+  非零像素:  20865
+  压缩效果:
+    NIfTI:    49.5 KB (基准)
+    NPZ:      13.3 KB (压缩比 3.7:1)
+    MedMask:   4.5 KB (压缩比 10.9:1)
+  编码时间:
+    NPZ:      40.7 ms
+    MedMask:  65.1 ms
+  解码时间:
+    NPZ:      24.7 ms
+    MedMask:   2.2 ms
+  数据一致性: ✓
+
+测试文件: iliac_artery_left.nii.gz
+  非零像素:   1155
+  压缩效果:
+    NIfTI:    44.2 KB (基准)
+    NPZ:      10.5 KB (压缩比 4.2:1)
+    MedMask:   1.5 KB (压缩比 30.3:1)
+  编码时间:
+    NPZ:      39.7 ms
+    MedMask:  66.0 ms
+  解码时间:
+    NPZ:      27.2 ms
+    MedMask:   6.9 ms
+  数据一致性: ✓
+
+测试文件: small_bowel.nii.gz
+  非零像素:    244
+  压缩效果:
+    NIfTI:    43.4 KB (基准)
+    NPZ:       9.9 KB (压缩比 4.4:1)
+    MedMask:   1.1 KB (压缩比 39.4:1)
+  编码时间:
+    NPZ:      39.3 ms
+    MedMask:  65.0 ms
+  解码时间:
+    NPZ:      25.3 ms
+    MedMask:   3.7 ms
+  数据一致性: ✓</code></pre>
+</div>
+</div>
+</section>
+<section id="binary-mask-性能汇总" class="level3">
+<h3 class="anchored" data-anchor-id="binary-mask-性能汇总">Binary Mask 性能汇总</h3>
+<div id="9634686e" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 汇总统计</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Binary Mask 压缩性能汇总</span><span class="ch">\n</span><span class="st">"</span> <span class="op">+</span> <span class="st">"="</span><span class="op">*</span><span class="dv">80</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>total_nifti <span class="op">=</span> <span class="bu">sum</span>(r[<span class="st">'nifti_size'</span>] <span class="cf">for</span> r <span class="kw">in</span> results)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>total_npz <span class="op">=</span> <span class="bu">sum</span>(r[<span class="st">'npz_size'</span>] <span class="cf">for</span> r <span class="kw">in</span> results)  </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>total_medmask <span class="op">=</span> <span class="bu">sum</span>(r[<span class="st">'medmask_size'</span>] <span class="cf">for</span> r <span class="kw">in</span> results)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>avg_npz_encode <span class="op">=</span> np.mean([r[<span class="st">'npz_encode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>avg_medmask_encode <span class="op">=</span> np.mean([r[<span class="st">'medmask_encode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>avg_npz_decode <span class="op">=</span> np.mean([r[<span class="st">'npz_decode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>avg_medmask_decode <span class="op">=</span> np.mean([r[<span class="st">'medmask_decode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"总存储大小对比:"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  NIfTI:   </span><span class="sc">{</span>total_nifti<span class="op">/</span><span class="dv">1024</span><span class="sc">:7.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  NPZ:     </span><span class="sc">{</span>total_npz<span class="op">/</span><span class="dv">1024</span><span class="sc">:7.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>total_nifti<span class="op">/</span>total_npz<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  MedMask: </span><span class="sc">{</span>total_medmask<span class="op">/</span><span class="dv">1024</span><span class="sc">:7.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>total_nifti<span class="op">/</span>total_medmask<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">平均处理时间:"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  编码时间 - NPZ: </span><span class="sc">{</span>avg_npz_encode<span class="sc">:.1f}</span><span class="ss">ms, MedMask: </span><span class="sc">{</span>avg_medmask_encode<span class="sc">:.1f}</span><span class="ss">ms"</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  解码时间 - NPZ: </span><span class="sc">{</span>avg_npz_decode<span class="sc">:.1f}</span><span class="ss">ms, MedMask: </span><span class="sc">{</span>avg_medmask_decode<span class="sc">:.1f}</span><span class="ss">ms"</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">MedMask相对于NPZ的优势:"</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  存储空间节省: </span><span class="sc">{</span>(<span class="dv">1</span> <span class="op">-</span> total_medmask<span class="op">/</span>total_npz)<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  编码速度: </span><span class="sc">{</span>avg_npz_encode<span class="op">/</span>avg_medmask_encode<span class="sc">:.1f}</span><span class="ss">x </span><span class="sc">{</span><span class="st">'更快'</span> <span class="cf">if</span> avg_medmask_encode <span class="op">&lt;</span> avg_npz_encode <span class="cf">else</span> <span class="st">'更慢'</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  解码速度: </span><span class="sc">{</span>avg_npz_decode<span class="op">/</span>avg_medmask_decode<span class="sc">:.1f}</span><span class="ss">x </span><span class="sc">{</span><span class="st">'更快'</span> <span class="cf">if</span> avg_medmask_decode <span class="op">&lt;</span> avg_npz_decode <span class="cf">else</span> <span class="st">'更慢'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Binary Mask 压缩性能汇总
+================================================================================
+总存储大小对比:
+  NIfTI:     319.9 KB
+  NPZ:        90.7 KB (压缩比 3.5:1)
+  MedMask:    41.7 KB (压缩比 7.7:1)
+
+平均处理时间:
+  编码时间 - NPZ: 42.4ms, MedMask: 67.7ms
+  解码时间 - NPZ: 25.2ms, MedMask: 4.7ms
+
+MedMask相对于NPZ的优势:
+  存储空间节省: 54.0%
+  编码速度: 0.6x 更慢
+  解码速度: 5.4x 更快</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="multi-label-mask-压缩测试" class="level2">
+<h2 class="anchored" data-anchor-id="multi-label-mask-压缩测试">Multi-label Mask 压缩测试</h2>
+<p>由于s0000样例中肋骨和脊椎数据大多为空，我们使用现有的有效数据构建multi-label测试：</p>
+<div id="dd03052c" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Multi-label Mask 压缩测试</span><span class="ch">\n</span><span class="st">"</span> <span class="op">+</span> <span class="st">"="</span><span class="op">*</span><span class="dv">60</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 构建测试组合</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>test_groups <span class="op">=</span> [</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'name'</span>: <span class="st">'gluteus_muscles'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'files'</span>: [<span class="st">'gluteus_maximus_left.nii.gz'</span>, <span class="st">'gluteus_maximus_right.nii.gz'</span>, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'gluteus_medius_left.nii.gz'</span>, <span class="st">'gluteus_medius_right.nii.gz'</span>],</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">'description'</span>: <span class="st">'臀肌群组合'</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">'name'</span>: <span class="st">'femur_and_hip'</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">'files'</span>: [<span class="st">'femur_left.nii.gz'</span>, <span class="st">'femur_right.nii.gz'</span>, </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'hip_left.nii.gz'</span>, <span class="st">'hip_right.nii.gz'</span>],</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">'description'</span>: <span class="st">'股骨和髋骨组合'</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">'name'</span>: <span class="st">'pelvic_organs'</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">'files'</span>: [<span class="st">'urinary_bladder.nii.gz'</span>, <span class="st">'colon.nii.gz'</span>, <span class="st">'small_bowel.nii.gz'</span>],</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">'description'</span>: <span class="st">'盆腔器官组合'</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>multilabel_results <span class="op">=</span> []</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> group <span class="kw">in</span> test_groups:</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">测试组: </span><span class="sc">{</span>group[<span class="st">'name'</span>]<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>group[<span class="st">'description'</span>]<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 加载并合并多个掩膜</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    first_file <span class="op">=</span> mask_dir <span class="op">/</span> group[<span class="st">'files'</span>][<span class="dv">0</span>]</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    ref_img <span class="op">=</span> nib.load(first_file)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> Space.from_nifti(ref_img)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 方法1: 分别存储 (传统方法)</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    individual_nifti_size <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    individual_npz_size <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    individual_encode_time <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    individual_decode_time <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, fname <span class="kw">in</span> <span class="bu">enumerate</span>(group[<span class="st">'files'</span>]):</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>        fpath <span class="op">=</span> mask_dir <span class="op">/</span> fname</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> fpath.exists():</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>            individual_nifti_size <span class="op">+=</span> fpath.stat().st_size</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>            <span class="co"># NPZ单独存储测试</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>            img <span class="op">=</span> nib.load(fpath)</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> img.get_fdata().astype(np.uint8)</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>            start_time <span class="op">=</span> time.time()</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> tempfile.NamedTemporaryFile(suffix<span class="op">=</span><span class="st">'.npz'</span>, delete<span class="op">=</span><span class="va">False</span>) <span class="im">as</span> tmp:</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>                np.savez_compressed(tmp.name, mask<span class="op">=</span>data)</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>                individual_encode_time <span class="op">+=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>                individual_npz_size <span class="op">+=</span> Path(tmp.name).stat().st_size</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>                start_time <span class="op">=</span> time.time()</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>                loaded <span class="op">=</span> np.load(tmp.name)</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>                _ <span class="op">=</span> loaded[<span class="st">'mask'</span>]</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>                individual_decode_time <span class="op">+=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>                os.unlink(tmp.name)</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 方法2: MedMask multi-label存储</span></span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>    combined_mask <span class="op">=</span> SegmentationMask.lazy_init(bit_depth<span class="op">=</span><span class="dv">8</span>, space<span class="op">=</span>space)</span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>    medmask_start <span class="op">=</span> time.time()</span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, fname <span class="kw">in</span> <span class="bu">enumerate</span>(group[<span class="st">'files'</span>]):</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>        fpath <span class="op">=</span> mask_dir <span class="op">/</span> fname</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> fpath.exists():</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>            img <span class="op">=</span> nib.load(fpath)</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>            mask_data <span class="op">=</span> img.get_fdata() <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>            organ_name <span class="op">=</span> fname.replace(<span class="st">'.nii.gz'</span>, <span class="st">''</span>)</span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>            combined_mask.add_label(mask_data, i <span class="op">+</span> <span class="dv">1</span>, organ_name)</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> tempfile.NamedTemporaryFile(suffix<span class="op">=</span><span class="st">'.msk'</span>, delete<span class="op">=</span><span class="va">False</span>) <span class="im">as</span> tmp:</span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a>        combined_mask.save(tmp.name)</span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>        medmask_encode_time <span class="op">=</span> time.time() <span class="op">-</span> medmask_start</span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a>        medmask_size <span class="op">=</span> Path(tmp.name).stat().st_size</span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a>        <span class="co"># MedMask解码测试</span></span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>        medmask_decode_start <span class="op">=</span> time.time()</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>        loaded_combined <span class="op">=</span> SegmentationMask.load(tmp.name)</span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 解码所有标签</span></span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> fname <span class="kw">in</span> group[<span class="st">'files'</span>]:</span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a>            organ_name <span class="op">=</span> fname.replace(<span class="st">'.nii.gz'</span>, <span class="st">''</span>)</span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>                _ <span class="op">=</span> loaded_combined.get_binary_mask_by_names(organ_name)</span>
+<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span>:</span>
+<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>                <span class="cf">pass</span>  <span class="co"># 某些文件可能不存在</span></span>
+<span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a>        medmask_decode_time <span class="op">=</span> time.time() <span class="op">-</span> medmask_decode_start</span>
+<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a>        os.unlink(tmp.name)</span>
+<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 记录结果</span></span>
+<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> {</span>
+<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a>        <span class="st">'group_name'</span>: group[<span class="st">'name'</span>],</span>
+<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>        <span class="st">'num_files'</span>: <span class="bu">len</span>(group[<span class="st">'files'</span>]),</span>
+<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a>        <span class="st">'individual_nifti_size'</span>: individual_nifti_size,</span>
+<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a>        <span class="st">'individual_npz_size'</span>: individual_npz_size,</span>
+<span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a>        <span class="st">'medmask_size'</span>: medmask_size,</span>
+<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a>        <span class="st">'individual_encode_time'</span>: individual_encode_time,</span>
+<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a>        <span class="st">'medmask_encode_time'</span>: medmask_encode_time,</span>
+<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a>        <span class="st">'individual_decode_time'</span>: individual_decode_time,</span>
+<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>        <span class="st">'medmask_decode_time'</span>: medmask_decode_time</span>
+<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a>    multilabel_results.append(result)</span>
+<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  文件数: </span><span class="sc">{</span>result[<span class="st">'num_files'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  存储大小:"</span>)</span>
+<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    分别存储(NIfTI): </span><span class="sc">{</span>individual_nifti_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    分别存储(NPZ):   </span><span class="sc">{</span>individual_npz_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>individual_nifti_size<span class="op">/</span>individual_npz_size<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    MedMask合并:     </span><span class="sc">{</span>medmask_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>individual_nifti_size<span class="op">/</span>medmask_size<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  处理时间:"</span>)</span>
+<span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    分别处理编码: </span><span class="sc">{</span>individual_encode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    MedMask编码:  </span><span class="sc">{</span>medmask_encode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    分别处理解码: </span><span class="sc">{</span>individual_decode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>) </span>
+<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"    MedMask解码:  </span><span class="sc">{</span>medmask_decode_time<span class="op">*</span><span class="dv">1000</span><span class="sc">:6.1f}</span><span class="ss"> ms"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Multi-label Mask 压缩测试
+============================================================
+
+测试组: gluteus_muscles (臀肌群组合)
+  文件数: 4
+  存储大小:
+    分别存储(NIfTI):  240.4 KB
+    分别存储(NPZ):     72.9 KB (压缩比 3.3:1)
+    MedMask合并:       31.6 KB (压缩比 7.6:1)
+  处理时间:
+    分别处理编码:  182.4 ms
+    MedMask编码:   230.0 ms
+    分别处理解码:   97.8 ms
+    MedMask解码:    10.7 ms
+
+测试组: femur_and_hip (股骨和髋骨组合)
+  文件数: 4
+  存储大小:
+    分别存储(NIfTI):  236.4 KB
+    分别存储(NPZ):     77.2 KB (压缩比 3.1:1)
+    MedMask合并:       31.4 KB (压缩比 7.5:1)
+  处理时间:
+    分别处理编码:  184.8 ms
+    MedMask编码:   211.5 ms
+    分别处理解码:   94.3 ms
+    MedMask解码:    10.4 ms
+
+测试组: pelvic_organs (盆腔器官组合)
+  文件数: 3
+  存储大小:
+    分别存储(NIfTI):  154.0 KB
+    分别存储(NPZ):     41.4 KB (压缩比 3.7:1)
+    MedMask合并:       16.7 KB (压缩比 9.2:1)
+  处理时间:
+    分别处理编码:  121.1 ms
+    MedMask编码:   123.5 ms
+    分别处理解码:   73.5 ms
+    MedMask解码:     6.4 ms</code></pre>
+</div>
+</div>
+<section id="multi-label-性能汇总" class="level3">
+<h3 class="anchored" data-anchor-id="multi-label-性能汇总">Multi-label 性能汇总</h3>
+<div id="46462e7b" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Multi-label Mask 压缩性能汇总</span><span class="ch">\n</span><span class="st">"</span> <span class="op">+</span> <span class="st">"="</span><span class="op">*</span><span class="dv">80</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>total_groups <span class="op">=</span> <span class="bu">len</span>(multilabel_results)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>total_individual_nifti <span class="op">=</span> <span class="bu">sum</span>(r[<span class="st">'individual_nifti_size'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>total_individual_npz <span class="op">=</span> <span class="bu">sum</span>(r[<span class="st">'individual_npz_size'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>total_medmask <span class="op">=</span> <span class="bu">sum</span>(r[<span class="st">'medmask_size'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>avg_individual_encode <span class="op">=</span> np.mean([r[<span class="st">'individual_encode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>avg_medmask_encode <span class="op">=</span> np.mean([r[<span class="st">'medmask_encode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>avg_individual_decode <span class="op">=</span> np.mean([r[<span class="st">'individual_decode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>avg_medmask_decode <span class="op">=</span> np.mean([r[<span class="st">'medmask_decode_time'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results]) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"总体对比 (</span><span class="sc">{</span>total_groups<span class="sc">}</span><span class="ss">个测试组):"</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  存储大小:"</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    分别存储(NIfTI): </span><span class="sc">{</span>total_individual_nifti<span class="op">/</span><span class="dv">1024</span><span class="sc">:7.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    分别存储(NPZ):   </span><span class="sc">{</span>total_individual_npz<span class="op">/</span><span class="dv">1024</span><span class="sc">:7.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>total_individual_nifti<span class="op">/</span>total_individual_npz<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    MedMask合并:     </span><span class="sc">{</span>total_medmask<span class="op">/</span><span class="dv">1024</span><span class="sc">:7.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>total_individual_nifti<span class="op">/</span>total_medmask<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">  平均处理时间:"</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    编码 - 分别处理: </span><span class="sc">{</span>avg_individual_encode<span class="sc">:.1f}</span><span class="ss">ms, MedMask: </span><span class="sc">{</span>avg_medmask_encode<span class="sc">:.1f}</span><span class="ss">ms"</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    解码 - 分别处理: </span><span class="sc">{</span>avg_individual_decode<span class="sc">:.1f}</span><span class="ss">ms, MedMask: </span><span class="sc">{</span>avg_medmask_decode<span class="sc">:.1f}</span><span class="ss">ms"</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">  MedMask优势:"</span>)</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    存储效率: 相比NPZ节省 </span><span class="sc">{</span>(<span class="dv">1</span><span class="op">-</span>total_medmask<span class="op">/</span>total_individual_npz)<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    文件管理: </span><span class="sc">{</span><span class="bu">sum</span>(r[<span class="st">'num_files'</span>] <span class="cf">for</span> r <span class="kw">in</span> multilabel_results)<span class="sc">}</span><span class="ss"> 个文件 → </span><span class="sc">{</span>total_groups<span class="sc">}</span><span class="ss"> 个文件"</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    编码效率: </span><span class="sc">{</span>avg_individual_encode<span class="op">/</span>avg_medmask_encode<span class="sc">:.1f}</span><span class="ss">x </span><span class="sc">{</span><span class="st">'提升'</span> <span class="cf">if</span> avg_medmask_encode <span class="op">&lt;</span> avg_individual_encode <span class="cf">else</span> <span class="st">'下降'</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"    解码效率: </span><span class="sc">{</span>avg_individual_decode<span class="op">/</span>avg_medmask_decode<span class="sc">:.1f}</span><span class="ss">x </span><span class="sc">{</span><span class="st">'提升'</span> <span class="cf">if</span> avg_medmask_decode <span class="op">&lt;</span> avg_individual_decode <span class="cf">else</span> <span class="st">'下降'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Multi-label Mask 压缩性能汇总
+================================================================================
+总体对比 (3个测试组):
+  存储大小:
+    分别存储(NIfTI):   630.8 KB
+    分别存储(NPZ):     191.5 KB (压缩比 3.3:1)
+    MedMask合并:        79.7 KB (压缩比 7.9:1)
+
+  平均处理时间:
+    编码 - 分别处理: 162.8ms, MedMask: 188.3ms
+    解码 - 分别处理: 88.5ms, MedMask: 9.2ms
+
+  MedMask优势:
+    存储效率: 相比NPZ节省 58.4%
+    文件管理: 11 个文件 → 3 个文件
+    编码效率: 0.9x 下降
+    解码效率: 9.6x 提升</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="关键技术特性分析" class="level2">
+<h2 class="anchored" data-anchor-id="关键技术特性分析">关键技术特性分析</h2>
+<section id="packbits预处理的威力" class="level3">
+<h3 class="anchored" data-anchor-id="packbits预处理的威力">PackBits预处理的威力</h3>
+<p>MedMask对二值掩膜的优化主要来自PackBits预处理，它专门针对稀疏二值数据进行行程编码：</p>
+<div id="eb1eca30" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PackBits预处理效果分析</span><span class="ch">\n</span><span class="st">"</span> <span class="op">+</span> <span class="st">"="</span><span class="op">*</span><span class="dv">50</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择一个代表性的稀疏掩膜进行详细分析</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>test_mask <span class="op">=</span> <span class="st">'iliac_artery_left.nii.gz'</span>  <span class="co"># 小血管，高度稀疏</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> nib.load(mask_dir <span class="op">/</span> test_mask)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> img.get_fdata().astype(np.uint8)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>total_voxels <span class="op">=</span> data.size</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>nonzero_voxels <span class="op">=</span> np.count_nonzero(data)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>sparsity <span class="op">=</span> (total_voxels <span class="op">-</span> nonzero_voxels) <span class="op">/</span> total_voxels</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"测试掩膜: </span><span class="sc">{</span>test_mask<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"总体素数: </span><span class="sc">{</span>total_voxels<span class="sc">:,}</span><span class="ss">"</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"非零体素: </span><span class="sc">{</span>nonzero_voxels<span class="sc">:,}</span><span class="ss">"</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"稀疏度: </span><span class="sc">{</span>sparsity<span class="sc">:.1%}</span><span class="ss">"</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 分析不同压缩方法的效果</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>raw_size <span class="op">=</span> data.nbytes</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>gzip_compressed <span class="op">=</span> gzip.compress(data.tobytes())</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>npz_temp <span class="op">=</span> tempfile.NamedTemporaryFile(suffix<span class="op">=</span><span class="st">'.npz'</span>, delete<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>np.savez_compressed(npz_temp.name, mask<span class="op">=</span>data)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>npz_size <span class="op">=</span> Path(npz_temp.name).stat().st_size</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>os.unlink(npz_temp.name)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">压缩效果对比:"</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  原始大小:     </span><span class="sc">{</span>raw_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  gzip压缩:     </span><span class="sc">{</span><span class="bu">len</span>(gzip_compressed)<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>raw_size<span class="op">/</span><span class="bu">len</span>(gzip_compressed)<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  NPZ(gzip):    </span><span class="sc">{</span>npz_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>raw_size<span class="op">/</span>npz_size<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="co"># MedMask的压缩结果</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>mask_obj <span class="op">=</span> SegmentationMask(data, {<span class="st">'test'</span>: <span class="dv">1</span>}, Space.from_nifti(img))</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>medmask_temp <span class="op">=</span> tempfile.NamedTemporaryFile(suffix<span class="op">=</span><span class="st">'.msk'</span>, delete<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>mask_obj.save(medmask_temp.name)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>medmask_size <span class="op">=</span> Path(medmask_temp.name).stat().st_size</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>os.unlink(medmask_temp.name)</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  MedMask:      </span><span class="sc">{</span>medmask_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:6.1f}</span><span class="ss"> KB (压缩比 </span><span class="sc">{</span>raw_size<span class="op">/</span>medmask_size<span class="sc">:.1f}</span><span class="ss">:1)"</span>)</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">MedMask相比NPZ的改进: </span><span class="sc">{</span>npz_size<span class="op">/</span>medmask_size<span class="sc">:.1f}</span><span class="ss">x压缩比提升"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PackBits预处理效果分析
+==================================================
+测试掩膜: iliac_artery_left.nii.gz
+总体素数: 10,104,192
+非零体素: 1,155
+稀疏度: 100.0%
+
+压缩效果对比:
+  原始大小:     9867.4 KB
+  gzip压缩:        9.9 KB (压缩比 993.8:1)
+  NPZ(gzip):      10.5 KB (压缩比 938.8:1)
+  MedMask:         1.4 KB (压缩比 6827.2:1)
+
+MedMask相比NPZ的改进: 7.3x压缩比提升</code></pre>
+</div>
+</div>
+</section>
+<section id="压缩算法适应性" class="level3">
+<h3 class="anchored" data-anchor-id="压缩算法适应性">压缩算法适应性</h3>
+<div id="416c0a5e" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">压缩算法适应性分析</span><span class="ch">\n</span><span class="st">"</span> <span class="op">+</span> <span class="st">"="</span><span class="op">*</span><span class="dv">50</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 按稀疏度分类测试结果</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>sparsity_analysis <span class="op">=</span> []</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> result <span class="kw">in</span> results:</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    fname <span class="op">=</span> result[<span class="st">'file'</span>]</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> nib.load(mask_dir <span class="op">/</span> fname)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> img.get_fdata()</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    total_voxels <span class="op">=</span> data.size</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    nonzero_voxels <span class="op">=</span> np.count_nonzero(data)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    sparsity <span class="op">=</span> (total_voxels <span class="op">-</span> nonzero_voxels) <span class="op">/</span> total_voxels</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    medmask_advantage <span class="op">=</span> result[<span class="st">'npz_size'</span>] <span class="op">/</span> result[<span class="st">'medmask_size'</span>]</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    sparsity_analysis.append({</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">'file'</span>: fname,</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">'sparsity'</span>: sparsity,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">'medmask_advantage'</span>: medmask_advantage,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">'nonzero_pixels'</span>: nonzero_voxels</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 按稀疏度排序</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>sparsity_analysis.sort(key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="st">'sparsity'</span>], reverse<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"稀疏度 vs MedMask压缩优势:"</span>)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"文件名                    稀疏度    非零像素   MedMask优势"</span>)</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">65</span>)</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> item <span class="kw">in</span> sparsity_analysis:</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>item[<span class="st">'file'</span>]<span class="sc">:&lt;25}</span><span class="ss"> </span><span class="sc">{</span>item[<span class="st">'sparsity'</span>]<span class="sc">:6.1%}</span><span class="ss">   </span><span class="sc">{</span>item[<span class="st">'nonzero_pixels'</span>]<span class="sc">:8d}</span><span class="ss">   </span><span class="sc">{</span>item[<span class="st">'medmask_advantage'</span>]<span class="sc">:6.1f}</span><span class="ss">x"</span>)</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="co"># 相关性分析</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>sparsities <span class="op">=</span> [item[<span class="st">'sparsity'</span>] <span class="cf">for</span> item <span class="kw">in</span> sparsity_analysis]</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>advantages <span class="op">=</span> [item[<span class="st">'medmask_advantage'</span>] <span class="cf">for</span> item <span class="kw">in</span> sparsity_analysis]</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>correlation <span class="op">=</span> np.corrcoef(sparsities, advantages)[<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">稀疏度与压缩优势的相关系数: </span><span class="sc">{</span>correlation<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"结论: 数据越稀疏，MedMask的压缩优势越明显"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+压缩算法适应性分析
+==================================================
+稀疏度 vs MedMask压缩优势:
+文件名                    稀疏度    非零像素   MedMask优势
+-----------------------------------------------------------------
+small_bowel.nii.gz        100.0%        244      9.0x
+iliac_artery_left.nii.gz  100.0%       1155      7.2x
+iliopsoas_left.nii.gz      99.8%      20865      2.9x
+colon.nii.gz               99.4%      59305      1.6x
+urinary_bladder.nii.gz     99.3%      68016      1.8x
+gluteus_maximus_right.nii.gz  98.5%     150852      1.6x
+
+稀疏度与压缩优势的相关系数: 0.731
+结论: 数据越稀疏，MedMask的压缩优势越明显</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="总结" class="level2">
+<h2 class="anchored" data-anchor-id="总结">总结</h2>
+<p>基于实际测试数据的分析表明：</p>
+<section id="binary-mask优势" class="level3">
+<h3 class="anchored" data-anchor-id="binary-mask优势">Binary Mask优势</h3>
+<ol type="1">
+<li><strong>显著的压缩比提升</strong>: MedMask相比传统NPZ格式平均获得2-5倍的压缩比改进</li>
+<li><strong>稀疏数据特别优化</strong>: 对于高度稀疏的掩膜(如血管、小器官)，压缩优势可达10倍以上</li>
+<li><strong>处理速度优化</strong>: 编解码速度与NPZ相当或更优</li>
+</ol>
+</section>
+<section id="multi-label-mask优势" class="level3">
+<h3 class="anchored" data-anchor-id="multi-label-mask优势">Multi-label Mask优势</h3>
+<ol type="1">
+<li><strong>文件管理简化</strong>: 多个分散文件整合为单一文件，减少文件系统开销</li>
+<li><strong>额外压缩收益</strong>: 多标签合并存储相比分别存储获得进一步的压缩比提升</li>
+<li><strong>语义一致性</strong>: 确保相关掩膜的版本一致性和原子操作</li>
+</ol>
+</section>
+<section id="技术关键" class="level3">
+<h3 class="anchored" data-anchor-id="技术关键">技术关键</h3>
+<p><strong>PackBits + Zstandard双层压缩</strong>是MedMask压缩优势的核心，特别适合医学图像分割掩膜的稀疏特性，为现代医学图像分析工作流提供了高效的存储解决方案。</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2024 FastDiag Toolkit. 基于 <a href="https://quarto.org/">Quarto</a> 构建</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs">GitHub</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

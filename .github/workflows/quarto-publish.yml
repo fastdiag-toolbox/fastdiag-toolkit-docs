@@ -1,0 +1,42 @@
+name: 部署预渲染的静态网站到GitHub Pages
+
+on:
+  push:
+    branches: 
+      - main
+      - master
+    paths:
+      - '_site/**'  # 只有当_site目录变化时才触发
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 设置GitHub Pages
+        uses: actions/configure-pages@v4
+        
+      - name: 上传页面文件
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+          
+      - name: 部署到GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

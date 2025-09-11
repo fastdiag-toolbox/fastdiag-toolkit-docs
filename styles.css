@@ -1,0 +1,129 @@
+/* 自定义样式 */
+
+/* 主体样式 */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+/* 代码块样式 */
+pre {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 导航栏样式 */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 侧边栏样式 */
+.sidebar {
+  border-right: 1px solid #e9ecef;
+}
+
+/* 卡片样式 */
+.card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 按钮样式 */
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* 图片样式 */
+img {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  color: #2c3e50;
+  border-bottom: 3px solid #3498db;
+  padding-bottom: 0.3em;
+}
+
+h2 {
+  color: #34495e;
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 0.2em;
+}
+
+/* 链接样式 */
+a {
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* 表格样式 */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* 警告框样式 */
+.callout {
+  border-radius: 8px;
+  margin: 1em 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .navbar, .sidebar, .page-footer {
+    display: none;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+

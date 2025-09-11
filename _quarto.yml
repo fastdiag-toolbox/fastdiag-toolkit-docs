@@ -1,0 +1,92 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "FastDiag Toolkit 文档"
+  description: "高效的医学影像处理工具包技术文档与教程"
+  navbar:
+    background: primary
+    search: true
+    left:
+      - text: "首页"
+        file: index.qmd
+      - text: "DiCube 教程"
+        menu:
+          - text: "设计动机"
+            file: 1.0_motivation.qmd
+          - text: "与NIfTI格式对比"
+            file: 1.1_vs_nifti.qmd
+          - text: "元数据存储"
+            file: 1.2_meta_storage.qmd
+          - text: "DICOM状态分析"
+            file: 1.3_dicom_status.qmd
+          - text: "排序方法"
+            file: 1.4_sort_method.qmd
+          - text: "轴序约定"
+            file: 1.5_axis_order.qmd
+          - text: "DICOM兼容性"
+            file: 1.6_dicom_compatibility_simple.qmd
+      - text: "MedMask 教程"
+        menu:
+          - text: "掩膜处理基础"
+            file: 2.0_mask.qmd
+          - text: "掩膜压缩技术"
+            file: 2.1_mask_compression.qmd
+    right:
+      - icon: github
+        href: https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs
+        text: "GitHub"
+
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - section: "DiCube 核心技术"
+        contents:
+          - 1.0_motivation.qmd
+          - 1.1_vs_nifti.qmd
+          - 1.2_meta_storage.qmd
+          - 1.3_dicom_status.qmd
+          - 1.4_sort_method.qmd
+          - 1.5_axis_order.qmd
+          - 1.6_dicom_compatibility_simple.qmd
+      - section: "MedMask 技术"
+        contents:
+          - 2.0_mask.qmd
+          - 2.1_mask_compression.qmd
+
+  page-footer:
+    left: |
+      © 2024 FastDiag Toolkit. 基于 [Quarto](https://quarto.org/) 构建
+    right: |
+      [GitHub](https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs)
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    fig-width: 8
+    fig-height: 6
+    df-print: paged
+
+execute:
+  freeze: auto
+  cache: false
+  daemon: false
+  keep-md: false
+
+filters:
+  - quarto
+
+lang: zh-CN
+
+jupyter:
+  kernelspec:
+    name: "dicube-docs"
+    language: "python"
+    display_name: "DiCube Docs Python"

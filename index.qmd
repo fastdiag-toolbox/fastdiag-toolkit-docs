@@ -1,0 +1,81 @@
+---
+title: "FastDiag Toolkit"
+subtitle: "高效的医学影像处理工具包"
+---
+
+## 欢迎来到 FastDiag Toolkit 文档
+
+FastDiag Toolkit 是一个专为医学影像处理设计的高效工具包，主要包含两个核心组件：
+
+### 🎯 DiCube：下一代医学影像存储格式
+
+DiCube 是一个革命性的医学影像存储方案，旨在解决传统DICOM格式在现代医疗应用中面临的性能瓶颈。
+
+**核心特性：**
+
+- **高效压缩**：基于HTJ2K技术，实现更优的压缩比和处理速度
+- **流式读取**：支持按需访问，无需加载完整数据集
+- **DICOM兼容**：完全兼容现有PACS系统和工作流
+- **元数据优化**：智能存储和检索医学影像元信息
+
+### 🎭 MedMask：专业医学掩膜处理
+
+MedMask 提供了完整的医学影像分割掩膜处理解决方案，支持高效的存储、压缩和操作。
+
+**主要功能：**
+
+- **智能压缩**：针对医学掩膜特点优化的压缩算法
+- **多格式支持**：兼容主流医学影像格式
+- **高性能操作**：优化的掩膜计算和变换操作
+- **内存友好**：大规模数据集的高效内存管理
+
+## 📚 文档导航
+
+### DiCube 核心技术
+
+1. [**设计动机**](1.0_motivation.qmd) - 了解DiCube诞生的背景和解决的问题
+2. [**与NIfTI格式对比**](1.1_vs_nifti.qmd) - 深入对比分析不同存储格式的优劣
+3. [**元数据存储**](1.2_meta_storage.qmd) - 探索高效的医学影像元数据管理
+4. [**DICOM状态分析**](1.3_dicom_status.qmd) - 现有DICOM格式的技术分析
+5. [**排序方法**](1.4_sort_method.qmd) - 医学影像序列的智能排序算法
+6. [**轴序约定**](1.5_axis_order.qmd) - 标准化的坐标系统和轴序定义
+7. [**DICOM兼容性**](1.6_dicom_compatibility_simple.qmd) - 与现有系统的无缝集成方案
+
+### MedMask 技术
+
+1. [**掩膜处理基础**](2.0_mask.qmd) - MedMask的核心概念和基础操作
+2. [**掩膜压缩技术**](2.1_mask_compression.qmd) - 先进的医学掩膜压缩算法
+
+## 🚀 快速开始
+
+```python
+# 安装FastDiag Toolkit
+pip install fastdiag-toolkit
+
+# DiCube基础使用
+import dicube
+dcb_image = dicube.load_from_dicom_folder('dicom_folder/')
+dicube.save(dcb_image, 'output.dcbs')
+
+# MedMask基础使用
+import medmask
+mask = medmask.load('segmentation.msk')
+processed_mask = mask.apply_threshold(0.5)
+```
+
+## 🤝 贡献与支持
+
+这个项目是开源的，我们欢迎社区的贡献和反馈。如果你在使用过程中遇到问题或有改进建议，请：
+
+- 📝 提交Issue报告问题
+- 🔧 提交Pull Request贡献代码
+- 💬 参与讨论分享经验
+
+## 📄 许可证
+
+本项目采用开源许可证，详细信息请查看项目仓库。
+
+---
+
+*文档最后更新：{{< meta date >}}*
+

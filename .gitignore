@@ -1,47 +1,104 @@
-# 忽略生成的HTML文件
-*.html
+# ==========================================
+# Quarto 生成文件和缓存
+# ==========================================
+# Quarto 核心缓存目录
+.quarto/
+/.quarto/
 
-# 忽略Quarto生成的文件目录
+# Quarto 渲染过程中生成的临时文件
+**/*_files/
 *_files/
-_site/
 
-# 忽略Python缓存
-__pycache__/
-*.pyc
-*.pyo
+# Quarto freeze 缓存（包含执行结果）
+_freeze/
 
-# 忽略Jupyter notebook checkpoints
-.ipynb_checkpoints/
+# Quarto 临时 notebook 文件
+**/*.quarto_ipynb
+*.quarto_ipynb
 
-# 忽略临时文件
-*.tmp
-*.temp
-*~
-
-# 忽略编辑器配置文件
-.vscode/
-.idea/
-
-# 忽略系统文件
-.DS_Store
-Thumbs.db
-
-# 忽略示例数据（旧的）
-sample_data/
-
-# 忽略DiCube和SpaceTransformer包
+# ==========================================
+# 数据文件（本地专有数据）
+# ==========================================
+*.dcm
+*.dcbs
+*.nii
+*.nii.gz
+*.msk
+*.mska
+dicube-testdata/
+**/testdata/
+**/test_data/
+hdd/
+medmask/
 dicube/
 spacetransformer/
 
-# 忽略其他文件类型
-*.py
-*.deb
-*.ipynb
-hdd
+# ==========================================
+# Python 相关
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
 
-# 只保留这些文件类型：
-# - *.qmd (文档源文件)
-# - .gitignore (git配置)
-# - .gitmodules (git submodule配置)
-# - dicube-testdata/ (git submodule)
-# - README.md (说明文档)
+# ==========================================
+# Jupyter Notebook
+# ==========================================
+.ipynb_checkpoints/
+*.ipynb
+
+# ==========================================
+# 大型文件和安装包
+# ==========================================
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# ==========================================
+# 系统和IDE临时文件
+# ==========================================
+*.tmp
+*.temp
+*~
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================================
+# 日志和配置文件
+# ==========================================
+*.log
+.env
+.env.local
+
+# ==========================================
+# R 相关 (如果使用)
+# ==========================================
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# ==========================================
+# 编译输出
+# ==========================================
+dist/
+build/
+*.egg-info/
+
+# ==========================================
+# 缓存文件
+# ==========================================
+.cache/
+.pytest_cache/

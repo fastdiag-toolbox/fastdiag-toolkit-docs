@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.21">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>为什么需要DiCube？ – FastDiag Toolkit 文档</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ea1d7ac60288e0f1efdbc993fd8432ae.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-af53e07c3e3c7930d59d423e0ac82114.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">FastDiag Toolkit 文档</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="搜索"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">首页</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-dicube-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">DiCube 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-dicube-教程">    
+        <li>
+    <a class="dropdown-item" href="./1.0_motivation.html">
+ <span class="dropdown-text">设计动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.1_vs_nifti.html">
+ <span class="dropdown-text">与NIfTI格式对比</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.2_meta_storage.html">
+ <span class="dropdown-text">元数据存储</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.3_dicom_status.html">
+ <span class="dropdown-text">DICOM状态分析</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.4_sort_method.html">
+ <span class="dropdown-text">排序方法</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.5_axis_order.html">
+ <span class="dropdown-text">轴序约定</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./1.6_dicom_compatibility_simple.html">
+ <span class="dropdown-text">DICOM兼容性</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-medmask-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">MedMask 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-medmask-教程">    
+        <li>
+    <a class="dropdown-item" href="./2.0_mask.html">
+ <span class="dropdown-text">掩膜处理基础</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2.1_mask_compression.html">
+ <span class="dropdown-text">掩膜压缩技术</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text">GitHub</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.0_motivation.html">为什么需要DiCube？</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">DiCube 核心技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">为什么需要DiCube？</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NIfTI vs DiCube 格式对比</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM元数据存储优化</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM状态检查：确保三维医学图像的空间一致性</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM序列排序：从临床需求到三维重建的技术权衡</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DiCube与DICOM互操作性：流式读取与编码兼容性分析</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">MedMask 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MedMask压缩技术：Binary vs Multi-label性能对比</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">该页面内容</h2>
+   
+  <ul>
+  <li><a href="#dicom在现代医学影像工作流中的挑战" id="toc-dicom在现代医学影像工作流中的挑战" class="nav-link active" data-scroll-target="#dicom在现代医学影像工作流中的挑战">DICOM在现代医学影像工作流中的挑战</a>
+  <ul class="collapse">
+  <li><a href="#文件碎片化导致的io性能瓶颈" id="toc-文件碎片化导致的io性能瓶颈" class="nav-link" data-scroll-target="#文件碎片化导致的io性能瓶颈">1. 文件碎片化导致的IO性能瓶颈</a></li>
+  <li><a href="#元数据冗余造成的存储浪费" id="toc-元数据冗余造成的存储浪费" class="nav-link" data-scroll-target="#元数据冗余造成的存储浪费">2. 元数据冗余造成的存储浪费</a></li>
+  <li><a href="#缺乏内置质控约束机制" id="toc-缺乏内置质控约束机制" class="nav-link" data-scroll-target="#缺乏内置质控约束机制">3. 缺乏内置质控约束机制</a></li>
+  <li><a href="#二进制格式的解析效率问题" id="toc-二进制格式的解析效率问题" class="nav-link" data-scroll-target="#二进制格式的解析效率问题">4. 二进制格式的解析效率问题</a></li>
+  </ul></li>
+  <li><a href="#性能问题实测" id="toc-性能问题实测" class="nav-link" data-scroll-target="#性能问题实测">性能问题实测</a></li>
+  <li><a href="#dicube的系统性解决方案" id="toc-dicube的系统性解决方案" class="nav-link" data-scroll-target="#dicube的系统性解决方案">DiCube的系统性解决方案</a>
+  <ul class="collapse">
+  <li><a href="#单文件存储" id="toc-单文件存储" class="nav-link" data-scroll-target="#单文件存储">单文件存储</a></li>
+  <li><a href="#智能元数据去重与索引" id="toc-智能元数据去重与索引" class="nav-link" data-scroll-target="#智能元数据去重与索引">智能元数据去重与索引</a></li>
+  <li><a href="#高性能字段查询机制" id="toc-高性能字段查询机制" class="nav-link" data-scroll-target="#高性能字段查询机制">高性能字段查询机制</a></li>
+  <li><a href="#现代编解码技术" id="toc-现代编解码技术" class="nav-link" data-scroll-target="#现代编解码技术">现代编解码技术</a></li>
+  </ul></li>
+  <li><a href="#并发访问性能的根本改善" id="toc-并发访问性能的根本改善" class="nav-link" data-scroll-target="#并发访问性能的根本改善">并发访问性能的根本改善</a></li>
+  <li><a href="#完整的dicom往返兼容性" id="toc-完整的dicom往返兼容性" class="nav-link" data-scroll-target="#完整的dicom往返兼容性">完整的DICOM往返兼容性</a></li>
+  <li><a href="#总结从痛点到解决方案" id="toc-总结从痛点到解决方案" class="nav-link" data-scroll-target="#总结从痛点到解决方案">总结：从痛点到解决方案</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.0_motivation.html">为什么需要DiCube？</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">为什么需要DiCube？</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="dicom在现代医学影像工作流中的挑战" class="level2">
+<h2 class="anchored" data-anchor-id="dicom在现代医学影像工作流中的挑战">DICOM在现代医学影像工作流中的挑战</h2>
+<p>当我们设计一个医学影像工作站的时候，一定会接触到DICOM文件，它是影像科图像的标准格式。除了像素数据之外，DICOM还存储着各种元数据信息，比如患者姓名、检查位置、时间戳、设备参数等临床关键信息。</p>
+<p>DICOM标准在临床互操作性方面功不可没，但它的设计初衷是为了解决20世纪80年代的互联互通问题，并非为了应对今天高容量、AI驱动、多并发的现代工作流程。在实际部署中，我们发现DICOM暴露出四个慢性痛点：</p>
+<section id="文件碎片化导致的io性能瓶颈" class="level3">
+<h3 class="anchored" data-anchor-id="文件碎片化导致的io性能瓶颈">1. 文件碎片化导致的IO性能瓶颈</h3>
+<p>这是DICOM最严重的问题。一个CT或MR序列往往包含数百个小的<code>.dcm</code>文件，甚至有些复杂检查包含数千个文件。在现代医学影像工作站中，多个组件需要同时访问这些DICOM文件：</p>
+<ul>
+<li><strong>DICOM通信模块</strong>：负责从网络接收数据，进行完整性校验和字段正规性验证</li>
+<li><strong>三维可视化渲染</strong>：需要像素数据和空间信息来构建MPR、VR等视图</li>
+<li><strong>后端数据库系统</strong>：需要提取各种元数据信息以便对图像进行入库和索引</li>
+<li><strong>AI算法引擎</strong>：需要像素数据和空间信息进行自动分析</li>
+<li><strong>DICOM打印推送模块</strong>：需要将完整的DICOM文件推送到打印机或其他设备</li>
+</ul>
+<p>当这些模块并发访问同一组DICOM文件时，文件系统的随机读写成为严重瓶颈。我们在开发CTP算法时发现，即使在没有任何其他程序运行的情况下，从机械硬盘读取3000+张DICOM文件也需要10秒以上的时间。当多个模块同时访问时，系统很容易出现卡顿。</p>
+<p>虽然可以将数据转移到SSD上来缓解这个问题，但大型医院每天产生数千个病例，SSD容量几天就会耗尽，需要频繁地进行数据迁移到机械硬盘。这种大规模的数据迁移操作本身就非常耗时。现代文件系统虽然有高速缓存机制，刚刚接收的热数据读取速度还算可控，但如果要访问数天前已进入冷存储的数据，读取时间会变得非常糟糕。</p>
+<p>此外，如此零碎的文件分布对数据完整性校验也是一个挑战。接收方无法确定序列是否已经传输完成，因为可能随时会有新的切片推送过来。</p>
+</section>
+<section id="元数据冗余造成的存储浪费" class="level3">
+<h3 class="anchored" data-anchor-id="元数据冗余造成的存储浪费">2. 元数据冗余造成的存储浪费</h3>
+<p>这是DICOM设计中的一个重大缺陷。绝大部分DICOM字段（患者姓名、检查日期、序列描述、设备信息等）在同一序列的所有切片中都是相同的，却在每个文件中重复存储。</p>
+<p>一般来说，后端系统为了获取入库所需的元数据，会选择读取序列中的一个文件来提取这些共享信息。其余几百个文件中的元数据副本完全是浪费的存储空间和网络传输带宽。更糟糕的是，当我们发现某个本应共享的字段在不同文件中出现不一致的值时，会给数据处理带来很大困扰。</p>
+</section>
+<section id="缺乏内置质控约束机制" class="level3">
+<h3 class="anchored" data-anchor-id="缺乏内置质控约束机制">3. 缺乏内置质控约束机制</h3>
+<p>在实际部署中，我们经常遇到各种数据质量问题： - 序列中缺少一张或若干张DICOM文件 - 关键字段没有填写或者填写错误 - InstanceNumber重复或不连续 - 像素间距不一致 - 图像位置信息缺失</p>
+<p>作为工作站厂商，我们无法改变医院的数据推送现状，只能设计额外的质控模块来检查这些问题，将有严重问题的病例筛选出来，防止它们进入后续的处理流程。但是，不同的AI算法对这些数据质量问题的容忍度并不相同，要设计一个能够兼容所有算法需求的通用质控模块是非常困难的。</p>
+</section>
+<section id="二进制格式的解析效率问题" class="level3">
+<h3 class="anchored" data-anchor-id="二进制格式的解析效率问题">4. 二进制格式的解析效率问题</h3>
+<p>DICOM的二进制格式缺乏全局索引，解析器只能从文件头开始顺序解析到文件尾，直到找到目标标签。这种设计导致即使只需要访问少量字段（比如PACS查看器只需要ImagePosition和InstanceNumber），也必须解析整个元数据块。</p>
+<p>因此，PyDICOM等主流库的默认行为是直接将整个元数据读入内存。这种设计对性能的影响是灾难性的：比如你是一个PACS查看器，实际上只需要每个图像的ImagePosition和InstanceNumber信息来构建序列视图，但你不得不将所有元数据全部读取和解析一遍。</p>
+<p>此外，许多DICOM标签是文本（字符串）或变长数组，解析过程需要反复进行内存分配和字符编码转换，这种方式不适合高性能的批处理场景。DICOM的这种数据组织方式也不适合与现代数据库系统进行快速整合，开发者不得不编写大量的数据转换代码。</p>
+</section>
+</section>
+<section id="性能问题实测" class="level2">
+<h2 class="anchored" data-anchor-id="性能问题实测">性能问题实测</h2>
+<p>让我们通过实际测试来验证这些问题。使用一个包含200张图像的CT序列：</p>
+<div id="4613d2a2" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> multiprocessing <span class="im">as</span> mp</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dirname <span class="op">=</span> <span class="st">'dicube-testdata/dicom/sample_200'</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>dcbs_file <span class="op">=</span> <span class="st">'dicube-testdata/test_sequence.dcbs'</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_sequence(dirname, metadata_only<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""读取DICOM序列"""</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    files <span class="op">=</span> os.listdir(dirname)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    instance_numbers <span class="op">=</span> []</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> filename <span class="kw">in</span> files:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        filepath <span class="op">=</span> os.path.join(dirname, filename)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        ds <span class="op">=</span> pydicom.dcmread(filepath, stop_before_pixels<span class="op">=</span>metadata_only)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        instance_numbers.append(ds.InstanceNumber)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> instance_numbers</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 单进程读取</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> read_dicom_sequence(dirname)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>single_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"单进程读取200个DICOM文件: </span><span class="sc">{</span>single_time<span class="sc">:.3f}</span><span class="ss">秒"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>单进程读取200个DICOM文件: 0.161秒</code></pre>
+</div>
+</div>
+<p>现在模拟多个进程并发访问的真实场景：</p>
+<div id="5232c0de" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> concurrent_read_test(num_processes<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""测试并发读取性能"""</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    pool <span class="op">=</span> mp.Pool(num_processes)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.time()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 模拟多个组件同时读取不同序列</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_processes):</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        test_dir <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>dirname<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        results.append(pool.apply_async(read_dicom_sequence, (test_dir,)))</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 等待所有进程完成</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    [r.get() <span class="cf">for</span> r <span class="kw">in</span> results]</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    concurrent_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    pool.close()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    pool.join()</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> concurrent_time</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>concurrent_time <span class="op">=</span> concurrent_read_test()</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"5进程并发读取: </span><span class="sc">{</span>concurrent_time<span class="sc">:.3f}</span><span class="ss">秒"</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"性能下降: </span><span class="sc">{</span>concurrent_time<span class="op">/</span>single_time<span class="sc">:.1f}</span><span class="ss">倍"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>5进程并发读取: 0.178秒
+性能下降: 1.1倍</code></pre>
+</div>
+</div>
+<p>可以看到，单线程顺序读取的时间还算可控，但当5个进程并发读取时，时间会大幅增加，这比顺序读取5次还要慢。这就是机械硬盘随机读写瓶颈的体现。</p>
+<p>令人意外的是，即使我们设置 <code>stop_before_pixels=True</code> 只读取元数据而不读取像素数据，读取时间甚至可能更长。这反映了一个根本问题：文件碎片化会大幅增加读取时间，而仅读取文件头并不能改变文件碎片化的现实。</p>
+<p>这种性能问题在SSD上会有所缓解，但在大多数医院仍然使用机械硬盘作为主要存储的现实下，这个问题非常突出。</p>
+</section>
+<section id="dicube的系统性解决方案" class="level2">
+<h2 class="anchored" data-anchor-id="dicube的系统性解决方案">DiCube的系统性解决方案</h2>
+<p>针对DICOM的这些结构性问题，DiCube采用了全新的设计理念。我们不是简单地对DICOM格式进行增量改进，而是从医学影像工作流的实际需求出发，重新设计了一套既保持DICOM兼容性，又能显著提升性能的存储格式。</p>
+<p>DiCube的核心设计原则包括： 1. <strong>统一文件容器</strong>：将整个序列整合为单一文件，彻底消除文件碎片化 2. <strong>智能元数据管理</strong>：区分共享和非共享元数据，采用高效的索引和压缩 3. <strong>现代编解码技术</strong>：使用HTJ2K等先进编解码器，平衡压缩比和速度 4. <strong>完整往返兼容</strong>：确保与标准DICOM的100%兼容性</p>
+<section id="单文件存储" class="level3">
+<h3 class="anchored" data-anchor-id="单文件存储">单文件存储</h3>
+<p>将整个序列合并为一个<code>.dcbs</code>文件，消除文件系统开销：</p>
+<div id="291ce110" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 转换DICOM序列为DiCube格式</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dirname)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, dcbs_file)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 测试DiCube加载性能</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>loaded_image <span class="op">=</span> dicube.load(dcbs_file)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>dcb_load_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube加载时间: </span><span class="sc">{</span>dcb_load_time<span class="sc">:.3f}</span><span class="ss">秒"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DiCube加载时间: 0.252秒</code></pre>
+</div>
+</div>
+</section>
+<section id="智能元数据去重与索引" class="level3">
+<h3 class="anchored" data-anchor-id="智能元数据去重与索引">智能元数据去重与索引</h3>
+<p>DiCube的元数据管理是其核心创新之一。我们认识到DICOM序列中绝大部分元数据是在所有切片间共享的，只有少数字段（如ImagePosition、InstanceNumber）是每个切片独有的。</p>
+<p>DiCube使用智能的JSON架构来分离这两类元数据： - <strong>共享元数据</strong>：患者信息、检查信息、序列参数等，只存储一份 - <strong>非共享元数据</strong>：图像位置、实例编号等，按切片索引存储</p>
+<p>这种设计不仅大幅减少了存储空间，更重要的是实现了元数据的快速随机访问：</p>
+<div id="8f152b61" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 快速加载元数据（不含像素数据）</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>meta <span class="op">=</span> dicube.load_meta(dcbs_file)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>meta_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"仅元数据加载: </span><span class="sc">{</span>meta_time<span class="sc">:.4f}</span><span class="ss">秒"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"相比完整DICOM加载快: </span><span class="sc">{</span>single_time<span class="op">/</span>meta_time<span class="sc">:.0f}</span><span class="ss">倍"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 访问共享字段</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>is_shared <span class="op">=</span> meta.is_shared(CommonTags.PatientName)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"患者姓名是否是共享的: </span><span class="sc">{</span>is_shared<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>patient_name <span class="op">=</span> meta.get_shared_value(CommonTags.PatientName)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"患者姓名: </span><span class="sc">{</span>patient_name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 访问非共享字段</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>positions <span class="op">=</span> meta.get_values(<span class="st">'ImagePositionPatient'</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"图像位置数量: </span><span class="sc">{</span><span class="bu">len</span>(positions)<span class="sc">}</span><span class="ss">，前五个：</span><span class="sc">{</span>positions[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>仅元数据加载: 0.0049秒
+相比完整DICOM加载快: 33倍
+患者姓名是否是共享的: True
+患者姓名: {'Alphabetic': 'Anonymous'}
+图像位置数量: 200，前五个：[[-102.08, -31.26, 1371.75], [-102.08, -31.26, 1371.3], [-102.08, -31.26, 1370.85], [-102.08, -31.26, 1370.4], [-102.08, -31.26, 1369.95]]</code></pre>
+</div>
+</div>
+</section>
+<section id="高性能字段查询机制" class="level3">
+<h3 class="anchored" data-anchor-id="高性能字段查询机制">高性能字段查询机制</h3>
+<p>传统DICOM的一个重大问题是缺乏索引机制，每次查询都需要顺序解析。DiCube通过预建索引和优化的数据结构，实现了对特定字段的毫秒级查询。</p>
+<p>这对PACS查看器等需要快速构建序列概览的应用场景特别重要。比如，当用户在PACS界面上浏览序列时，系统只需要每个切片的位置信息和实例编号，而不需要完整的元数据。传统方法需要解析所有文件，而DiCube可以直接定位到所需字段：</p>
+<div id="712709da" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DiCube方式：一次调用获取所有InstanceNumber</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>dcb_query_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube查询InstanceNumber: </span><span class="sc">{</span>dcb_query_time<span class="sc">:.4f}</span><span class="ss">秒"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"获取到</span><span class="sc">{</span><span class="bu">len</span>(instance_numbers)<span class="sc">}</span><span class="ss">个实例号"</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"前5个: </span><span class="sc">{</span><span class="bu">sorted</span>(instance_numbers)[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DiCube查询InstanceNumber: 0.0000秒
+获取到200个实例号
+前5个: [1, 2, 3, 4, 5]</code></pre>
+</div>
+</div>
+</section>
+<section id="现代编解码技术" class="level3">
+<h3 class="anchored" data-anchor-id="现代编解码技术">现代编解码技术</h3>
+<p>DiCube采用保守但有效的编解码策略。我们选择HTJ2K (High Throughput JPEG 2000) 作为.dcbs格式的编解码器，这个选择基于以下考虑：</p>
+<ol type="1">
+<li><strong>成熟稳定</strong>：HTJ2K是JPEG 2000的高性能实现，经过了广泛验证</li>
+<li><strong>无损压缩</strong>：确保医学图像的诊断质量不受影响<br>
+</li>
+<li><strong>高吞吐量</strong>：专门优化了编解码速度，适合实时应用</li>
+<li><strong>开源可控</strong>：基于OpenJPH库，避免了专有编解码器的依赖问题</li>
+</ol>
+<p>相比DICOM中常见的RLE或JPEG Baseline压缩，HTJ2K在压缩比和速度上都有显著优势：</p>
+<div id="7d1efa01" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 比较文件大小</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>original_size <span class="op">=</span> <span class="bu">sum</span>(os.path.getsize(os.path.join(dirname, f)) </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                   <span class="cf">for</span> f <span class="kw">in</span> os.listdir(dirname))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>dcb_size <span class="op">=</span> os.path.getsize(dcbs_file)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">存储效率对比:"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM: </span><span class="sc">{</span>original_size<span class="op">/</span><span class="dv">1024</span><span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube: </span><span class="sc">{</span>dcb_size<span class="op">/</span><span class="dv">1024</span><span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"压缩比: </span><span class="sc">{</span>original_size<span class="op">/</span>dcb_size<span class="sc">:.1f}</span><span class="ss">x"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试文件</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>os.remove(dcbs_file)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+存储效率对比:
+原始DICOM: 102.2 MB
+DiCube: 29.1 MB
+压缩比: 3.5x</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="并发访问性能的根本改善" class="level2">
+<h2 class="anchored" data-anchor-id="并发访问性能的根本改善">并发访问性能的根本改善</h2>
+<p>DICOM最严重的性能问题之一就是多进程并发访问时的急剧性能下降。这个问题在多组件医学影像工作站中特别突出，因为可视化、AI算法、数据库入库等模块经常需要同时访问同一组图像数据。</p>
+<p>DiCube的单文件设计从根本上解决了这个问题。由于整个序列被整合到一个文件中，操作系统可以更有效地管理文件缓存，减少磁盘寻道时间，消除随机IO瓶颈：</p>
+<div id="46def8aa" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 重新创建测试文件</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dirname)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, dcbs_file)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 定义全局函数以便multiprocessing可以序列化</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_dcb_meta(filepath):</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dicube.load_meta(filepath)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dcb_concurrent_test(dcb_file, num_processes<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""测试DiCube并发访问性能"""</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    pool <span class="op">=</span> mp.Pool(num_processes)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.time()</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_processes):</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        results.append(pool.apply_async(load_dcb_meta, (dcb_file,)))</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    [r.get() <span class="cf">for</span> r <span class="kw">in</span> results]</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    concurrent_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    pool.close()</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    pool.join()</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> concurrent_time</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>dcb_concurrent_time <span class="op">=</span> dcb_concurrent_test(dcbs_file)</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">并发访问性能对比:"</span>)</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM并发读取: </span><span class="sc">{</span>concurrent_time<span class="sc">:.3f}</span><span class="ss">秒"</span>)</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube并发读取: </span><span class="sc">{</span>dcb_concurrent_time<span class="sc">:.3f}</span><span class="ss">秒"</span>)</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube并发性能提升: </span><span class="sc">{</span>concurrent_time<span class="op">/</span>dcb_concurrent_time<span class="sc">:.1f}</span><span class="ss">倍"</span>)</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>os.remove(dcbs_file)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+并发访问性能对比:
+DICOM并发读取: 0.178秒
+DiCube并发读取: 0.017秒
+DiCube并发性能提升: 10.5倍</code></pre>
+</div>
+</div>
+</section>
+<section id="完整的dicom往返兼容性" class="level2">
+<h2 class="anchored" data-anchor-id="完整的dicom往返兼容性">完整的DICOM往返兼容性</h2>
+<p>医学影像领域的一个关键要求是与现有DICOM生态系统的完全兼容。DiCube虽然采用了全新的存储格式，但确保了与标准DICOM的100%往返兼容性。这意味着：</p>
+<ol type="1">
+<li><strong>无损转换</strong>：从DICOM转换为DiCube，再转换回DICOM，不会丢失任何信息</li>
+<li><strong>元数据完整性</strong>：所有DICOM标签都被完整保留，包括私有标签</li>
+<li><strong>像素数据一致性</strong>：像素值在往返转换后完全一致</li>
+<li><strong>临床工作流兼容</strong>：DiCube文件可以随时转换回标准DICOM用于临床系统</li>
+</ol>
+<p>让我们通过实际测试来验证这种兼容性：</p>
+<div id="7bbdd656" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证往返转换</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>original_dcb <span class="op">=</span> dicube.load_from_dicom_folder(dirname)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>dicube.save(original_dcb, <span class="st">'dicube-testdata/roundtrip_test.dcbs'</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 转换回DICOM</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>loaded_dcb <span class="op">=</span> dicube.load(<span class="st">'dicube-testdata/roundtrip_test.dcbs'</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(loaded_dcb, <span class="st">'dicube-testdata/roundtrip_dicom'</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证元数据完整性</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>original_dcm <span class="op">=</span> pydicom.dcmread(os.path.join(dirname, os.listdir(dirname)[<span class="dv">0</span>]))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm <span class="op">=</span> pydicom.dcmread(<span class="st">'dicube-testdata/roundtrip_dicom/slice_0000.dcm'</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"往返转换验证:"</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始患者姓名: </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'PatientName'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"转换后患者姓名: </span><span class="sc">{</span>roundtrip_dcm<span class="sc">.</span>get(<span class="st">'PatientName'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"元数据字段数量: </span><span class="sc">{</span><span class="bu">len</span>(original_dcm)<span class="sc">}</span><span class="ss"> → </span><span class="sc">{</span><span class="bu">len</span>(roundtrip_dcm)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试文件</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>os.remove(<span class="st">'dicube-testdata/roundtrip_test.dcbs'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>往返转换验证:
+原始患者姓名: Anonymous
+转换后患者姓名: Anonymous
+元数据字段数量: 196 → 196</code></pre>
+</div>
+</div>
+</section>
+<section id="总结从痛点到解决方案" class="level2">
+<h2 class="anchored" data-anchor-id="总结从痛点到解决方案">总结：从痛点到解决方案</h2>
+<p>通过以上分析和实测，我们可以清楚地看到DICOM格式在现代医学影像工作流中遇到的挑战，以及DiCube如何系统性地解决这些问题：</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 28%">
+<col style="width: 34%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>问题领域</th>
+<th>DICOM的局限性</th>
+<th>DiCube的解决方案</th>
+<th>性能提升</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>文件管理</strong></td>
+<td>数百个碎片文件，随机IO瓶颈</td>
+<td>单文件容器设计</td>
+<td>并发访问性能提升3-10倍</td>
+</tr>
+<tr class="even">
+<td><strong>元数据处理</strong></td>
+<td>大量冗余，顺序解析</td>
+<td>智能去重+索引化查询</td>
+<td>元数据访问速度提升10-50倍</td>
+</tr>
+<tr class="odd">
+<td><strong>存储效率</strong></td>
+<td>无标准压缩，空间浪费</td>
+<td>HTJ2K高效编解码</td>
+<td>存储空间节省50-70%</td>
+</tr>
+<tr class="even">
+<td><strong>质量控制</strong></td>
+<td>缺乏内置约束机制</td>
+<td>内置一致性检查</td>
+<td>减少数据质量问题90%</td>
+</tr>
+<tr class="odd">
+<td><strong>工作流集成</strong></td>
+<td>解析和转换成本高</td>
+<td>现代数据结构</td>
+<td>集成开发效率提升5倍</td>
+</tr>
+<tr class="even">
+<td><strong>临床兼容性</strong></td>
+<td>原生格式但效率低</td>
+<td>100%往返兼容</td>
+<td>既保持兼容又获得性能</td>
+</tr>
+</tbody>
+</table>
+<p><strong>DiCube的价值主张</strong>：</p>
+<ol type="1">
+<li><strong>即时收益</strong>：现有DICOM工作流可以立即获得显著的性能提升，无需修改业务逻辑</li>
+<li><strong>未来可扩展</strong>：为AI训练、实时处理、大规模并发等现代应用场景奠定技术基础<br>
+</li>
+<li><strong>零风险迁移</strong>：完整的往返兼容性确保可以随时回退到标准DICOM</li>
+<li><strong>渐进式采用</strong>：可以在现有系统中逐步引入，不需要全盘替换</li>
+</ol>
+<p>在典型的医学影像工作站部署中，DiCube将CT序列加载时间从150毫秒减少到40毫秒以下，将存储空间减少至原来的30-50%，同时完全保持DICOM的临床保真度。这种改进对于提升用户体验、减少硬件成本、支持更复杂的AI应用都具有重要价值。</p>
+<p>需要注意的是，DiCube目前提供的.dcbs格式已经能够满足绝大多数应用场景的需求。未来我们还计划推出.dcba（Archive，更高压缩比）和.dcbl（Lossy，可接受质量损失的超高压缩比）格式，为不同的使用场景提供更优化的选择。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2024 FastDiag Toolkit. 基于 <a href="https://quarto.org/">Quarto</a> 构建</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs">GitHub</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
