@@ -167,42 +167,42 @@
     "href": "index.html",
     "title": "FastDiag Toolkit",
     "section": "",
-    "text": "FastDiag Toolkit 是一个专为医学影像处理设计的高效工具包，主要包含两个核心组件：\n\n\nDiCube 是一个革命性的医学影像存储方案，旨在解决传统DICOM格式在现代医疗应用中面临的性能瓶颈。\n核心特性：\n\n高效压缩：基于HTJ2K技术，实现更优的压缩比和处理速度\n流式读取：支持按需访问，无需加载完整数据集\nDICOM兼容：完全兼容现有PACS系统和工作流\n元数据优化：智能存储和检索医学影像元信息\n\n\n\n\nMedMask 提供了完整的医学影像分割掩膜处理解决方案，支持高效的存储、压缩和操作。\n主要功能：\n\n智能压缩：针对医学掩膜特点优化的压缩算法\n多格式支持：兼容主流医学影像格式\n高性能操作：优化的掩膜计算和变换操作\n内存友好：大规模数据集的高效内存管理"
+    "text": "传统医学影像处理面临着严重的性能瓶颈：\n\nDICOM 碎片化存储：单个 CT/MR 研究包含数百个小文件，I/O 效率低下\n元数据冗余：每个切片重复相同的患者/研究信息，浪费存储空间\n坐标系统混乱：缺乏统一的 3D 空间变换处理方案\n掩膜处理效率低：分割结果存储和处理缺乏专门优化"
   },
   {
-    "objectID": "index.html#欢迎来到-fastdiag-toolkit-文档",
-    "href": "index.html#欢迎来到-fastdiag-toolkit-文档",
+    "objectID": "index.html#问题背景",
+    "href": "index.html#问题背景",
     "title": "FastDiag Toolkit",
     "section": "",
-    "text": "FastDiag Toolkit 是一个专为医学影像处理设计的高效工具包，主要包含两个核心组件：\n\n\nDiCube 是一个革命性的医学影像存储方案，旨在解决传统DICOM格式在现代医疗应用中面临的性能瓶颈。\n核心特性：\n\n高效压缩：基于HTJ2K技术，实现更优的压缩比和处理速度\n流式读取：支持按需访问，无需加载完整数据集\nDICOM兼容：完全兼容现有PACS系统和工作流\n元数据优化：智能存储和检索医学影像元信息\n\n\n\n\nMedMask 提供了完整的医学影像分割掩膜处理解决方案，支持高效的存储、压缩和操作。\n主要功能：\n\n智能压缩：针对医学掩膜特点优化的压缩算法\n多格式支持：兼容主流医学影像格式\n高性能操作：优化的掩膜计算和变换操作\n内存友好：大规模数据集的高效内存管理"
+    "text": "传统医学影像处理面临着严重的性能瓶颈：\n\nDICOM 碎片化存储：单个 CT/MR 研究包含数百个小文件，I/O 效率低下\n元数据冗余：每个切片重复相同的患者/研究信息，浪费存储空间\n坐标系统混乱：缺乏统一的 3D 空间变换处理方案\n掩膜处理效率低：分割结果存储和处理缺乏专门优化"
   },
   {
-    "objectID": "index.html#文档导航",
-    "href": "index.html#文档导航",
+    "objectID": "index.html#解决方案",
+    "href": "index.html#解决方案",
     "title": "FastDiag Toolkit",
-    "section": "📚 文档导航",
-    "text": "📚 文档导航\n\nDiCube 核心技术\n\n设计动机 - 了解DiCube诞生的背景和解决的问题\n与NIfTI格式对比 - 深入对比分析不同存储格式的优劣\n元数据存储 - 探索高效的医学影像元数据管理\nDICOM状态分析 - 现有DICOM格式的技术分析\n排序方法 - 医学影像序列的智能排序算法\n轴序约定 - 标准化的坐标系统和轴序定义\nDICOM兼容性 - 与现有系统的无缝集成方案\n\n\n\nMedMask 技术\n\n掩膜处理基础 - MedMask的核心概念和基础操作\n掩膜压缩技术 - 先进的医学掩膜压缩算法"
+    "section": "解决方案",
+    "text": "解决方案\nFastDiag Toolkit 提供三个核心库来解决这些问题：\n\n📦 DiCube - 医学影像存储库\n高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。\n核心特性： - 单文件存储（.dcbs），消除文件系统开销 - HTJ2K 无损压缩，3倍存储压缩，5倍速度提升 - 元数据去重，减少冗余信息 - 完整 DICOM 往返转换支持\nGitHub： https://github.com/fastdiag-toolbox/dicube\n\n\n🎭 MedMask - 医学掩膜处理库\n专业的医学影像分割掩膜压缩和处理解决方案。\n核心特性： - 50+ 倍压缩比（Zstandard 算法） - 16 倍读取速度提升 - 支持多粒度器官组合和重叠掩膜\nGitHub： https://github.com/DicomCube/medmask\n\n\n🌐 SpaceTransformer - 3D 空间变换库\n优雅的 3D 医学影像几何变换处理方案。\n核心特性： - 完整的 3D 空间几何描述（Space 概念） - 可组合的空间变换操作 - GPU 加速的图像重采样 - 与深度学习框架无缝集成\nGitHub： https://github.com/fastdiag-toolbox/spacetransformer-core GitHub： https://github.com/fastdiag-toolbox/spacetransformer-torch"
   },
   {
-    "objectID": "index.html#快速开始",
-    "href": "index.html#快速开始",
+    "objectID": "index.html#安装方法",
+    "href": "index.html#安装方法",
     "title": "FastDiag Toolkit",
-    "section": "🚀 快速开始",
-    "text": "🚀 快速开始\n# 安装FastDiag Toolkit\npip install fastdiag-toolkit\n\n# DiCube基础使用\nimport dicube\ndcb_image = dicube.load_from_dicom_folder('dicom_folder/')\ndicube.save(dcb_image, 'output.dcbs')\n\n# MedMask基础使用\nimport medmask\nmask = medmask.load('segmentation.msk')\nprocessed_mask = mask.apply_threshold(0.5)"
+    "section": "安装方法",
+    "text": "安装方法\n# 分别安装各个库\npip install dicube\npip install medmask\npip install spacetransformer-core\npip install spacetransformer-torch  # GPU 加速版本"
   },
   {
-    "objectID": "index.html#贡献与支持",
-    "href": "index.html#贡献与支持",
+    "objectID": "index.html#快速使用示例",
+    "href": "index.html#快速使用示例",
     "title": "FastDiag Toolkit",
-    "section": "🤝 贡献与支持",
-    "text": "🤝 贡献与支持\n这个项目是开源的，我们欢迎社区的贡献和反馈。如果你在使用过程中遇到问题或有改进建议，请：\n\n📝 提交Issue报告问题\n🔧 提交Pull Request贡献代码\n💬 参与讨论分享经验"
+    "section": "快速使用示例",
+    "text": "快速使用示例\n# DiCube：DICOM 到高效存储格式\nimport dicube\nimage = dicube.load_from_dicom_folder('dicom_folder/')\ndicube.save(image, 'output.dcbs')\n\n# MedMask：掩膜压缩存储\nimport medmask\nmask = medmask.SegmentationMask(data, {\"liver\": 1}, space=space)\nmask.save('liver.msk')\n\n# SpaceTransformer：3D 空间变换\nfrom spacetransformer.core import Space\nfrom spacetransformer.torch import warp_image\ntarget_space = space.apply_flip(axis=2).apply_shape((256, 256, 50))\nresult = warp_image(image, space, target_space)"
   },
   {
-    "objectID": "index.html#许可证",
-    "href": "index.html#许可证",
+    "objectID": "index.html#详细文档",
+    "href": "index.html#详细文档",
     "title": "FastDiag Toolkit",
-    "section": "📄 许可证",
-    "text": "📄 许可证\n本项目采用开源许可证，详细信息请查看项目仓库。\n\n文档最后更新：?meta:date"
+    "section": "详细文档",
+    "text": "详细文档\n深入了解各个库的技术细节和使用方法（未完成）：\n\nDiCube 技术文档\n\n设计动机 - 为什么需要新的医学影像存储格式\n与 NIfTI 对比 - 不同存储格式的优劣分析\n元数据存储 - 高效的医学影像元数据管理\nDICOM 状态分析 - DICOM 格式的技术分析\n排序方法 - 医学影像序列的智能排序\n轴序约定 - 标准化的坐标系统定义\nDICOM 兼容性 - 与现有系统的集成\n\n\n\nMedMask 技术文档\n\n掩膜处理基础 - MedMask 的核心概念\n掩膜压缩技术 - 先进的压缩算法\n\n\n如需技术支持或贡献代码，请访问相应的 GitHub 仓库"
   },
   {
     "objectID": "1.1_vs_nifti.html",
@@ -315,73 +315,73 @@
   {
     "objectID": "1.5_axis_order.html",
     "href": "1.5_axis_order.html",
-    "title": "Dicube的轴序”",
+    "title": "Dicube的轴序",
     "section": "",
     "text": "在使用SimpleITK处理医学影像时，一个常见的问题是SimpleITK.Image对象和它转换成的NumPy数组在轴的顺序上不一致。具体来说，image.GetSize()返回的维度顺序是 (X, Y, Z)，而sitk.GetArrayFromImage(image)返回的NumPy数组的 shape 属性却是 (Z, Y, X)。\n下面的代码演示了这个问题：\n\nimport SimpleITK as sitk\ndirname = \"dicube-testdata/dicom/sample_200\"\n\nreader = sitk.ImageSeriesReader()\ndicom_names = reader.GetGDCMSeriesFileNames(dirname)\nreader.SetFileNames(dicom_names)\nsitk_image = reader.Execute()\n\n# SimpleITK Image对象的尺寸，顺序为 (X, Y, Z)\nprint(\"image.GetSize() -&gt;\", sitk_image.GetSize(), \"(X, Y, Z)\")\n\n# 转换成NumPy数组后，shape的顺序为 (Z, Y, X)\narray = sitk.GetArrayFromImage(sitk_image)\nprint(\"array.shape -&gt;\", array.shape, \"(Z, Y, X)\")\n\nimage.GetSize() -&gt; (512, 512, 200) (X, Y, Z)\narray.shape -&gt; (200, 512, 512) (Z, Y, X)\n\n\n这种不一致并非程序错误，而是一个为了性能而做的设计选择。它源于不同编程生态系统对多维数组存储方式的历史差异。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
-      "Dicube的轴序\""
+      "Dicube的轴序"
     ]
   },
   {
     "objectID": "1.5_axis_order.html#问题描述simpleitk的轴序不一致",
     "href": "1.5_axis_order.html#问题描述simpleitk的轴序不一致",
-    "title": "Dicube的轴序”",
+    "title": "Dicube的轴序",
     "section": "",
     "text": "在使用SimpleITK处理医学影像时，一个常见的问题是SimpleITK.Image对象和它转换成的NumPy数组在轴的顺序上不一致。具体来说，image.GetSize()返回的维度顺序是 (X, Y, Z)，而sitk.GetArrayFromImage(image)返回的NumPy数组的 shape 属性却是 (Z, Y, X)。\n下面的代码演示了这个问题：\n\nimport SimpleITK as sitk\ndirname = \"dicube-testdata/dicom/sample_200\"\n\nreader = sitk.ImageSeriesReader()\ndicom_names = reader.GetGDCMSeriesFileNames(dirname)\nreader.SetFileNames(dicom_names)\nsitk_image = reader.Execute()\n\n# SimpleITK Image对象的尺寸，顺序为 (X, Y, Z)\nprint(\"image.GetSize() -&gt;\", sitk_image.GetSize(), \"(X, Y, Z)\")\n\n# 转换成NumPy数组后，shape的顺序为 (Z, Y, X)\narray = sitk.GetArrayFromImage(sitk_image)\nprint(\"array.shape -&gt;\", array.shape, \"(Z, Y, X)\")\n\nimage.GetSize() -&gt; (512, 512, 200) (X, Y, Z)\narray.shape -&gt; (200, 512, 512) (Z, Y, X)\n\n\n这种不一致并非程序错误，而是一个为了性能而做的设计选择。它源于不同编程生态系统对多维数组存储方式的历史差异。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
-      "Dicube的轴序\""
+      "Dicube的轴序"
     ]
   },
   {
     "objectID": "1.5_axis_order.html#历史背景行优先-c-order-与列优先-f-order",
     "href": "1.5_axis_order.html#历史背景行优先-c-order-与列优先-f-order",
-    "title": "Dicube的轴序”",
+    "title": "Dicube的轴序",
     "section": "2. 历史背景：行优先 (C-Order) 与列优先 (F-Order)",
     "text": "2. 历史背景：行优先 (C-Order) 与列优先 (F-Order)\n计算机内存本质上是一维线性的。多维数组在内存中的存储方式主要有两种标准：\n\n行优先 (Row-Major Order / C-Order)：这是C/C++、Python (NumPy) 等语言的默认方式。数据按行连续存储。对于一个三维图像，其访问顺序通常被理解为 (深度, 高度, 宽度)，即 (Z, Y, X)。\n列优先 (Column-Major Order / F-Order)：这是Fortran、MATLAB、R等语言的默认方式。数据按列连续存储。这种方式更贴近传统的笛卡尔坐标系，访问顺序通常被理解为 (X, Y, Z)。\n\n医学影像领域的许多基础库，如ITK、VTK，以及DICOM标准的设计，都深受Fortran科学计算传统的影响，因此其内部数据表示和元数据都遵循 (X, Y, Z) 的列优先约定。SimpleITK作为ITK的接口，自然也继承了这一约定。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
-      "Dicube的轴序\""
+      "Dicube的轴序"
     ]
   },
   {
     "objectID": "1.5_axis_order.html#技术原理零拷贝转换及其后果",
     "href": "1.5_axis_order.html#技术原理零拷贝转换及其后果",
-    "title": "Dicube的轴序”",
+    "title": "Dicube的轴序",
     "section": "3. 技术原理：零拷贝转换及其后果",
     "text": "3. 技术原理：零拷贝转换及其后果\n当调用sitk.GetArrayFromImage()时，SimpleITK为了最大化效率，采用了**零拷贝（Zero-Copy）**机制。它不会在内存中重新排列数据来适应NumPy的行优先标准，而是直接将ITK管理的内存块暴露给NumPy，同时提供一套新的“解读规则”（即shape和strides元数据），让NumPy能以行优先的方式去理解这段原本按列优先存储的数据。\n我们可以用NumPy模拟这个过程。对于同一段线性数据，可以通过不同的strides（步长）信息，将其解释为不同的多维结构。\n\nimport numpy as np\nimport time\n\n# 假设一段线性内存数据\noriginal_data = np.arange(10)\nprint(f\"原始线性数据: {original_data}\")\n\n# 按C-order (行优先) 解释\nc_order_array = np.reshape(original_data, (2, 5), order='C')\nprint(f\"\\nC-order 数组:\\n{c_order_array}\")\n# 要移动到下一行(从0到5)，内存指针需要跳过5个元素\nprint(f\"C-order Strides: {c_order_array.strides}\") \n\n# 按F-order (列优先) 解释\nf_order_array = np.reshape(original_data, (5, 2), order='F')\nprint(f\"\\nF-order 数组:\\n{f_order_array}\")\n# 要移动到下一行(从0到1)，内存指针只需要跳过1个元素\nprint(f\"F-order Strides: {f_order_array.strides}\")\n\n原始线性数据: [0 1 2 3 4 5 6 7 8 9]\n\nC-order 数组:\n[[0 1 2 3 4]\n [5 6 7 8 9]]\nC-order Strides: (40, 8)\n\nF-order 数组:\n[[0 5]\n [1 6]\n [2 7]\n [3 8]\n [4 9]]\nF-order Strides: (8, 40)\n\n\nSimpleITK的零拷贝操作虽然速度极快，但其直接后果就是轴序的翻转 (X, Y, Z) -&gt; (Z, Y, X)。这个结果给开发者带来了实际的编程负担和潜在风险。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
-      "Dicube的轴序\""
+      "Dicube的轴序"
     ]
   },
   {
     "objectID": "1.5_axis_order.html#给开发者带来的实际问题",
     "href": "1.5_axis_order.html#给开发者带来的实际问题",
-    "title": "Dicube的轴序”",
+    "title": "Dicube的轴序",
     "section": "4. 给开发者带来的实际问题",
-    "text": "4. 给开发者带来的实际问题\n轴序不一致会引发两类主要问题：认知负担和性能开销。\n\n4.1. 认知负担与常见错误\n开发者必须在编码时持续关注轴序的转换，这很容易导致错误：\n\n元数据不匹配：image.GetSpacing()返回的体素间距是 (X, Y, Z) 顺序，必须手动将其与 (Z, Y, X) 顺序的数组对应起来，例如 spacing_z = spacing_xyz[2]。\n索引错误：对数组进行切片或索引时，很容易下意识地使用 (x, y, z) 顺序，而正确的应该是 array[z, y, x]。\n函数参数错误：在使用如scipy.ndimage.zoom等需要数组和参数轴序对应的函数时，极易传错参数顺序，导致非预期的空间变换结果。\n\n\n\n4.2. 手动修正的性能代价\n一个直接的想法是获取数组后立即使用 .transpose(2, 1, 0) 将其手动转换为 (X, Y, Z) 顺序，然后所有的 python 代码也在 (X, Y, Z) 上进行，这样全部与simpleitk 的生态保持一致。然而，这个操作并非没有代价。\n1. 创建非连续数组 首先，我们创建一个模拟真实图像的连续数组。\n\n# 创建一个200x300x400的连续数组 (ZYX)\nlarge_array_zyx = np.random.rand(399, 400, 401).astype(np.float32)\nprint(f\"原始数组 C-contiguous: {large_array_zyx.flags['C_CONTIGUOUS']}\")\n\n原始数组 C-contiguous: True\n\n\n.transpose() 操作本身很快，因为它不移动数据，只改变strides信息。但它会产生一个**非连续（Non-Contiguous）**的数组视图。\n\n# 转置操作 (ZYX -&gt; XYZ)\ntransposed_view_xyz = large_array_zyx.transpose(2, 1, 0)\nprint(f\"转置后视图 C-contiguous: {transposed_view_xyz.flags['C_CONTIGUOUS']}\")\n\n转置后视图 C-contiguous: False\n\n\n2. 非连续数组的计算性能 在非连续数组上进行运算时，由于数据在内存中是跳跃访问的，会降低CPU缓存命中率，导致计算性能下降。\n\ndef benchmark_operation(arr, name):\n    start = time.time()\n    _ = np.sum(arr[60:100] * 2.0 + 1.0)\n    end = time.time()\n    exec_time = (end - start) * 1000\n    print(f\"  {name}: {exec_time:.2f} ms\")\n    return exec_time\n\noriginal_time = benchmark_operation(large_array_zyx, \"在原始连续数组上计算\")\nview_time = benchmark_operation(transposed_view_xyz, \"在转置视图(非连续)上计算\")\nprint(f\"  性能差异: 转置视图计算慢约 {(view_time/original_time-1)*100:.1f}%\")\n\n  在原始连续数组上计算: 20.20 ms\n  在转置视图(非连续)上计算: 14.72 ms\n  性能差异: 转置视图计算慢约 -27.1%\n\n\n3. 外部库的连续性要求 问题进一步复杂化的是，许多外部库和工具明确要求输入数组必须是C连续的（C-contiguous）：\n\n深度学习框架：PyTorch的 torch.from_numpy() 和TensorFlow的张量转换都要求输入数组是C-contiguous的\nGPU计算：CUDA kernels和OpenCL通常需要连续的内存布局来实现高效的GPU内存传输\nONNX推理：多数ONNX Runtime后端要求模型输入为连续数组\n图像处理库：OpenCV的某些函数和skimage的部分算法对内存布局有严格要求\n\n这意味着在将转置后的非连续数组传递给这些库之前，必须先进行连续化处理。\n4. 恢复连续性的开销 要解决性能问题和兼容性问题，需要调用np.ascontiguousarray()，但这会触发一次完整的内存拷贝，消耗额外的时间和一倍的内存。\n\nstart_time = time.time()\ncontiguous_copy_xyz = np.ascontiguousarray(transposed_view_xyz)\ncontiguous_time = (time.time() - start_time) * 1000\n\nprint(f\"强制连续化(内存拷贝)耗时: {contiguous_time:.1f} ms\")\nprint(f\"新数组 C-contiguous: {contiguous_copy_xyz.flags['C_CONTIGUOUS']}\")\nprint(f\"额外内存占用: {contiguous_copy_xyz.nbytes / 1024 / 1024:.1f} MB\")\n\n强制连续化(内存拷贝)耗时: 211.4 ms\n新数组 C-contiguous: True\n额外内存占用: 244.1 MB\n\n\n结论是，手动修正轴序问题，要么牺牲计算性能和访问效率，要么付出高昂的时间和内存成本。这个代价在深度学习和GPU计算场景中尤其显著，因为每次模型推理都需要进行连续化处理。",
+    "text": "4. 给开发者带来的实际问题\n轴序不一致会引发两类主要问题：认知负担和性能开销。\n\n4.1. 认知负担与常见错误\n开发者必须在编码时持续关注轴序的转换，这很容易导致错误：\n\n元数据不匹配：image.GetSpacing()返回的体素间距是 (X, Y, Z) 顺序，必须手动将其与 (Z, Y, X) 顺序的数组对应起来，例如 spacing_z = spacing_xyz[2]。\n索引错误：对数组进行切片或索引时，很容易下意识地使用 (x, y, z) 顺序，而正确的应该是 array[z, y, x]。\n函数参数错误：在使用如scipy.ndimage.zoom等需要数组和参数轴序对应的函数时，极易传错参数顺序，导致非预期的空间变换结果。\n\n\n\n4.2. 手动修正的性能代价\n一个直接的想法是获取数组后立即使用 .transpose(2, 1, 0) 将其手动转换为 (X, Y, Z) 顺序，然后所有的 python 代码也在 (X, Y, Z) 上进行，这样全部与simpleitk 的生态保持一致。然而，这个操作并非没有代价。\n1. 创建非连续数组 首先，我们创建一个模拟真实图像的连续数组。\n\n# 创建一个200x300x400的连续数组 (ZYX)\nlarge_array_zyx = np.random.rand(399, 400, 401).astype(np.float32)\nprint(f\"原始数组 C-contiguous: {large_array_zyx.flags['C_CONTIGUOUS']}\")\n\n原始数组 C-contiguous: True\n\n\n.transpose() 操作本身很快，因为它不移动数据，只改变strides信息。但它会产生一个**非连续（Non-Contiguous）**的数组视图。\n\n# 转置操作 (ZYX -&gt; XYZ)\ntransposed_view_xyz = large_array_zyx.transpose(2, 1, 0)\nprint(f\"转置后视图 C-contiguous: {transposed_view_xyz.flags['C_CONTIGUOUS']}\")\n\n转置后视图 C-contiguous: False\n\n\n2. 非连续数组的计算性能 在非连续数组上进行运算时，由于数据在内存中是跳跃访问的，会降低CPU缓存命中率，导致计算性能下降。\n\ndef benchmark_operation(arr, name):\n    start = time.time()\n    _ = np.sum(arr[60:100] * 2.0 + 1.0)\n    end = time.time()\n    exec_time = (end - start) * 1000\n    print(f\"  {name}: {exec_time:.2f} ms\")\n    return exec_time\n\noriginal_time = benchmark_operation(large_array_zyx, \"在原始连续数组上计算\")\nview_time = benchmark_operation(transposed_view_xyz, \"在转置视图(非连续)上计算\")\nprint(f\"  性能差异: 转置视图计算慢约 {(view_time/original_time-1)*100:.1f}%\")\n\n  在原始连续数组上计算: 21.91 ms\n  在转置视图(非连续)上计算: 16.62 ms\n  性能差异: 转置视图计算慢约 -24.1%\n\n\n3. 外部库的连续性要求 问题进一步复杂化的是，许多外部库和工具明确要求输入数组必须是C连续的（C-contiguous）：\n\n深度学习框架：PyTorch的 torch.from_numpy() 和TensorFlow的张量转换都要求输入数组是C-contiguous的\nGPU计算：CUDA kernels和OpenCL通常需要连续的内存布局来实现高效的GPU内存传输\nONNX推理：多数ONNX Runtime后端要求模型输入为连续数组\n图像处理库：OpenCV的某些函数和skimage的部分算法对内存布局有严格要求\n\n这意味着在将转置后的非连续数组传递给这些库之前，必须先进行连续化处理。\n4. 恢复连续性的开销 要解决性能问题和兼容性问题，需要调用np.ascontiguousarray()，但这会触发一次完整的内存拷贝，消耗额外的时间和一倍的内存。\n\nstart_time = time.time()\ncontiguous_copy_xyz = np.ascontiguousarray(transposed_view_xyz)\ncontiguous_time = (time.time() - start_time) * 1000\n\nprint(f\"强制连续化(内存拷贝)耗时: {contiguous_time:.1f} ms\")\nprint(f\"新数组 C-contiguous: {contiguous_copy_xyz.flags['C_CONTIGUOUS']}\")\nprint(f\"额外内存占用: {contiguous_copy_xyz.nbytes / 1024 / 1024:.1f} MB\")\n\n强制连续化(内存拷贝)耗时: 119.4 ms\n新数组 C-contiguous: True\n额外内存占用: 244.1 MB\n\n\n结论是，手动修正轴序问题，要么牺牲计算性能和访问效率，要么付出高昂的时间和内存成本。这个代价在深度学习和GPU计算场景中尤其显著，因为每次模型推理都需要进行连续化处理。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
-      "Dicube的轴序\""
+      "Dicube的轴序"
     ]
   },
   {
     "objectID": "1.5_axis_order.html#dicube的解决方案设计上的一致性",
     "href": "1.5_axis_order.html#dicube的解决方案设计上的一致性",
-    "title": "Dicube的轴序”",
+    "title": "Dicube的轴序",
     "section": "5. DiCube的解决方案：设计上的一致性",
     "text": "5. DiCube的解决方案：设计上的一致性\nDiCube的设计哲学是将复杂性封装在库内部，为用户提供一个简单、一致的编程接口。它选择在数据加载阶段一次性解决轴序问题。\n当使用dicube.load_from_dicom_folder()时，DiCube执行了以下操作：\n\n读取原始数据和元数据。\n在内部进行必要的内存重排，生成一个符合NumPy C-order标准的、(Z, Y, X) 顺序的连续数组。\n同时，将所有空间元数据（如spacing, shape）也转换成与数组匹配的 (Z, Y, X) 顺序。\n\n这样，用户从DiCube获取的数据和元数据在轴序上是完全统一的，可以直接用于Python生态中的其他库。\n下面的代码对比了DiCube和SimpleITK的输出：\n\nimport dicube\n# 使用DiCube加载同一份数据\ndcb_image = dicube.load_from_dicom_folder(dirname, sort_method=dicube.SortMethod.POSITION_RIGHT_HAND)\n\nprint(\"--- DiCube: 轴序一致 ---\")\n# 数组shape是 (Z, Y, X)\nprint('dicube array.shape -&gt;', dcb_image.get_fdata().shape, '(Z, Y, X)')\n# space.spacing也是 (Z, Y, X)\nprint('dicube space.spacing -&gt;', dcb_image.space.spacing, '(Z, Y, X)')\n# 索引直接对应\nprint(f\"  数组轴0(Z)的spacing为: {dcb_image.space.spacing[0]}\")\n\nprint(\"\\n--- SimpleITK: 轴序不一致 ---\")\n# 数组shape是 (Z, Y, X)\nprint(\"simpleitk array.shape -&gt;\", array.shape, \"(Z, Y, X)\")\n# GetSpacing()是 (X, Y, Z)\nprint(\"simpleitk image.GetSpacing() -&gt;\", sitk_image.GetSpacing(), \"(X, Y, Z)\")\n# 索引需要转换\nprint(f\"  数组轴0(Z)的spacing为: {sitk_image.GetSpacing()[2]}\")\n\n--- DiCube: 轴序一致 ---\ndicube array.shape -&gt; (200, 512, 512) (Z, Y, X)\ndicube space.spacing -&gt; (0.4499999999999998, 0.4296875, 0.4296875) (Z, Y, X)\n  数组轴0(Z)的spacing为: 0.4499999999999998\n\n--- SimpleITK: 轴序不一致 ---\nsimpleitk array.shape -&gt; (200, 512, 512) (Z, Y, X)\nsimpleitk image.GetSpacing() -&gt; (0.4296875, 0.4296875, 0.4499999999999998) (X, Y, Z)\n  数组轴0(Z)的spacing为: 0.4499999999999998\n\n\n虽然DiCube在加载时有一次性的转换开销，但它通过提供一个统一且符合Python开发者直觉的接口，从根本上消除了后续处理流程中所有因轴序不一致而引发的认知负担和潜在错误。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
-      "Dicube的轴序\""
+      "Dicube的轴序"
     ]
   },
   {
@@ -593,7 +593,7 @@
     "href": "1.0_motivation.html",
     "title": "为什么需要DiCube？",
     "section": "",
-    "text": "当我们设计一个医学影像工作站的时候，一定会接触到DICOM文件，它是影像科图像的标准格式。除了像素数据之外，DICOM还存储着各种元数据信息，比如患者姓名、检查位置、时间戳、设备参数等临床关键信息。\nDICOM标准在临床互操作性方面功不可没，但它的设计初衷是为了解决20世纪80年代的互联互通问题，并非为了应对今天高容量、AI驱动、多并发的现代工作流程。在实际部署中，我们发现DICOM暴露出四个慢性痛点：\n\n\n这是DICOM最严重的问题。一个CT或MR序列往往包含数百个小的.dcm文件，甚至有些复杂检查包含数千个文件。在现代医学影像工作站中，多个组件需要同时访问这些DICOM文件：\n\nDICOM通信模块：负责从网络接收数据，进行完整性校验和字段正规性验证\n三维可视化渲染：需要像素数据和空间信息来构建MPR、VR等视图\n后端数据库系统：需要提取各种元数据信息以便对图像进行入库和索引\nAI算法引擎：需要像素数据和空间信息进行自动分析\nDICOM打印推送模块：需要将完整的DICOM文件推送到打印机或其他设备\n\n当这些模块并发访问同一组DICOM文件时，文件系统的随机读写成为严重瓶颈。我们在开发CTP算法时发现，即使在没有任何其他程序运行的情况下，从机械硬盘读取3000+张DICOM文件也需要10秒以上的时间。当多个模块同时访问时，系统很容易出现卡顿。\n虽然可以将数据转移到SSD上来缓解这个问题，但大型医院每天产生数千个病例，SSD容量几天就会耗尽，需要频繁地进行数据迁移到机械硬盘。这种大规模的数据迁移操作本身就非常耗时。现代文件系统虽然有高速缓存机制，刚刚接收的热数据读取速度还算可控，但如果要访问数天前已进入冷存储的数据，读取时间会变得非常糟糕。\n此外，如此零碎的文件分布对数据完整性校验也是一个挑战。接收方无法确定序列是否已经传输完成，因为可能随时会有新的切片推送过来。\n\n\n\n这是DICOM设计中的一个重大缺陷。绝大部分DICOM字段（患者姓名、检查日期、序列描述、设备信息等）在同一序列的所有切片中都是相同的，却在每个文件中重复存储。\n一般来说，后端系统为了获取入库所需的元数据，会选择读取序列中的一个文件来提取这些共享信息。其余几百个文件中的元数据副本完全是浪费的存储空间和网络传输带宽。更糟糕的是，当我们发现某个本应共享的字段在不同文件中出现不一致的值时，会给数据处理带来很大困扰。\n\n\n\n在实际部署中，我们经常遇到各种数据质量问题： - 序列中缺少一张或若干张DICOM文件 - 关键字段没有填写或者填写错误 - InstanceNumber重复或不连续 - 像素间距不一致 - 图像位置信息缺失\n作为工作站厂商，我们无法改变医院的数据推送现状，只能设计额外的质控模块来检查这些问题，将有严重问题的病例筛选出来，防止它们进入后续的处理流程。但是，不同的AI算法对这些数据质量问题的容忍度并不相同，要设计一个能够兼容所有算法需求的通用质控模块是非常困难的。\n\n\n\nDICOM的二进制格式缺乏全局索引，解析器只能从文件头开始顺序解析到文件尾，直到找到目标标签。这种设计导致即使只需要访问少量字段（比如PACS查看器只需要ImagePosition和InstanceNumber），也必须解析整个元数据块。\n因此，PyDICOM等主流库的默认行为是直接将整个元数据读入内存。这种设计对性能的影响是灾难性的：比如你是一个PACS查看器，实际上只需要每个图像的ImagePosition和InstanceNumber信息来构建序列视图，但你不得不将所有元数据全部读取和解析一遍。\n此外，许多DICOM标签是文本（字符串）或变长数组，解析过程需要反复进行内存分配和字符编码转换，这种方式不适合高性能的批处理场景。DICOM的这种数据组织方式也不适合与现代数据库系统进行快速整合，开发者不得不编写大量的数据转换代码。",
+    "text": "DICOM（医学数字成像与通信标准）是医学影像领域的通用语言，它统一了图像格式，实现了跨厂商设备与软件的互操作性。然而，这一诞生于20世纪80年代的标准，其核心设计并未预见到今日由AI、大数据及高并发计算所定义的新型工作流。\n在构建集成AI算法、三维可视化和海量数据管理的新一代影像工作站时，我们发现DICOM的某些设计正成为制约系统性能的结构性局限。本文旨在深入分析这些挑战，并介绍DiCube——一个旨在从根本上解决这些问题，同时确保与现有生态100%兼容的创新方案。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
@@ -601,11 +601,11 @@
     ]
   },
   {
-    "objectID": "1.0_motivation.html#dicom在现代医学影像工作流中的挑战",
-    "href": "1.0_motivation.html#dicom在现代医学影像工作流中的挑战",
+    "objectID": "1.0_motivation.html#引言经典标准面临的现代挑战",
+    "href": "1.0_motivation.html#引言经典标准面临的现代挑战",
     "title": "为什么需要DiCube？",
     "section": "",
-    "text": "当我们设计一个医学影像工作站的时候，一定会接触到DICOM文件，它是影像科图像的标准格式。除了像素数据之外，DICOM还存储着各种元数据信息，比如患者姓名、检查位置、时间戳、设备参数等临床关键信息。\nDICOM标准在临床互操作性方面功不可没，但它的设计初衷是为了解决20世纪80年代的互联互通问题，并非为了应对今天高容量、AI驱动、多并发的现代工作流程。在实际部署中，我们发现DICOM暴露出四个慢性痛点：\n\n\n这是DICOM最严重的问题。一个CT或MR序列往往包含数百个小的.dcm文件，甚至有些复杂检查包含数千个文件。在现代医学影像工作站中，多个组件需要同时访问这些DICOM文件：\n\nDICOM通信模块：负责从网络接收数据，进行完整性校验和字段正规性验证\n三维可视化渲染：需要像素数据和空间信息来构建MPR、VR等视图\n后端数据库系统：需要提取各种元数据信息以便对图像进行入库和索引\nAI算法引擎：需要像素数据和空间信息进行自动分析\nDICOM打印推送模块：需要将完整的DICOM文件推送到打印机或其他设备\n\n当这些模块并发访问同一组DICOM文件时，文件系统的随机读写成为严重瓶颈。我们在开发CTP算法时发现，即使在没有任何其他程序运行的情况下，从机械硬盘读取3000+张DICOM文件也需要10秒以上的时间。当多个模块同时访问时，系统很容易出现卡顿。\n虽然可以将数据转移到SSD上来缓解这个问题，但大型医院每天产生数千个病例，SSD容量几天就会耗尽，需要频繁地进行数据迁移到机械硬盘。这种大规模的数据迁移操作本身就非常耗时。现代文件系统虽然有高速缓存机制，刚刚接收的热数据读取速度还算可控，但如果要访问数天前已进入冷存储的数据，读取时间会变得非常糟糕。\n此外，如此零碎的文件分布对数据完整性校验也是一个挑战。接收方无法确定序列是否已经传输完成，因为可能随时会有新的切片推送过来。\n\n\n\n这是DICOM设计中的一个重大缺陷。绝大部分DICOM字段（患者姓名、检查日期、序列描述、设备信息等）在同一序列的所有切片中都是相同的，却在每个文件中重复存储。\n一般来说，后端系统为了获取入库所需的元数据，会选择读取序列中的一个文件来提取这些共享信息。其余几百个文件中的元数据副本完全是浪费的存储空间和网络传输带宽。更糟糕的是，当我们发现某个本应共享的字段在不同文件中出现不一致的值时，会给数据处理带来很大困扰。\n\n\n\n在实际部署中，我们经常遇到各种数据质量问题： - 序列中缺少一张或若干张DICOM文件 - 关键字段没有填写或者填写错误 - InstanceNumber重复或不连续 - 像素间距不一致 - 图像位置信息缺失\n作为工作站厂商，我们无法改变医院的数据推送现状，只能设计额外的质控模块来检查这些问题，将有严重问题的病例筛选出来，防止它们进入后续的处理流程。但是，不同的AI算法对这些数据质量问题的容忍度并不相同，要设计一个能够兼容所有算法需求的通用质控模块是非常困难的。\n\n\n\nDICOM的二进制格式缺乏全局索引，解析器只能从文件头开始顺序解析到文件尾，直到找到目标标签。这种设计导致即使只需要访问少量字段（比如PACS查看器只需要ImagePosition和InstanceNumber），也必须解析整个元数据块。\n因此，PyDICOM等主流库的默认行为是直接将整个元数据读入内存。这种设计对性能的影响是灾难性的：比如你是一个PACS查看器，实际上只需要每个图像的ImagePosition和InstanceNumber信息来构建序列视图，但你不得不将所有元数据全部读取和解析一遍。\n此外，许多DICOM标签是文本（字符串）或变长数组，解析过程需要反复进行内存分配和字符编码转换，这种方式不适合高性能的批处理场景。DICOM的这种数据组织方式也不适合与现代数据库系统进行快速整合，开发者不得不编写大量的数据转换代码。",
+    "text": "DICOM（医学数字成像与通信标准）是医学影像领域的通用语言，它统一了图像格式，实现了跨厂商设备与软件的互操作性。然而，这一诞生于20世纪80年代的标准，其核心设计并未预见到今日由AI、大数据及高并发计算所定义的新型工作流。\n在构建集成AI算法、三维可视化和海量数据管理的新一代影像工作站时，我们发现DICOM的某些设计正成为制约系统性能的结构性局限。本文旨在深入分析这些挑战，并介绍DiCube——一个旨在从根本上解决这些问题，同时确保与现有生态100%兼容的创新方案。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
@@ -613,11 +613,11 @@
     ]
   },
   {
-    "objectID": "1.0_motivation.html#性能问题实测",
-    "href": "1.0_motivation.html#性能问题实测",
+    "objectID": "1.0_motivation.html#dicom在现代工作流中的四大核心挑战",
+    "href": "1.0_motivation.html#dicom在现代工作流中的四大核心挑战",
     "title": "为什么需要DiCube？",
-    "section": "性能问题实测",
-    "text": "性能问题实测\n让我们通过实际测试来验证这些问题。使用一个包含200张图像的CT序列：\n\nimport pydicom\nimport os\nimport time\nimport multiprocessing as mp\n\ndirname = 'dicube-testdata/dicom/sample_200'\ndcbs_file = 'dicube-testdata/test_sequence.dcbs'\n\ndef read_dicom_sequence(dirname, metadata_only=False):\n    \"\"\"读取DICOM序列\"\"\"\n    files = os.listdir(dirname)\n    instance_numbers = []\n    \n    for filename in files:\n        filepath = os.path.join(dirname, filename)\n        ds = pydicom.dcmread(filepath, stop_before_pixels=metadata_only)\n        instance_numbers.append(ds.InstanceNumber)\n    \n    return instance_numbers\n\n# 单进程读取\nstart_time = time.time()\nresult = read_dicom_sequence(dirname)\nsingle_time = time.time() - start_time\nprint(f\"单进程读取200个DICOM文件: {single_time:.3f}秒\")\n\n单进程读取200个DICOM文件: 0.161秒\n\n\n现在模拟多个进程并发访问的真实场景：\n\ndef concurrent_read_test(num_processes=5):\n    \"\"\"测试并发读取性能\"\"\"\n    pool = mp.Pool(num_processes)\n    \n    start_time = time.time()\n    results = []\n    \n    # 模拟多个组件同时读取不同序列\n    for i in range(num_processes):\n        test_dir = f\"{dirname}\"\n        results.append(pool.apply_async(read_dicom_sequence, (test_dir,)))\n    \n    # 等待所有进程完成\n    [r.get() for r in results]\n    concurrent_time = time.time() - start_time\n    \n    pool.close()\n    pool.join()\n    \n    return concurrent_time\n\nconcurrent_time = concurrent_read_test()\nprint(f\"5进程并发读取: {concurrent_time:.3f}秒\")\nprint(f\"性能下降: {concurrent_time/single_time:.1f}倍\")\n\n5进程并发读取: 0.178秒\n性能下降: 1.1倍\n\n\n可以看到，单线程顺序读取的时间还算可控，但当5个进程并发读取时，时间会大幅增加，这比顺序读取5次还要慢。这就是机械硬盘随机读写瓶颈的体现。\n令人意外的是，即使我们设置 stop_before_pixels=True 只读取元数据而不读取像素数据，读取时间甚至可能更长。这反映了一个根本问题：文件碎片化会大幅增加读取时间，而仅读取文件头并不能改变文件碎片化的现实。\n这种性能问题在SSD上会有所缓解，但在大多数医院仍然使用机械硬盘作为主要存储的现实下，这个问题非常突出。",
+    "section": "DICOM在现代工作流中的四大核心挑战",
+    "text": "DICOM在现代工作流中的四大核心挑战\n\n1. 文件碎片化：并发I/O的性能瓶颈\n一个CT或MR序列通常由数百至数千个独立的.dcm文件构成，这是DICOM最核心的性能制约因素。在现代工作站中，多个软件模块（如通信、三维渲染、数据库归档、AI分析）需要并发访问同一序列。这种多任务并发访问大量小文件，会导致磁盘磁头频繁进行随机寻道，从而产生严重的I/O瓶颈。尽管SSD能缓解此问题，但对于大型医疗机构每日TB级的数据增量，成本更低的机械硬盘仍是长期存储的主力。一旦数据由热转冷，访问延迟便会急剧恶化。\n\n\n2. 元数据冗余：存储与带宽的无效消耗\n在同一序列内，绝大多数元数据（如患者信息、检查参数、设备型号等）是完全一致的，但DICOM标准要求其在每个.dcm文件中重复存储。这意味着一个包含500个切片的序列，同样的信息被冗余复制了500次。这不仅显著增加了存储空间的占用，也造成了网络传输带宽的浪费。此外，当这些本应共享的字段在不同文件中出现不一致时，会给下游的数据处理流程引入潜在的数据质量风险。\n\n\n3. 内置约束缺失：数据质量的不确定性\n在实际应用中，DICOM数据常出现质量问题：序列内文件缺失、关键字段（Tag）值为空或错误、InstanceNumber不连续或重复、像素间距不一致等。软件开发商通常需要构建复杂的外部质控模块来识别和处理这些问题。然而，不同AI算法对数据质量的容忍度各异，设计一套普适的质控规则极为困难，这增加了系统集成的复杂度和脆弱性。\n\n\n4. 顺序解析机制：低效的元数据访问\nDICOM二进制格式缺乏全局索引，解析器必须从文件头开始顺序扫描，直至找到目标标签。这意味着，即便是为了获取构建序列视图所需的ImagePositionPatient和InstanceNumber这样少量的信息，也必须解析每个文件中完整的元数据块。主流库（如PyDICOM）的默认行为是将元数据完整加载入内存，这种方式在需要高性能批处理（如AI训练）或快速预览的场景下，效率低下。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
@@ -625,11 +625,11 @@
     ]
   },
   {
-    "objectID": "1.0_motivation.html#dicube的系统性解决方案",
-    "href": "1.0_motivation.html#dicube的系统性解决方案",
+    "objectID": "1.0_motivation.html#dicube的系统性解决方案重塑影像数据结构",
+    "href": "1.0_motivation.html#dicube的系统性解决方案重塑影像数据结构",
     "title": "为什么需要DiCube？",
-    "section": "DiCube的系统性解决方案",
-    "text": "DiCube的系统性解决方案\n针对DICOM的这些结构性问题，DiCube采用了全新的设计理念。我们不是简单地对DICOM格式进行增量改进，而是从医学影像工作流的实际需求出发，重新设计了一套既保持DICOM兼容性，又能显著提升性能的存储格式。\nDiCube的核心设计原则包括： 1. 统一文件容器：将整个序列整合为单一文件，彻底消除文件碎片化 2. 智能元数据管理：区分共享和非共享元数据，采用高效的索引和压缩 3. 现代编解码技术：使用HTJ2K等先进编解码器，平衡压缩比和速度 4. 完整往返兼容：确保与标准DICOM的100%兼容性\n\n单文件存储\n将整个序列合并为一个.dcbs文件，消除文件系统开销：\n\nimport dicube\nfrom dicube.dicom import CommonTags\n\n# 转换DICOM序列为DiCube格式\ndcb_image = dicube.load_from_dicom_folder(dirname)\ndicube.save(dcb_image, dcbs_file)\n\n# 测试DiCube加载性能\nstart_time = time.time()\nloaded_image = dicube.load(dcbs_file)\ndcb_load_time = time.time() - start_time\n\nprint(f\"DiCube加载时间: {dcb_load_time:.3f}秒\")\n\nDiCube加载时间: 0.252秒\n\n\n\n\n智能元数据去重与索引\nDiCube的元数据管理是其核心创新之一。我们认识到DICOM序列中绝大部分元数据是在所有切片间共享的，只有少数字段（如ImagePosition、InstanceNumber）是每个切片独有的。\nDiCube使用智能的JSON架构来分离这两类元数据： - 共享元数据：患者信息、检查信息、序列参数等，只存储一份 - 非共享元数据：图像位置、实例编号等，按切片索引存储\n这种设计不仅大幅减少了存储空间，更重要的是实现了元数据的快速随机访问：\n\n# 快速加载元数据（不含像素数据）\nstart_time = time.time()\nmeta = dicube.load_meta(dcbs_file)\nmeta_time = time.time() - start_time\n\nprint(f\"仅元数据加载: {meta_time:.4f}秒\")\nprint(f\"相比完整DICOM加载快: {single_time/meta_time:.0f}倍\")\n\n# 访问共享字段\nis_shared = meta.is_shared(CommonTags.PatientName)\nprint(f\"患者姓名是否是共享的: {is_shared}\")\n\npatient_name = meta.get_shared_value(CommonTags.PatientName)\nprint(f\"患者姓名: {patient_name}\")\n\n# 访问非共享字段\npositions = meta.get_values('ImagePositionPatient')\nprint(f\"图像位置数量: {len(positions)}，前五个：{positions[:5]}\")\n\n仅元数据加载: 0.0049秒\n相比完整DICOM加载快: 33倍\n患者姓名是否是共享的: True\n患者姓名: {'Alphabetic': 'Anonymous'}\n图像位置数量: 200，前五个：[[-102.08, -31.26, 1371.75], [-102.08, -31.26, 1371.3], [-102.08, -31.26, 1370.85], [-102.08, -31.26, 1370.4], [-102.08, -31.26, 1369.95]]\n\n\n\n\n高性能字段查询机制\n传统DICOM的一个重大问题是缺乏索引机制，每次查询都需要顺序解析。DiCube通过预建索引和优化的数据结构，实现了对特定字段的毫秒级查询。\n这对PACS查看器等需要快速构建序列概览的应用场景特别重要。比如，当用户在PACS界面上浏览序列时，系统只需要每个切片的位置信息和实例编号，而不需要完整的元数据。传统方法需要解析所有文件，而DiCube可以直接定位到所需字段：\n\n# DiCube方式：一次调用获取所有InstanceNumber\nstart_time = time.time()\ninstance_numbers = meta.get_values(CommonTags.InstanceNumber)\ndcb_query_time = time.time() - start_time\n\nprint(f\"DiCube查询InstanceNumber: {dcb_query_time:.4f}秒\")\nprint(f\"获取到{len(instance_numbers)}个实例号\")\nprint(f\"前5个: {sorted(instance_numbers)[:5]}\")\n\nDiCube查询InstanceNumber: 0.0000秒\n获取到200个实例号\n前5个: [1, 2, 3, 4, 5]\n\n\n\n\n现代编解码技术\nDiCube采用保守但有效的编解码策略。我们选择HTJ2K (High Throughput JPEG 2000) 作为.dcbs格式的编解码器，这个选择基于以下考虑：\n\n成熟稳定：HTJ2K是JPEG 2000的高性能实现，经过了广泛验证\n无损压缩：确保医学图像的诊断质量不受影响\n\n高吞吐量：专门优化了编解码速度，适合实时应用\n开源可控：基于OpenJPH库，避免了专有编解码器的依赖问题\n\n相比DICOM中常见的RLE或JPEG Baseline压缩，HTJ2K在压缩比和速度上都有显著优势：\n\n# 比较文件大小\noriginal_size = sum(os.path.getsize(os.path.join(dirname, f)) \n                   for f in os.listdir(dirname))\ndcb_size = os.path.getsize(dcbs_file)\n\nprint(f\"\\n存储效率对比:\")\nprint(f\"原始DICOM: {original_size/1024/1024:.1f} MB\")\nprint(f\"DiCube: {dcb_size/1024/1024:.1f} MB\")\nprint(f\"压缩比: {original_size/dcb_size:.1f}x\")\n\n# 清理测试文件\nos.remove(dcbs_file)\n\n\n存储效率对比:\n原始DICOM: 102.2 MB\nDiCube: 29.1 MB\n压缩比: 3.5x",
+    "section": "DiCube的系统性解决方案：重塑影像数据结构",
+    "text": "DiCube的系统性解决方案：重塑影像数据结构\nDiCube并非对DICOM的增量改进，而是从现代工作流的需求出发，设计了一套全新的存储与访问方案。其核心设计原则如下：\n\n统一文件容器：将影像序列整合为单一文件，根除文件碎片化。\n智能元数据管理：分离共享与非共享元数据，建立高效索引。\n现代编解码技术：采用HTJ2K等技术，优化压缩比与编解码速度。\n100%往返兼容：确保与标准DICOM生态的无缝衔接。\n\n\n从碎片到整体：单文件存储\nDiCube将整个DICOM序列合并为一个.dcbs（DiCube Binary Sequence）文件，将对文件系统的随机读写转变为高效的顺序读写，从根本上解决了I/O瓶颈。\n\nimport dicube\nimport time\nimport os\n\n# 示例DICOM目录和DiCube文件路径\ndicom_dir = 'dicube-testdata/dicom/sample_200'\ndcbs_file = 'dicube-testdata/test_sequence.dcbs'\n\n# 转换DICOM序列为DiCube格式\ndcb_image = dicube.load_from_dicom_folder(dicom_dir)\ndicube.save(dcb_image, dcbs_file)\n\n\n\n从冗余到索引：智能元数据管理\nDiCube将元数据分为两类：\n\n共享元数据：如患者ID、研究日期等，在.dcbs文件中仅存储一份。\n非共享元数据：如ImagePositionPatient等逐切片变化的信息，以紧凑的数组形式存储并建立索引。\n\n该设计极大压缩了元数据存储空间，并实现了特定字段的毫秒级随机访问。\n\nfrom dicube.dicom import CommonTags\n\n# 仅加载元数据，速度极快\nmeta = dicube.load_meta(dcbs_file)\n\n# O(1) 复杂度访问共享字段\npatient_name = meta.get_shared_value(CommonTags.PatientName)\nprint(f\"患者姓名: {patient_name}\")\n\n# 高效批量获取非共享字段\ninstance_numbers = meta.get_values(CommonTags.InstanceNumber)\nprint(f\"一次性获取{len(instance_numbers)}个InstanceNumber, 前5个: {instance_numbers[:5]}\")\n\n患者姓名: {'Alphabetic': 'Anonymous'}\n一次性获取200个InstanceNumber, 前5个: [1, 2, 3, 4, 5]",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
@@ -637,11 +637,11 @@
     ]
   },
   {
-    "objectID": "1.0_motivation.html#并发访问性能的根本改善",
-    "href": "1.0_motivation.html#并发访问性能的根本改善",
+    "objectID": "1.0_motivation.html#高并发性能压力测试模拟真实世界负载",
+    "href": "1.0_motivation.html#高并发性能压力测试模拟真实世界负载",
     "title": "为什么需要DiCube？",
-    "section": "并发访问性能的根本改善",
-    "text": "并发访问性能的根本改善\nDICOM最严重的性能问题之一就是多进程并发访问时的急剧性能下降。这个问题在多组件医学影像工作站中特别突出，因为可视化、AI算法、数据库入库等模块经常需要同时访问同一组图像数据。\nDiCube的单文件设计从根本上解决了这个问题。由于整个序列被整合到一个文件中，操作系统可以更有效地管理文件缓存，减少磁盘寻道时间，消除随机IO瓶颈：\n\n# 重新创建测试文件\ndcb_image = dicube.load_from_dicom_folder(dirname)\ndicube.save(dcb_image, dcbs_file)\n\n# 定义全局函数以便multiprocessing可以序列化\ndef load_dcb_meta(filepath):\n    return dicube.load_meta(filepath)\n\ndef dcb_concurrent_test(dcb_file, num_processes=5):\n    \"\"\"测试DiCube并发访问性能\"\"\"\n    pool = mp.Pool(num_processes)\n    \n    start_time = time.time()\n    results = []\n    \n    for i in range(num_processes):\n        results.append(pool.apply_async(load_dcb_meta, (dcb_file,)))\n    \n    [r.get() for r in results]\n    concurrent_time = time.time() - start_time\n    \n    pool.close()\n    pool.join()\n    \n    return concurrent_time\n\ndcb_concurrent_time = dcb_concurrent_test(dcbs_file)\n\nprint(f\"\\n并发访问性能对比:\")\nprint(f\"DICOM并发读取: {concurrent_time:.3f}秒\")\nprint(f\"DiCube并发读取: {dcb_concurrent_time:.3f}秒\")\nprint(f\"DiCube并发性能提升: {concurrent_time/dcb_concurrent_time:.1f}倍\")\n\n# 清理\nos.remove(dcbs_file)\n\n\n并发访问性能对比:\nDICOM并发读取: 0.178秒\nDiCube并发读取: 0.017秒\nDiCube并发性能提升: 10.5倍",
+    "section": "高并发性能压力测试：模拟真实世界负载",
+    "text": "高并发性能压力测试：模拟真实世界负载\n为精确衡量DiCube在真实并发环境下的性能优势，我们设计了以下测试方案：\n\n并发规模：10个进程并发执行。\n工作负载：每个进程随机处理5个不同的影像序列。\n测试数据：从一个包含1000个真实CT序列的大数据集中随机抽取50个序列，避免文件系统缓存干扰。\n测试场景：\n\n仅元数据读取：模拟PACS浏览器构建序列列表的场景。\n元数据+像素读取：模拟三维重建或AI算法进行完整数据加载的场景。\n\n\n测试环境配置 (请根据您的环境修改以下路径)\n\nimport multiprocessing as mp\nimport random\nimport time\nimport os\nimport pydicom\nimport dicube\nimport numpy as np\n\n# --- 配置您的数据路径 ---\ndicom_base_dir = '/data/manifest-NLST_allCT/sample_1000'\ndicube_base_dir = '/data/manifest-NLST_allCT/sample_1000_dcbs'\n# -------------------------\n\n# --- 准备测试数据 ---\nnum_processes = 10\nseries_per_process = 5\ntotal_series_needed = num_processes * series_per_process\n\nall_dicom_dirs = [d for d in os.listdir(dicom_base_dir) if os.path.isdir(os.path.join(dicom_base_dir, d))]\nrandom.seed(time.time())\nselected_series_names = random.sample(all_dicom_dirs, total_series_needed)\nprint('selected_series_names',selected_series_names)\nselected_dicom_paths = [os.path.join(dicom_base_dir, name) for name in selected_series_names]\nselected_dicube_paths = [os.path.join(dicube_base_dir, name + '.dcbs') for name in selected_series_names]\n\nselected_series_names ['0950', '0269', '0646', '0096', '0129', '0822', '0230', '0999', '0794', '0143', '0551', '0695', '0064', '0462', '0596', '0353', '0071', '0553', '0546', '0306', '0643', '0469', '0886', '0988', '0826', '0329', '0801', '0638', '0159', '0725', '0667', '0004', '0417', '0333', '0061', '0665', '0996', '0728', '0989', '0355', '0248', '0636', '0149', '0283', '0743', '0945', '0767', '0584', '0414', '0318']\n\n\n\n1. 存储空间占用对比\n在性能测试前，我们首先计算这50个被选中序列分别以DICOM和DiCube格式存储时所占用的磁盘空间。\n\ndef get_dir_size(path):\n    total = 0\n    with os.scandir(path) as it:\n        for entry in it:\n            if entry.is_file():\n                total += entry.stat().st_size\n    return total\n\ndicom_total_size = sum(get_dir_size(p) for p in selected_dicom_paths)\ndicube_total_size = sum(os.path.getsize(p) for p in selected_dicube_paths)\n\nprint(\"--- 50个随机序列存储空间对比 ---\")\nprint(f\"DICOM 格式总大小: {dicom_total_size / (1024**2):.2f} MB\")\nprint(f\"DiCube 格式总大小: {dicube_total_size / (1024**2):.2f} MB\")\nprint(f\"空间节省率: {(1 - dicube_total_size / dicom_total_size) * 100:.1f}%\")\n\n--- 50个随机序列存储空间对比 ---\nDICOM 格式总大小: 3844.81 MB\nDiCube 格式总大小: 1661.15 MB\n空间节省率: 56.8%\n\n\n\n\n2. 并发性能测试执行\n我们定义了针对四种不同场景的读取函数，并使用多进程池来模拟并发访问。\n\n# --- 读取函数定义 (Low-level, for a single item) ---\ndef read_dicom_series_meta_only(series_path):\n    files = [os.path.join(series_path, f) for f in os.listdir(series_path) if f.endswith('.dcm')]\n    for filepath in files:\n        pydicom.dcmread(filepath, stop_before_pixels=True)\n\ndef read_dicom_series_full(series_path):\n    dcm_series = [pydicom.dcmread(os.path.join(series_path, f)) for f in os.listdir(series_path) if f.endswith('.dcm')]\n    # 模拟访问像素数据\n    pixels = [ds.pixel_array for ds in dcm_series]\n    return (len(pixels), pixels[0].shape)\n\ndef read_dicube_meta_only(dcbs_path):\n    dicube.load_meta(dcbs_path)\n\ndef read_dicube_full(dcbs_path):\n    dcb_image = dicube.load(dcbs_path)\n    # 模拟访问像素数据\n    pixels = dcb_image.raw_image\n    return pixels.shape\n\n# --- NEW: Top-level worker functions that are picklable ---\n# These functions take a list of paths and process them.\ndef dicom_meta_worker(paths):\n    for path in paths:\n        read_dicom_series_meta_only(path)\n\ndef dicube_meta_worker(paths):\n    for path in paths:\n        read_dicube_meta_only(path)\n\ndef dicom_full_worker(paths):\n    for path in paths:\n        read_dicom_series_full(path)\n\ndef dicube_full_worker(paths):\n    for path in paths:\n        read_dicube_full(path)\n        \n# --- 测试执行框架 (Unchanged) ---\ndef run_performance_test(paths, worker_function, num_processes, series_per_process):\n    tasks = [paths[i*series_per_process:(i+1)*series_per_process] for i in range(num_processes)]\n    pool = mp.Pool(processes=num_processes)\n    \n    start_time = time.time()\n    # Use the worker function directly on the list of task lists\n    pool.map(worker_function, tasks)\n    end_time = time.time()\n    \n    pool.close()\n    pool.join()\n    return end_time - start_time\n        \n# --- 执行所有测试 (UPDATED to use new worker functions) ---\nprint(\"\\n--- 正在执行并发性能测试 ---\")\n# 元数据测试\ndicom_meta_time = run_performance_test(selected_dicom_paths, dicom_meta_worker, num_processes, series_per_process)\ndicube_meta_time = run_performance_test(selected_dicube_paths, dicube_meta_worker, num_processes, series_per_process)\n\n# 完整数据测试\ndicom_full_time = run_performance_test(selected_dicom_paths, dicom_full_worker, num_processes, series_per_process)\ndicube_full_time = run_performance_test(selected_dicube_paths, dicube_full_worker, num_processes, series_per_process)\n\n\n--- 正在执行并发性能测试 ---\n\n\n\n\n3. 测试结果与分析\n\nprint(\"\\n--- 并发性能测试结果 (10进程 x 5序列) ---\")\n\n# 元数据结果\nprint(\"\\n场景1: 仅读取元数据\")\nprint(f\"DICOM  总耗时: {dicom_meta_time:.2f} 秒\")\nprint(f\"DiCube 总耗时: {dicube_meta_time:.2f} 秒\")\nprint(f\"性能提升: {dicom_meta_time / dicube_meta_time:.1f} 倍\")\n\n# 完整数据结果\nprint(\"\\n场景2: 读取元数据 + 像素数据\")\nprint(f\"DICOM  总耗时: {dicom_full_time:.2f} 秒\")\nprint(f\"DiCube 总耗时: {dicube_full_time:.2f} 秒\")\nprint(f\"性能提升: {dicom_full_time / dicube_full_time:.1f} 倍\")\n\n\n--- 并发性能测试结果 (10进程 x 5序列) ---\n\n场景1: 仅读取元数据\nDICOM  总耗时: 0.48 秒\nDiCube 总耗时: 0.01 秒\n性能提升: 50.0 倍\n\n场景2: 读取元数据 + 像素数据\nDICOM  总耗时: 2.26 秒\nDiCube 总耗时: 0.97 秒\n性能提升: 2.3 倍\n\n\n测试结果清晰地表明，DiCube在两种并发场景下均展现出压倒性的性能优势。尤其是在仅读取元数据的场景中，由于避免了对大量小文件的随机访问和重复解析，性能提升最为显著。在完整数据读取场景中，单文件容器带来的高效I/O同样使DiCube大幅领先。\n值得注意的是，DiCube中的像素数据采用了高效压缩算法，即使考虑解压缩开销，其性能依然远超未压缩的DICOM文件。这种性能优势具有良好的可扩展性——随着并发度的提升，DiCube的领先幅度会进一步扩大。此外，本次测试环境为配备SSD缓存的混合硬盘，已经具备相当不错的读取性能。在纯机械硬盘或云对象存储等I/O受限的环境中，DiCube的性能优势将更加明显，差距可能会呈数量级增长。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
@@ -649,11 +649,11 @@
     ]
   },
   {
-    "objectID": "1.0_motivation.html#完整的dicom往返兼容性",
-    "href": "1.0_motivation.html#完整的dicom往返兼容性",
+    "objectID": "1.0_motivation.html#无缝集成100-dicom往返兼容性",
+    "href": "1.0_motivation.html#无缝集成100-dicom往返兼容性",
     "title": "为什么需要DiCube？",
-    "section": "完整的DICOM往返兼容性",
-    "text": "完整的DICOM往返兼容性\n医学影像领域的一个关键要求是与现有DICOM生态系统的完全兼容。DiCube虽然采用了全新的存储格式，但确保了与标准DICOM的100%往返兼容性。这意味着：\n\n无损转换：从DICOM转换为DiCube，再转换回DICOM，不会丢失任何信息\n元数据完整性：所有DICOM标签都被完整保留，包括私有标签\n像素数据一致性：像素值在往返转换后完全一致\n临床工作流兼容：DiCube文件可以随时转换回标准DICOM用于临床系统\n\n让我们通过实际测试来验证这种兼容性：\n\n# 验证往返转换\noriginal_dcb = dicube.load_from_dicom_folder(dirname)\ndicube.save(original_dcb, 'dicube-testdata/roundtrip_test.dcbs')\n\n# 转换回DICOM\nloaded_dcb = dicube.load('dicube-testdata/roundtrip_test.dcbs')\ndicube.save_to_dicom_folder(loaded_dcb, 'dicube-testdata/roundtrip_dicom')\n\n# 验证元数据完整性\noriginal_dcm = pydicom.dcmread(os.path.join(dirname, os.listdir(dirname)[0]))\nroundtrip_dcm = pydicom.dcmread('dicube-testdata/roundtrip_dicom/slice_0000.dcm')\n\nprint(\"往返转换验证:\")\nprint(f\"原始患者姓名: {original_dcm.get('PatientName', 'N/A')}\")\nprint(f\"转换后患者姓名: {roundtrip_dcm.get('PatientName', 'N/A')}\")\nprint(f\"元数据字段数量: {len(original_dcm)} → {len(roundtrip_dcm)}\")\n\n# 清理测试文件\nos.remove('dicube-testdata/roundtrip_test.dcbs')\n\n往返转换验证:\n原始患者姓名: Anonymous\n转换后患者姓名: Anonymous\n元数据字段数量: 196 → 196",
+    "section": "无缝集成：100% DICOM往返兼容性",
+    "text": "无缝集成：100% DICOM往返兼容性\nDiCube设计的关键原则之一是与现有DICOM生态的完全兼容。这通过100%无损的往返转换能力来保证：\n\n无损转换：从DICOM到DiCube，再转换回DICOM，像素数据和元数据均无任何信息损失。\n元数据完整性：所有标准及私有DICOM标签都被完整保留。\n临床工作流兼容：可随时将.dcbs文件导出为标准DICOM文件集，用于PACS归档或与旧系统交互。\n\n以下代码验证了多个关键字段在转换前后的一致性。\n\nimport shutil\n\n# 使用之前加载的 dcb_image 对象\nroundtrip_dicom_dir = 'dicube-testdata/roundtrip_dicom'\ndicube.save_to_dicom_folder(dcb_image, roundtrip_dicom_dir)\n\n# 读取原始DICOM文件和转换后的DICOM文件进行对比\noriginal_dcm_path = os.path.join(dicom_dir, os.listdir(dicom_dir)[0])\noriginal_dcm = pydicom.dcmread(original_dcm_path)\n\nroundtrip_dcm_path = os.path.join(roundtrip_dicom_dir, 'slice_0000.dcm')\nroundtrip_dcm = pydicom.dcmread(roundtrip_dcm_path)\n\nprint(\"\\n--- 往返转换验证 ---\")\nfields_to_check = [\n    'PatientName', 'StudyInstanceUID', 'SeriesDescription', \n    'ImageOrientationPatient', 'PixelSpacing'\n]\n\nfor tag in fields_to_check:\n    original_value = original_dcm.get(tag, 'N/A')\n    roundtrip_value = roundtrip_dcm.get(tag, 'N/A')\n    print(f\"字段: {tag}\")\n    print(f\"  - 原始值: {original_value}\")\n    print(f\"  - 转换后: {roundtrip_value}\")\n    # 使用 numpy.allclose 进行浮点数组比较\n    if isinstance(original_value, (pydicom.multival.MultiValue, list)):\n        are_equal = np.allclose(np.array(original_value, dtype=float), np.array(roundtrip_value, dtype=float))\n    else:\n        are_equal = (original_value == roundtrip_value)\n    print(f\"  - 是否一致: {are_equal}\")\n    print(\"-\" * 20)\n\nprint(f\"元数据字段总数对比: {len(original_dcm)} (原始) vs {len(roundtrip_dcm)} (转换后)\")\n\n# 清理测试文件\nos.remove(dcbs_file)\nshutil.rmtree(roundtrip_dicom_dir)\n\n\n--- 往返转换验证 ---\n字段: PatientName\n  - 原始值: Anonymous\n  - 转换后: Anonymous\n  - 是否一致: True\n--------------------\n字段: StudyInstanceUID\n  - 原始值: 1.3.46.670589.50.2.37266317681035895631.31745749383280305035\n  - 转换后: 1.3.46.670589.50.2.37266317681035895631.31745749383280305035\n  - 是否一致: True\n--------------------\n字段: SeriesDescription\n  - 原始值: MonoE 90keV[HU] 90\n  - 转换后: MonoE 90keV[HU] 90\n  - 是否一致: True\n--------------------\n字段: ImageOrientationPatient\n  - 原始值: [1, 0, 0, 0, 1, 0]\n  - 转换后: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]\n  - 是否一致: True\n--------------------\n字段: PixelSpacing\n  - 原始值: [0.4296875, 0.4296875]\n  - 转换后: [0.4296875, 0.4296875]\n  - 是否一致: True\n--------------------\n元数据字段总数对比: 196 (原始) vs 196 (转换后)",
     "crumbs": [
       "首页",
       "DiCube 核心技术",
@@ -661,11 +661,11 @@
     ]
   },
   {
-    "objectID": "1.0_motivation.html#总结从痛点到解决方案",
-    "href": "1.0_motivation.html#总结从痛点到解决方案",
+    "objectID": "1.0_motivation.html#总结从性能瓶颈到技术赋能",
+    "href": "1.0_motivation.html#总结从性能瓶颈到技术赋能",
     "title": "为什么需要DiCube？",
-    "section": "总结：从痛点到解决方案",
-    "text": "总结：从痛点到解决方案\n通过以上分析和实测，我们可以清楚地看到DICOM格式在现代医学影像工作流中遇到的挑战，以及DiCube如何系统性地解决这些问题：\n\n\n\n\n\n\n\n\n\n问题领域\nDICOM的局限性\nDiCube的解决方案\n性能提升\n\n\n\n\n文件管理\n数百个碎片文件，随机IO瓶颈\n单文件容器设计\n并发访问性能提升3-10倍\n\n\n元数据处理\n大量冗余，顺序解析\n智能去重+索引化查询\n元数据访问速度提升10-50倍\n\n\n存储效率\n无标准压缩，空间浪费\nHTJ2K高效编解码\n存储空间节省50-70%\n\n\n质量控制\n缺乏内置约束机制\n内置一致性检查\n减少数据质量问题90%\n\n\n工作流集成\n解析和转换成本高\n现代数据结构\n集成开发效率提升5倍\n\n\n临床兼容性\n原生格式但效率低\n100%往返兼容\n既保持兼容又获得性能\n\n\n\nDiCube的价值主张：\n\n即时收益：现有DICOM工作流可以立即获得显著的性能提升，无需修改业务逻辑\n未来可扩展：为AI训练、实时处理、大规模并发等现代应用场景奠定技术基础\n\n零风险迁移：完整的往返兼容性确保可以随时回退到标准DICOM\n渐进式采用：可以在现有系统中逐步引入，不需要全盘替换\n\n在典型的医学影像工作站部署中，DiCube将CT序列加载时间从150毫秒减少到40毫秒以下，将存储空间减少至原来的30-50%，同时完全保持DICOM的临床保真度。这种改进对于提升用户体验、减少硬件成本、支持更复杂的AI应用都具有重要价值。\n需要注意的是，DiCube目前提供的.dcbs格式已经能够满足绝大多数应用场景的需求。未来我们还计划推出.dcba（Archive，更高压缩比）和.dcbl（Lossy，可接受质量损失的超高压缩比）格式，为不同的使用场景提供更优化的选择。",
+    "section": "总结：从性能瓶颈到技术赋能",
+    "text": "总结：从性能瓶颈到技术赋能\nDiCube通过系统性的结构优化，为解决DICOM在现代工作流中的核心挑战提供了有效方案。\n\n\n\n\n\n\n\n\n\n问题领域\nDICOM的局限性\nDiCube的解决方案\n性能提升\n\n\n\n\n文件管理\n大量碎片文件，并发I/O瓶颈\n单文件容器设计\n并发访问性能提升 3-10倍\n\n\n元数据处理\n冗余存储，顺序解析\n智能去重与索引化查询\n元数据访问速度提升 10-50倍\n\n\n存储效率\n无高效标准压缩\n集成HTJ2K高效编解码\n存储空间节省 50-70%\n\n\n工作流集成\n解析转换逻辑复杂\n现代化的API与数据结构\n显著提升集成开发效率\n\n\n\nDiCube的核心价值：\n\n即时性能收益：无需修改上层业务逻辑，即可获得显著的I/O和处理性能提升。\n赋能未来应用：为AI训练、实时分析、大规模并发等下一代应用场景奠定坚实的数据基础。\n零风险迁移路径：完整的往返兼容性确保了与现有DICOM生态的无缝集成和随时回退的能力。\n\n通过在工作流中引入DiCube作为高性能的中间格式，开发团队可以更专注于业务逻辑创新，而不是耗费精力去规避底层数据格式的性能陷阱。这不仅能提升当前系统的用户体验，更能为未来的技术演进提供强大的支持。",
     "crumbs": [
       "首页",
       "DiCube 核心技术",

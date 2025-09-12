@@ -265,7 +265,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dicube的轴序”</span></a>
+ <span class="menu-text">Dicube的轴序</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -309,19 +309,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">该页面内容</h2>
    
   <ul>
-  <li><a href="#欢迎来到-fastdiag-toolkit-文档" id="toc-欢迎来到-fastdiag-toolkit-文档" class="nav-link active" data-scroll-target="#欢迎来到-fastdiag-toolkit-文档">欢迎来到 FastDiag Toolkit 文档</a>
+  <li><a href="#问题背景" id="toc-问题背景" class="nav-link active" data-scroll-target="#问题背景">问题背景</a></li>
+  <li><a href="#解决方案" id="toc-解决方案" class="nav-link" data-scroll-target="#解决方案">解决方案</a>
   <ul class="collapse">
-  <li><a href="#dicube下一代医学影像存储格式" id="toc-dicube下一代医学影像存储格式" class="nav-link" data-scroll-target="#dicube下一代医学影像存储格式">🎯 DiCube：下一代医学影像存储格式</a></li>
-  <li><a href="#medmask专业医学掩膜处理" id="toc-medmask专业医学掩膜处理" class="nav-link" data-scroll-target="#medmask专业医学掩膜处理">🎭 MedMask：专业医学掩膜处理</a></li>
+  <li><a href="#dicube---医学影像存储库" id="toc-dicube---医学影像存储库" class="nav-link" data-scroll-target="#dicube---医学影像存储库">📦 DiCube - 医学影像存储库</a></li>
+  <li><a href="#medmask---医学掩膜处理库" id="toc-medmask---医学掩膜处理库" class="nav-link" data-scroll-target="#medmask---医学掩膜处理库">🎭 MedMask - 医学掩膜处理库</a></li>
+  <li><a href="#spacetransformer---3d-空间变换库" id="toc-spacetransformer---3d-空间变换库" class="nav-link" data-scroll-target="#spacetransformer---3d-空间变换库">🌐 SpaceTransformer - 3D 空间变换库</a></li>
   </ul></li>
-  <li><a href="#文档导航" id="toc-文档导航" class="nav-link" data-scroll-target="#文档导航">📚 文档导航</a>
+  <li><a href="#安装方法" id="toc-安装方法" class="nav-link" data-scroll-target="#安装方法">安装方法</a></li>
+  <li><a href="#快速使用示例" id="toc-快速使用示例" class="nav-link" data-scroll-target="#快速使用示例">快速使用示例</a></li>
+  <li><a href="#详细文档" id="toc-详细文档" class="nav-link" data-scroll-target="#详细文档">详细文档</a>
   <ul class="collapse">
-  <li><a href="#dicube-核心技术" id="toc-dicube-核心技术" class="nav-link" data-scroll-target="#dicube-核心技术">DiCube 核心技术</a></li>
-  <li><a href="#medmask-技术" id="toc-medmask-技术" class="nav-link" data-scroll-target="#medmask-技术">MedMask 技术</a></li>
+  <li><a href="#dicube-技术文档" id="toc-dicube-技术文档" class="nav-link" data-scroll-target="#dicube-技术文档">DiCube 技术文档</a></li>
+  <li><a href="#medmask-技术文档" id="toc-medmask-技术文档" class="nav-link" data-scroll-target="#medmask-技术文档">MedMask 技术文档</a></li>
   </ul></li>
-  <li><a href="#快速开始" id="toc-快速开始" class="nav-link" data-scroll-target="#快速开始">🚀 快速开始</a></li>
-  <li><a href="#贡献与支持" id="toc-贡献与支持" class="nav-link" data-scroll-target="#贡献与支持">🤝 贡献与支持</a></li>
-  <li><a href="#许可证" id="toc-许可证" class="nav-link" data-scroll-target="#许可证">📄 许可证</a></li>
   </ul>
 </nav>
     </div>
@@ -348,85 +349,90 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="欢迎来到-fastdiag-toolkit-文档" class="level2">
-<h2 class="anchored" data-anchor-id="欢迎来到-fastdiag-toolkit-文档">欢迎来到 FastDiag Toolkit 文档</h2>
-<p>FastDiag Toolkit 是一个专为医学影像处理设计的高效工具包，主要包含两个核心组件：</p>
-<section id="dicube下一代医学影像存储格式" class="level3">
-<h3 class="anchored" data-anchor-id="dicube下一代医学影像存储格式">🎯 DiCube：下一代医学影像存储格式</h3>
-<p>DiCube 是一个革命性的医学影像存储方案，旨在解决传统DICOM格式在现代医疗应用中面临的性能瓶颈。</p>
-<p><strong>核心特性：</strong></p>
+<section id="问题背景" class="level2">
+<h2 class="anchored" data-anchor-id="问题背景">问题背景</h2>
+<p>传统医学影像处理面临着严重的性能瓶颈：</p>
 <ul>
-<li><strong>高效压缩</strong>：基于HTJ2K技术，实现更优的压缩比和处理速度</li>
-<li><strong>流式读取</strong>：支持按需访问，无需加载完整数据集</li>
-<li><strong>DICOM兼容</strong>：完全兼容现有PACS系统和工作流</li>
-<li><strong>元数据优化</strong>：智能存储和检索医学影像元信息</li>
+<li><strong>DICOM 碎片化存储</strong>：单个 CT/MR 研究包含数百个小文件，I/O 效率低下</li>
+<li><strong>元数据冗余</strong>：每个切片重复相同的患者/研究信息，浪费存储空间</li>
+<li><strong>坐标系统混乱</strong>：缺乏统一的 3D 空间变换处理方案</li>
+<li><strong>掩膜处理效率低</strong>：分割结果存储和处理缺乏专门优化</li>
 </ul>
 </section>
-<section id="medmask专业医学掩膜处理" class="level3">
-<h3 class="anchored" data-anchor-id="medmask专业医学掩膜处理">🎭 MedMask：专业医学掩膜处理</h3>
-<p>MedMask 提供了完整的医学影像分割掩膜处理解决方案，支持高效的存储、压缩和操作。</p>
-<p><strong>主要功能：</strong></p>
-<ul>
-<li><strong>智能压缩</strong>：针对医学掩膜特点优化的压缩算法</li>
-<li><strong>多格式支持</strong>：兼容主流医学影像格式</li>
-<li><strong>高性能操作</strong>：优化的掩膜计算和变换操作</li>
-<li><strong>内存友好</strong>：大规模数据集的高效内存管理</li>
-</ul>
+<section id="解决方案" class="level2">
+<h2 class="anchored" data-anchor-id="解决方案">解决方案</h2>
+<p>FastDiag Toolkit 提供三个核心库来解决这些问题：</p>
+<section id="dicube---医学影像存储库" class="level3">
+<h3 class="anchored" data-anchor-id="dicube---医学影像存储库">📦 DiCube - 医学影像存储库</h3>
+<p>高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。</p>
+<p><strong>核心特性：</strong> - 单文件存储（.dcbs），消除文件系统开销 - HTJ2K 无损压缩，3倍存储压缩，5倍速度提升 - 元数据去重，减少冗余信息 - 完整 DICOM 往返转换支持</p>
+<p><strong>GitHub：</strong> https://github.com/fastdiag-toolbox/dicube</p>
+</section>
+<section id="medmask---医学掩膜处理库" class="level3">
+<h3 class="anchored" data-anchor-id="medmask---医学掩膜处理库">🎭 MedMask - 医学掩膜处理库</h3>
+<p>专业的医学影像分割掩膜压缩和处理解决方案。</p>
+<p><strong>核心特性：</strong> - 50+ 倍压缩比（Zstandard 算法） - 16 倍读取速度提升 - 支持多粒度器官组合和重叠掩膜</p>
+<p><strong>GitHub：</strong> https://github.com/DicomCube/medmask</p>
+</section>
+<section id="spacetransformer---3d-空间变换库" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer---3d-空间变换库">🌐 SpaceTransformer - 3D 空间变换库</h3>
+<p>优雅的 3D 医学影像几何变换处理方案。</p>
+<p><strong>核心特性：</strong> - 完整的 3D 空间几何描述（Space 概念） - 可组合的空间变换操作 - GPU 加速的图像重采样 - 与深度学习框架无缝集成</p>
+<p><strong>GitHub：</strong> https://github.com/fastdiag-toolbox/spacetransformer-core <strong>GitHub：</strong> https://github.com/fastdiag-toolbox/spacetransformer-torch</p>
 </section>
 </section>
-<section id="文档导航" class="level2">
-<h2 class="anchored" data-anchor-id="文档导航">📚 文档导航</h2>
-<section id="dicube-核心技术" class="level3">
-<h3 class="anchored" data-anchor-id="dicube-核心技术">DiCube 核心技术</h3>
+<section id="安装方法" class="level2">
+<h2 class="anchored" data-anchor-id="安装方法">安装方法</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分别安装各个库</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install dicube</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install medmask</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install spacetransformer-core</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install spacetransformer-torch  <span class="co"># GPU 加速版本</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="快速使用示例" class="level2">
+<h2 class="anchored" data-anchor-id="快速使用示例">快速使用示例</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DiCube：DICOM 到高效存储格式</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> dicube.load_from_dicom_folder(<span class="st">'dicom_folder/'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>dicube.save(image, <span class="st">'output.dcbs'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># MedMask：掩膜压缩存储</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> medmask</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> medmask.SegmentationMask(data, {<span class="st">"liver"</span>: <span class="dv">1</span>}, space<span class="op">=</span>space)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>mask.save(<span class="st">'liver.msk'</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># SpaceTransformer：3D 空间变换</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.torch <span class="im">import</span> warp_image</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>target_space <span class="op">=</span> space.apply_flip(axis<span class="op">=</span><span class="dv">2</span>).apply_shape((<span class="dv">256</span>, <span class="dv">256</span>, <span class="dv">50</span>))</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> warp_image(image, space, target_space)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="详细文档" class="level2">
+<h2 class="anchored" data-anchor-id="详细文档">详细文档</h2>
+<p>深入了解各个库的技术细节和使用方法（未完成）：</p>
+<section id="dicube-技术文档" class="level3">
+<h3 class="anchored" data-anchor-id="dicube-技术文档">DiCube 技术文档</h3>
 <ol type="1">
-<li><a href="./1.0_motivation.html"><strong>设计动机</strong></a> - 了解DiCube诞生的背景和解决的问题</li>
-<li><a href="./1.1_vs_nifti.html"><strong>与NIfTI格式对比</strong></a> - 深入对比分析不同存储格式的优劣</li>
-<li><a href="./1.2_meta_storage.html"><strong>元数据存储</strong></a> - 探索高效的医学影像元数据管理</li>
-<li><a href="./1.3_dicom_status.html"><strong>DICOM状态分析</strong></a> - 现有DICOM格式的技术分析</li>
-<li><a href="./1.4_sort_method.html"><strong>排序方法</strong></a> - 医学影像序列的智能排序算法</li>
-<li><a href="./1.5_axis_order.html"><strong>轴序约定</strong></a> - 标准化的坐标系统和轴序定义</li>
-<li><a href="./1.6_dicom_compatibility_simple.html"><strong>DICOM兼容性</strong></a> - 与现有系统的无缝集成方案</li>
+<li><a href="./1.0_motivation.html"><strong>设计动机</strong></a> - 为什么需要新的医学影像存储格式</li>
+<li><a href="./1.1_vs_nifti.html"><strong>与 NIfTI 对比</strong></a> - 不同存储格式的优劣分析</li>
+<li><a href="./1.2_meta_storage.html"><strong>元数据存储</strong></a> - 高效的医学影像元数据管理</li>
+<li><a href="./1.3_dicom_status.html"><strong>DICOM 状态分析</strong></a> - DICOM 格式的技术分析</li>
+<li><a href="./1.4_sort_method.html"><strong>排序方法</strong></a> - 医学影像序列的智能排序</li>
+<li><a href="./1.5_axis_order.html"><strong>轴序约定</strong></a> - 标准化的坐标系统定义</li>
+<li><a href="./1.6_dicom_compatibility_simple.html"><strong>DICOM 兼容性</strong></a> - 与现有系统的集成</li>
 </ol>
 </section>
-<section id="medmask-技术" class="level3">
-<h3 class="anchored" data-anchor-id="medmask-技术">MedMask 技术</h3>
+<section id="medmask-技术文档" class="level3">
+<h3 class="anchored" data-anchor-id="medmask-技术文档">MedMask 技术文档</h3>
 <ol type="1">
-<li><a href="./2.0_mask.html"><strong>掩膜处理基础</strong></a> - MedMask的核心概念和基础操作</li>
-<li><a href="./2.1_mask_compression.html"><strong>掩膜压缩技术</strong></a> - 先进的医学掩膜压缩算法</li>
+<li><a href="./2.0_mask.html"><strong>掩膜处理基础</strong></a> - MedMask 的核心概念</li>
+<li><a href="./2.1_mask_compression.html"><strong>掩膜压缩技术</strong></a> - 先进的压缩算法</li>
 </ol>
-</section>
-</section>
-<section id="快速开始" class="level2">
-<h2 class="anchored" data-anchor-id="快速开始">🚀 快速开始</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装FastDiag Toolkit</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pip install fastdiag<span class="op">-</span>toolkit</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># DiCube基础使用</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(<span class="st">'dicom_folder/'</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, <span class="st">'output.dcbs'</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># MedMask基础使用</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> medmask</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> medmask.load(<span class="st">'segmentation.msk'</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>processed_mask <span class="op">=</span> mask.apply_threshold(<span class="fl">0.5</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="贡献与支持" class="level2">
-<h2 class="anchored" data-anchor-id="贡献与支持">🤝 贡献与支持</h2>
-<p>这个项目是开源的，我们欢迎社区的贡献和反馈。如果你在使用过程中遇到问题或有改进建议，请：</p>
-<ul>
-<li>📝 提交Issue报告问题</li>
-<li>🔧 提交Pull Request贡献代码</li>
-<li>💬 参与讨论分享经验</li>
-</ul>
-</section>
-<section id="许可证" class="level2">
-<h2 class="anchored" data-anchor-id="许可证">📄 许可证</h2>
-<p>本项目采用开源许可证，详细信息请查看项目仓库。</p>
 <hr>
-<p><em>文档最后更新：<strong>?meta:date</strong></em></p>
+<p><em>如需技术支持或贡献代码，请访问相应的 GitHub 仓库</em></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
