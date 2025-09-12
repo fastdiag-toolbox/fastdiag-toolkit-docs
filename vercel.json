@@ -2,12 +2,6 @@
   "outputDirectory": "_site",
   "cleanUrls": false,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/([^.]+)",
-      "destination": "/$1.html"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
