@@ -3,80 +3,104 @@ title: "FastDiag Toolkit"
 subtitle: "高效的医学影像处理工具包"
 ---
 
-## 欢迎来到 FastDiag Toolkit 文档
+## 问题背景
 
-FastDiag Toolkit 是一个专为医学影像处理设计的高效工具包，主要包含两个核心组件：
+传统医学影像处理面临着严重的性能瓶颈：
 
-### 🎯 DiCube：下一代医学影像存储格式
+- **DICOM 碎片化存储**：单个 CT/MR 研究包含数百个小文件，I/O 效率低下
+- **元数据冗余**：每个切片重复相同的患者/研究信息，浪费存储空间
+- **坐标系统混乱**：缺乏统一的 3D 空间变换处理方案
+- **掩膜处理效率低**：分割结果存储和处理缺乏专门优化
 
-DiCube 是一个革命性的医学影像存储方案，旨在解决传统DICOM格式在现代医疗应用中面临的性能瓶颈。
+## 解决方案
+
+FastDiag Toolkit 提供三个核心库来解决这些问题：
+
+### 📦 DiCube - 医学影像存储库
+
+高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。
 
 **核心特性：**
+- 单文件存储（.dcbs），消除文件系统开销
+- HTJ2K 无损压缩，3倍存储压缩，5倍速度提升
+- 元数据去重，减少冗余信息
+- 完整 DICOM 往返转换支持
 
-- **高效压缩**：基于HTJ2K技术，实现更优的压缩比和处理速度
-- **流式读取**：支持按需访问，无需加载完整数据集
-- **DICOM兼容**：完全兼容现有PACS系统和工作流
-- **元数据优化**：智能存储和检索医学影像元信息
+**GitHub：** https://github.com/fastdiag-toolbox/dicube
 
-### 🎭 MedMask：专业医学掩膜处理
+### 🎭 MedMask - 医学掩膜处理库
 
-MedMask 提供了完整的医学影像分割掩膜处理解决方案，支持高效的存储、压缩和操作。
+专业的医学影像分割掩膜压缩和处理解决方案。
 
-**主要功能：**
+**核心特性：**
+- 50+ 倍压缩比（Zstandard 算法）
+- 16 倍读取速度提升
+- 支持多粒度器官组合和重叠掩膜
 
-- **智能压缩**：针对医学掩膜特点优化的压缩算法
-- **多格式支持**：兼容主流医学影像格式
-- **高性能操作**：优化的掩膜计算和变换操作
-- **内存友好**：大规模数据集的高效内存管理
+**GitHub：** https://github.com/DicomCube/medmask
 
-## 📚 文档导航
+### 🌐 SpaceTransformer - 3D 空间变换库
 
-### DiCube 核心技术
+优雅的 3D 医学影像几何变换处理方案。
 
-1. [**设计动机**](1.0_motivation.qmd) - 了解DiCube诞生的背景和解决的问题
-2. [**与NIfTI格式对比**](1.1_vs_nifti.qmd) - 深入对比分析不同存储格式的优劣
-3. [**元数据存储**](1.2_meta_storage.qmd) - 探索高效的医学影像元数据管理
-4. [**DICOM状态分析**](1.3_dicom_status.qmd) - 现有DICOM格式的技术分析
-5. [**排序方法**](1.4_sort_method.qmd) - 医学影像序列的智能排序算法
-6. [**轴序约定**](1.5_axis_order.qmd) - 标准化的坐标系统和轴序定义
-7. [**DICOM兼容性**](1.6_dicom_compatibility_simple.qmd) - 与现有系统的无缝集成方案
+**核心特性：**
+- 完整的 3D 空间几何描述（Space 概念）
+- 可组合的空间变换操作
+- GPU 加速的图像重采样
+- 与深度学习框架无缝集成
 
-### MedMask 技术
+**GitHub：** https://github.com/fastdiag-toolbox/spacetransformer-core
+**GitHub：** https://github.com/fastdiag-toolbox/spacetransformer-torch
 
-1. [**掩膜处理基础**](2.0_mask.qmd) - MedMask的核心概念和基础操作
-2. [**掩膜压缩技术**](2.1_mask_compression.qmd) - 先进的医学掩膜压缩算法
+## 安装方法
 
-## 🚀 快速开始
-
-```python
-# 安装FastDiag Toolkit
-pip install fastdiag-toolkit
-
-# DiCube基础使用
-import dicube
-dcb_image = dicube.load_from_dicom_folder('dicom_folder/')
-dicube.save(dcb_image, 'output.dcbs')
-
-# MedMask基础使用
-import medmask
-mask = medmask.load('segmentation.msk')
-processed_mask = mask.apply_threshold(0.5)
+```bash
+# 分别安装各个库
+pip install dicube
+pip install medmask
+pip install spacetransformer-core
+pip install spacetransformer-torch  # GPU 加速版本
 ```
 
-## 🤝 贡献与支持
+## 快速使用示例
 
-这个项目是开源的，我们欢迎社区的贡献和反馈。如果你在使用过程中遇到问题或有改进建议，请：
+```python
+# DiCube：DICOM 到高效存储格式
+import dicube
+image = dicube.load_from_dicom_folder('dicom_folder/')
+dicube.save(image, 'output.dcbs')
 
-- 📝 提交Issue报告问题
-- 🔧 提交Pull Request贡献代码
-- 💬 参与讨论分享经验
+# MedMask：掩膜压缩存储
+import medmask
+mask = medmask.SegmentationMask(data, {"liver": 1}, space=space)
+mask.save('liver.msk')
 
-## 📄 许可证
+# SpaceTransformer：3D 空间变换
+from spacetransformer.core import Space
+from spacetransformer.torch import warp_image
+target_space = space.apply_flip(axis=2).apply_shape((256, 256, 50))
+result = warp_image(image, space, target_space)
+```
 
-本项目采用开源许可证，详细信息请查看项目仓库。
+## 详细文档
+
+深入了解各个库的技术细节和使用方法（未完成）：
+
+### DiCube 技术文档
+1. [**设计动机**](1.0_motivation.qmd) - 为什么需要新的医学影像存储格式
+2. [**与 NIfTI 对比**](1.1_vs_nifti.qmd) - 不同存储格式的优劣分析
+3. [**元数据存储**](1.2_meta_storage.qmd) - 高效的医学影像元数据管理
+4. [**DICOM 状态分析**](1.3_dicom_status.qmd) - DICOM 格式的技术分析
+5. [**排序方法**](1.4_sort_method.qmd) - 医学影像序列的智能排序
+6. [**轴序约定**](1.5_axis_order.qmd) - 标准化的坐标系统定义
+7. [**DICOM 兼容性**](1.6_dicom_compatibility_simple.qmd) - 与现有系统的集成
+
+### MedMask 技术文档
+1. [**掩膜处理基础**](2.0_mask.qmd) - MedMask 的核心概念
+2. [**掩膜压缩技术**](2.1_mask_compression.qmd) - 先进的压缩算法
 
 ---
 
-*文档最后更新：{{< meta date >}}*
+*如需技术支持或贡献代码，请访问相应的 GitHub 仓库*
 
 
