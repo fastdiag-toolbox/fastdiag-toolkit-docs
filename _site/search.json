@@ -181,7 +181,7 @@
     "href": "index.html#解决方案",
     "title": "FastDiag Toolkit",
     "section": "解决方案",
-    "text": "解决方案\nFastDiag Toolkit 提供三个核心库来解决这些问题：\n\n📦 DiCube - 医学影像存储库\n高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。\n核心特性： - 单文件存储（.dcbs），消除文件系统开销 - HTJ2K 无损压缩，3倍存储压缩，5倍速度提升 - 元数据去重，减少冗余信息 - 完整 DICOM 往返转换支持\nGitHub： https://github.com/fastdiag-toolbox/dicube\n\n\n🎭 MedMask - 医学掩膜处理库\n专业的医学影像分割掩膜压缩和处理解决方案。\n核心特性： - 50+ 倍压缩比（Zstandard 算法） - 16 倍读取速度提升 - 支持多粒度器官组合和重叠掩膜\nGitHub： https://github.com/DicomCube/medmask\n\n\n🌐 SpaceTransformer - 3D 空间变换库\n优雅的 3D 医学影像几何变换处理方案。\n核心特性： - 完整的 3D 空间几何描述（Space 概念） - 可组合的空间变换操作 - GPU 加速的图像重采样 - 与深度学习框架无缝集成\nGitHub： https://github.com/fastdiag-toolbox/spacetransformer-core GitHub： https://github.com/fastdiag-toolbox/spacetransformer-torch"
+    "text": "解决方案\nFastDiag Toolkit 提供三个核心库来解决这些问题：\n\n📦 DiCube - 医学影像存储库\n高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。\n核心特性：\n\n单文件存储（.dcbs），消除文件系统开销\nHTJ2K 无损压缩，3倍存储压缩，5倍速度提升\n元数据去重，减少冗余信息\n完整 DICOM 往返转换支持\n\nGitHub： https://github.com/fastdiag-toolbox/dicube\n\n\n🎭 MedMask - 医学掩膜处理库\n专业的医学影像分割掩膜压缩和处理解决方案。\n核心特性：\n\n50+ 倍压缩比（Zstandard 算法）\n16 倍读取速度提升\n支持多粒度器官组合和重叠掩膜\n\nGitHub： https://github.com/fastdiag-toolbox/medmask\n\n\n🌐 SpaceTransformer - 3D 空间变换库\n优雅的 3D 医学影像几何变换处理方案。\n核心特性：\n\n完整的 3D 空间几何描述（Space 概念）\n可组合的空间变换操作\nGPU 加速的图像重采样\n与深度学习框架无缝集成\n\nGitHub：\n\nhttps://github.com/fastdiag-toolbox/spacetransformer-core\nhttps://github.com/fastdiag-toolbox/spacetransformer-torch"
   },
   {
     "objectID": "index.html#安装方法",
@@ -202,7 +202,7 @@
     "href": "index.html#详细文档",
     "title": "FastDiag Toolkit",
     "section": "详细文档",
-    "text": "详细文档\n深入了解各个库的技术细节和使用方法（未完成）：\n\nDiCube 技术文档\n\n设计动机 - 为什么需要新的医学影像存储格式\n与 NIfTI 对比 - 不同存储格式的优劣分析\n元数据存储 - 高效的医学影像元数据管理\nDICOM 状态分析 - DICOM 格式的技术分析\n排序方法 - 医学影像序列的智能排序\n轴序约定 - 标准化的坐标系统定义\nDICOM 兼容性 - 与现有系统的集成\n\n\n\nMedMask 技术文档\n\n掩膜处理基础 - MedMask 的核心概念\n掩膜压缩技术 - 先进的压缩算法\n\n\n如需技术支持或贡献代码，请访问相应的 GitHub 仓库"
+    "text": "详细文档\n欢迎查看左侧导航栏中的相关技术文档，深入了解各个库的实现细节和使用方法。\n\n如需技术支持或贡献代码，请访问相应的 GitHub 仓库"
   },
   {
     "objectID": "1.1_vs_nifti.html",

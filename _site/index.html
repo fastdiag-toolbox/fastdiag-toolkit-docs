@@ -318,11 +318,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#安装方法" id="toc-安装方法" class="nav-link" data-scroll-target="#安装方法">安装方法</a></li>
   <li><a href="#快速使用示例" id="toc-快速使用示例" class="nav-link" data-scroll-target="#快速使用示例">快速使用示例</a></li>
-  <li><a href="#详细文档" id="toc-详细文档" class="nav-link" data-scroll-target="#详细文档">详细文档</a>
-  <ul class="collapse">
-  <li><a href="#dicube-技术文档" id="toc-dicube-技术文档" class="nav-link" data-scroll-target="#dicube-技术文档">DiCube 技术文档</a></li>
-  <li><a href="#medmask-技术文档" id="toc-medmask-技术文档" class="nav-link" data-scroll-target="#medmask-技术文档">MedMask 技术文档</a></li>
-  </ul></li>
+  <li><a href="#详细文档" id="toc-详细文档" class="nav-link" data-scroll-target="#详细文档">详细文档</a></li>
   </ul>
 </nav>
     </div>
@@ -365,20 +361,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="dicube---医学影像存储库" class="level3">
 <h3 class="anchored" data-anchor-id="dicube---医学影像存储库">📦 DiCube - 医学影像存储库</h3>
 <p>高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。</p>
-<p><strong>核心特性：</strong> - 单文件存储（.dcbs），消除文件系统开销 - HTJ2K 无损压缩，3倍存储压缩，5倍速度提升 - 元数据去重，减少冗余信息 - 完整 DICOM 往返转换支持</p>
-<p><strong>GitHub：</strong> https://github.com/fastdiag-toolbox/dicube</p>
+<p><strong>核心特性：</strong></p>
+<ul>
+<li>单文件存储（.dcbs），消除文件系统开销</li>
+<li>HTJ2K 无损压缩，3倍存储压缩，5倍速度提升</li>
+<li>元数据去重，减少冗余信息</li>
+<li>完整 DICOM 往返转换支持</li>
+</ul>
+<p><strong>GitHub：</strong> <a href="https://github.com/fastdiag-toolbox/dicube">https://github.com/fastdiag-toolbox/dicube</a></p>
 </section>
 <section id="medmask---医学掩膜处理库" class="level3">
 <h3 class="anchored" data-anchor-id="medmask---医学掩膜处理库">🎭 MedMask - 医学掩膜处理库</h3>
 <p>专业的医学影像分割掩膜压缩和处理解决方案。</p>
-<p><strong>核心特性：</strong> - 50+ 倍压缩比（Zstandard 算法） - 16 倍读取速度提升 - 支持多粒度器官组合和重叠掩膜</p>
-<p><strong>GitHub：</strong> https://github.com/DicomCube/medmask</p>
+<p><strong>核心特性：</strong></p>
+<ul>
+<li>50+ 倍压缩比（Zstandard 算法）</li>
+<li>16 倍读取速度提升</li>
+<li>支持多粒度器官组合和重叠掩膜</li>
+</ul>
+<p><strong>GitHub：</strong> <a href="https://github.com/fastdiag-toolbox/medmask">https://github.com/fastdiag-toolbox/medmask</a></p>
 </section>
 <section id="spacetransformer---3d-空间变换库" class="level3">
 <h3 class="anchored" data-anchor-id="spacetransformer---3d-空间变换库">🌐 SpaceTransformer - 3D 空间变换库</h3>
 <p>优雅的 3D 医学影像几何变换处理方案。</p>
-<p><strong>核心特性：</strong> - 完整的 3D 空间几何描述（Space 概念） - 可组合的空间变换操作 - GPU 加速的图像重采样 - 与深度学习框架无缝集成</p>
-<p><strong>GitHub：</strong> https://github.com/fastdiag-toolbox/spacetransformer-core <strong>GitHub：</strong> https://github.com/fastdiag-toolbox/spacetransformer-torch</p>
+<p><strong>核心特性：</strong></p>
+<ul>
+<li>完整的 3D 空间几何描述（Space 概念）</li>
+<li>可组合的空间变换操作</li>
+<li>GPU 加速的图像重采样</li>
+<li>与深度学习框架无缝集成</li>
+</ul>
+<p><strong>GitHub：</strong></p>
+<ul>
+<li><p><a href="https://github.com/fastdiag-toolbox/spacetransformer-core">https://github.com/fastdiag-toolbox/spacetransformer-core</a></p></li>
+<li><p><a href="https://github.com/fastdiag-toolbox/spacetransformer-torch">https://github.com/fastdiag-toolbox/spacetransformer-torch</a></p></li>
+</ul>
 </section>
 </section>
 <section id="安装方法" class="level2">
@@ -409,30 +426,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="详细文档" class="level2">
 <h2 class="anchored" data-anchor-id="详细文档">详细文档</h2>
-<p>深入了解各个库的技术细节和使用方法（未完成）：</p>
-<section id="dicube-技术文档" class="level3">
-<h3 class="anchored" data-anchor-id="dicube-技术文档">DiCube 技术文档</h3>
-<ol type="1">
-<li><a href="./1.0_motivation.html"><strong>设计动机</strong></a> - 为什么需要新的医学影像存储格式</li>
-<li><a href="./1.1_vs_nifti.html"><strong>与 NIfTI 对比</strong></a> - 不同存储格式的优劣分析</li>
-<li><a href="./1.2_meta_storage.html"><strong>元数据存储</strong></a> - 高效的医学影像元数据管理</li>
-<li><a href="./1.3_dicom_status.html"><strong>DICOM 状态分析</strong></a> - DICOM 格式的技术分析</li>
-<li><a href="./1.4_sort_method.html"><strong>排序方法</strong></a> - 医学影像序列的智能排序</li>
-<li><a href="./1.5_axis_order.html"><strong>轴序约定</strong></a> - 标准化的坐标系统定义</li>
-<li><a href="./1.6_dicom_compatibility_simple.html"><strong>DICOM 兼容性</strong></a> - 与现有系统的集成</li>
-</ol>
-</section>
-<section id="medmask-技术文档" class="level3">
-<h3 class="anchored" data-anchor-id="medmask-技术文档">MedMask 技术文档</h3>
-<ol type="1">
-<li><a href="./2.0_mask.html"><strong>掩膜处理基础</strong></a> - MedMask 的核心概念</li>
-<li><a href="./2.1_mask_compression.html"><strong>掩膜压缩技术</strong></a> - 先进的压缩算法</li>
-</ol>
+<p>欢迎查看左侧导航栏中的相关技术文档，深入了解各个库的实现细节和使用方法。</p>
 <hr>
 <p><em>如需技术支持或贡献代码，请访问相应的 GitHub 仓库</em></p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
