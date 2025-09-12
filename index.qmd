@@ -21,36 +21,42 @@ FastDiag Toolkit 提供三个核心库来解决这些问题：
 高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。
 
 **核心特性：**
+
 - 单文件存储（.dcbs），消除文件系统开销
 - HTJ2K 无损压缩，3倍存储压缩，5倍速度提升
 - 元数据去重，减少冗余信息
 - 完整 DICOM 往返转换支持
 
-**GitHub：** https://github.com/fastdiag-toolbox/dicube
+**GitHub：** [https://github.com/fastdiag-toolbox/dicube](https://github.com/fastdiag-toolbox/dicube)
 
 ### 🎭 MedMask - 医学掩膜处理库
 
 专业的医学影像分割掩膜压缩和处理解决方案。
 
 **核心特性：**
+
 - 50+ 倍压缩比（Zstandard 算法）
 - 16 倍读取速度提升
 - 支持多粒度器官组合和重叠掩膜
 
-**GitHub：** https://github.com/DicomCube/medmask
+**GitHub：** [https://github.com/fastdiag-toolbox/medmask](https://github.com/fastdiag-toolbox/medmask)
 
 ### 🌐 SpaceTransformer - 3D 空间变换库
 
 优雅的 3D 医学影像几何变换处理方案。
 
 **核心特性：**
+
 - 完整的 3D 空间几何描述（Space 概念）
 - 可组合的空间变换操作
 - GPU 加速的图像重采样
 - 与深度学习框架无缝集成
 
-**GitHub：** https://github.com/fastdiag-toolbox/spacetransformer-core
-**GitHub：** https://github.com/fastdiag-toolbox/spacetransformer-torch
+**GitHub：** 
+
+- [https://github.com/fastdiag-toolbox/spacetransformer-core](https://github.com/fastdiag-toolbox/spacetransformer-core) 
+
+ - [https://github.com/fastdiag-toolbox/spacetransformer-torch](https://github.com/fastdiag-toolbox/spacetransformer-torch)
 
 ## 安装方法
 
@@ -84,20 +90,7 @@ result = warp_image(image, space, target_space)
 
 ## 详细文档
 
-深入了解各个库的技术细节和使用方法（未完成）：
-
-### DiCube 技术文档
-1. [**设计动机**](1.0_motivation.qmd) - 为什么需要新的医学影像存储格式
-2. [**与 NIfTI 对比**](1.1_vs_nifti.qmd) - 不同存储格式的优劣分析
-3. [**元数据存储**](1.2_meta_storage.qmd) - 高效的医学影像元数据管理
-4. [**DICOM 状态分析**](1.3_dicom_status.qmd) - DICOM 格式的技术分析
-5. [**排序方法**](1.4_sort_method.qmd) - 医学影像序列的智能排序
-6. [**轴序约定**](1.5_axis_order.qmd) - 标准化的坐标系统定义
-7. [**DICOM 兼容性**](1.6_dicom_compatibility_simple.qmd) - 与现有系统的集成
-
-### MedMask 技术文档
-1. [**掩膜处理基础**](2.0_mask.qmd) - MedMask 的核心概念
-2. [**掩膜压缩技术**](2.1_mask_compression.qmd) - 先进的压缩算法
+欢迎查看左侧导航栏中的相关技术文档，深入了解各个库的实现细节和使用方法。
 
 ---
 
