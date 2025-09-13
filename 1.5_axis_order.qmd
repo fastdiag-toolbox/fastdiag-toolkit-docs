@@ -153,8 +153,8 @@ DiCube的设计哲学是将复杂性封装在库内部，为用户提供一个�
 当使用`dicube.load_from_dicom_folder()`时，DiCube执行了以下操作：
 
 1.  读取原始数据和元数据。
-2.  在内部进行必要的内存重排，生成一个符合NumPy C-order标准的、`(Z, Y, X)` 顺序的连续数组。
-3.  同时，将所有空间元数据（如spacing, shape）也转换成与数组匹配的 `(Z, Y, X)` 顺序。
+2.  使用`(Z, Y, X)` + C-continuous的方式重新解释内存布局，无需内存重排。
+3.  同时，将空间元数据的xyz轴进行翻转，使spacing等元数据也符合 `(Z, Y, X)` 顺序。
 
 这样，用户从DiCube获取的数据和元数据在轴序上是完全统一的，可以直接用于Python生态中的其他库。
 
@@ -182,4 +182,4 @@ print("simpleitk image.GetSpacing() ->", sitk_image.GetSpacing(), "(X, Y, Z)")
 print(f"  数组轴0(Z)的spacing为: {sitk_image.GetSpacing()[2]}")
 ```
 
-虽然DiCube在加载时有一次性的转换开销，但它通过提供一个统一且符合Python开发者直觉的接口，从根本上消除了后续处理流程中所有因轴序不一致而引发的认知负担和潜在错误。
+由于DiCube只是重新解释内存布局和翻转space轴序，没有实际的内存重排开销。它通过提供一个统一且符合Python开发者直觉的接口，从根本上消除了后续处理流程中所有因轴序不一致而引发的认知负担和潜在错误。
