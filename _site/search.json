@@ -253,6 +253,198 @@
     ]
   },
   {
+    "objectID": "2.3_mask_archive.html",
+    "href": "2.3_mask_archive.html",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "",
+    "text": "MaskArchive 是 MedMask 提供的多掩膜归档功能，核心作用是将多个分割掩膜绑定到同一个归档文件中。当需要管理大量相关掩膜时（如全身器官分割、多层级解剖结构），这一功能可以将原本分散的多个文件合并为单一归档，简化文件管理。\n关键限制：归档中的所有掩膜必须共享相同的空间参考信息（shape、spacing、origin），确保空间一致性。",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#摘要",
+    "href": "2.3_mask_archive.html#摘要",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "",
+    "text": "MaskArchive 是 MedMask 提供的多掩膜归档功能，核心作用是将多个分割掩膜绑定到同一个归档文件中。当需要管理大量相关掩膜时（如全身器官分割、多层级解剖结构），这一功能可以将原本分散的多个文件合并为单一归档，简化文件管理。\n关键限制：归档中的所有掩膜必须共享相同的空间参考信息（shape、spacing、origin），确保空间一致性。",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#问题场景肺部多层级分割",
+    "href": "2.3_mask_archive.html#问题场景肺部多层级分割",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "1. 问题场景：肺部多层级分割",
+    "text": "1. 问题场景：肺部多层级分割\n在肺部分析中，常需要同时处理不同粒度的结构：\n\n5个肺叶：左上叶、左下叶、右上叶、右中叶、右下叶（互不重叠）\n18个肺段：每个肺叶下的亚结构（互不重叠，但与肺叶重叠）\n\nN个病灶：肺结节、肿块等（可与肺叶、肺段重叠）\n1个全肺：整体肺区域（与所有结构重叠）\n\n传统方法需要管理 5+18+N+1 个独立文件，而 MaskArchive 可以将它们合并到一个归档中。",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#模拟数据构建",
+    "href": "2.3_mask_archive.html#模拟数据构建",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "2. 模拟数据构建",
+    "text": "2. 模拟数据构建\n我们用2D掩膜来模拟这一场景：\n\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom medmask import SegmentationMask, MaskArchive\nfrom spacetransformer import Space\nfrom pathlib import Path\nimport time\n\n# 创建模拟的2D肺部图像 (1, 64, 64) - 单层CT切片\nshape = (1, 64, 64)\nspace = Space(shape=shape, spacing=(1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0))\n\n# 构建肺叶掩膜 (5个肺叶，互不重叠)\nlobe_mask = np.zeros(shape, dtype=np.uint8)\nlobe_mask[0, 10:30, 10:25] = 1  # 左上叶\nlobe_mask[0, 35:55, 10:25] = 2  # 左下叶  \nlobe_mask[0, 10:25, 40:55] = 3  # 右上叶\nlobe_mask[0, 30:45, 40:55] = 4  # 右中叶\nlobe_mask[0, 50:60, 40:55] = 5  # 右下叶\n\nlobe_mapping = {\n    \"left_upper_lobe\": 1,\n    \"left_lower_lobe\": 2,\n    \"right_upper_lobe\": 3,\n    \"right_middle_lobe\": 4,\n    \"right_lower_lobe\": 5\n}\n\n# 构建肺段掩膜 (10个肺段，与肺叶重叠)\nsegment_mask = np.zeros(shape, dtype=np.uint8)\n# 左上叶的段\nsegment_mask[0, 10:18, 10:18] = 1   \nsegment_mask[0, 18:25, 12:20] = 2   \nsegment_mask[0, 22:30, 17:25] = 3   \n# 左下叶的段\nsegment_mask[0, 35:42, 10:18] = 4   \nsegment_mask[0, 42:50, 12:20] = 5   \nsegment_mask[0, 48:55, 17:25] = 6   \n# 右上叶的段\nsegment_mask[0, 10:18, 40:48] = 7   \nsegment_mask[0, 18:25, 42:50] = 8   \n# 右中叶的段\nsegment_mask[0, 30:38, 40:48] = 9   \nsegment_mask[0, 38:45, 42:50] = 10  \n\nsegment_mapping = {\n    \"LUL_S1\": 1, \"LUL_S2\": 2, \"LUL_S3\": 3,\n    \"LLL_S4\": 4, \"LLL_S5\": 5, \"LLL_S6\": 6,\n    \"RUL_S1\": 7, \"RUL_S2\": 8,\n    \"RML_S4\": 9, \"RML_S5\": 10\n}\n\n# 构建病灶掩膜 (3个病灶，可与肺叶重叠)\nlesion_mask = np.zeros(shape, dtype=np.uint8)\nlesion_mask[0, 15:20, 15:20] = 1    # 病灶1：位于左上叶\nlesion_mask[0, 40:45, 15:20] = 2    # 病灶2：位于左下叶\nlesion_mask[0, 25:30, 45:50] = 3    # 病灶3：位于右中叶\n\nlesion_mapping = {\n    \"nodule_1\": 1,\n    \"nodule_2\": 2,\n    \"mass_1\": 3\n}\n\n# 构建全肺掩膜 (包含所有肺叶区域)\nwhole_lung_mask = np.zeros(shape, dtype=np.uint8)\nwhole_lung_mask[0, 8:62, 8:57] = 1  # 整个肺部区域，稍微扩大范围\n\nwhole_lung_mapping = {\"whole_lung\": 1}\n\nprint(\"模拟数据构建完成:\")\nprint(f\"空间信息: {shape}\")\nprint(f\"肺叶标签数: {len(lobe_mapping)}\")\nprint(f\"肺段标签数: {len(segment_mapping)}\")\nprint(f\"病灶标签数: {len(lesion_mapping)}\")\nprint(f\"全肺标签数: {len(whole_lung_mapping)}\")\n\n模拟数据构建完成:\n空间信息: (1, 64, 64)\n肺叶标签数: 5\n肺段标签数: 10\n病灶标签数: 3\n全肺标签数: 1",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#可视化掩膜结构",
+    "href": "2.3_mask_archive.html#可视化掩膜结构",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "3. 可视化掩膜结构",
+    "text": "3. 可视化掩膜结构\n\n# 可视化四种掩膜的空间分布\nfig, axes = plt.subplots(2, 2, figsize=(12, 10))\naxes = axes.flatten()\n\nmasks = [\n    (lobe_mask[0], \"Lung Lobes (5 lobes)\", \"Set3\"),\n    (segment_mask[0], \"Lung Segments (10 segments)\", \"Set3\"), \n    (lesion_mask[0], \"Lung Lesions (3 lesions)\", \"Set3\"),\n    (whole_lung_mask[0], \"Whole Lung (1 region)\", \"Set3\")\n]\n\nfor i, (mask, title, cmap) in enumerate(masks):\n    axes[i].imshow(mask, cmap=cmap, alpha=0.8)\n    axes[i].set_title(title, fontsize=12)\n    axes[i].axis('off')\n\nplt.tight_layout()\nplt.show()\n\nprint(\"Mask overlap relationships:\")\nprint(\"- Segments overlap with lobes (segments are sub-structures of lobes)\")  \nprint(\"- Lesions overlap with lobes and segments (lesions are located within lobes)\")\nprint(\"- Whole lung overlaps with all structures (whole lung contains all regions)\")\n\n\n\n\n\n\n\n\nMask overlap relationships:\n- Segments overlap with lobes (segments are sub-structures of lobes)\n- Lesions overlap with lobes and segments (lesions are located within lobes)\n- Whole lung overlaps with all structures (whole lung contains all regions)",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#传统方法独立文件存储",
+    "href": "2.3_mask_archive.html#传统方法独立文件存储",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "4. 传统方法：独立文件存储",
+    "text": "4. 传统方法：独立文件存储\n\n# 方法1: 传统的独立文件存储\nprint(\"=== 传统方法：独立文件存储 ===\")\nstart_time = time.time()\n\n# 创建四个独立的SegmentationMask文件\nlobe_segmask = SegmentationMask(lobe_mask, lobe_mapping, space=space)\nsegment_segmask = SegmentationMask(segment_mask, segment_mapping, space=space)\nlesion_segmask = SegmentationMask(lesion_mask, lesion_mapping, space=space)\nwhole_lung_segmask = SegmentationMask(whole_lung_mask, whole_lung_mapping, space=space)\n\n# 保存为独立文件\nlobe_segmask.save(\"lung_lobes.msk\")\nsegment_segmask.save(\"lung_segments.msk\") \nlesion_segmask.save(\"lung_lesions.msk\")\nwhole_lung_segmask.save(\"whole_lung.msk\")\n\ntraditional_time = time.time() - start_time\n\n# 计算独立文件的总大小\nindependent_files = [\"lung_lobes.msk\", \"lung_segments.msk\", \"lung_lesions.msk\", \"whole_lung.msk\"]\ntotal_size = sum(Path(f).stat().st_size for f in independent_files)\n\nprint(f\"创建时间: {traditional_time:.3f}s\")\nprint(f\"文件数量: {len(independent_files)} 个\")\nprint(f\"总大小: {total_size / 1024:.1f} KB\")\nfor f in independent_files:\n    size = Path(f).stat().st_size\n    print(f\"  - {f}: {size / 1024:.1f} KB\")\n\n=== 传统方法：独立文件存储 ===\n创建时间: 0.003s\n文件数量: 4 个\n总大小: 1.7 KB\n  - lung_lobes.msk: 0.5 KB\n  - lung_segments.msk: 0.5 KB\n  - lung_lesions.msk: 0.4 KB\n  - whole_lung.msk: 0.3 KB",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#maskarchive方法归档存储",
+    "href": "2.3_mask_archive.html#maskarchive方法归档存储",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "5. MaskArchive方法：归档存储",
+    "text": "5. MaskArchive方法：归档存储\n\n# 方法2: MaskArchive归档存储\nprint(\"\\n=== MaskArchive方法：归档存储 ===\")\nstart_time = time.time()\n\n# 创建归档并添加所有掩膜\narchive = MaskArchive(\"lung_analysis.mska\", mode=\"w\", space=space)\n\n# 添加各层级掩膜到归档\narchive.add_segmask(lobe_segmask, \"lobes\")\narchive.add_segmask(segment_segmask, \"segments\")\narchive.add_segmask(lesion_segmask, \"lesions\") \narchive.add_segmask(whole_lung_segmask, \"whole_lung\")\n\narchive_time = time.time() - start_time\narchive_size = Path(\"lung_analysis.mska\").stat().st_size\n\nprint(f\"创建时间: {archive_time:.3f}s\")\nprint(f\"文件数量: 1 个归档文件\")\nprint(f\"总大小: {archive_size / 1024:.1f} KB\")\nprint(f\"包含掩膜: {len(archive.all_names())} 个\")\nprint(f\"掩膜列表: {archive.all_names()}\")\n\n# 效率对比\nprint(f\"\\n=== 效率对比 ===\")\nprint(f\"文件管理: {len(independent_files)} 个独立文件 → 1 个归档文件\")\nprint(f\"存储大小: {total_size / 1024:.1f} KB → {archive_size / 1024:.1f} KB\")\nif total_size &gt; archive_size:\n    compression = total_size / archive_size\n    print(f\"存储优化: 压缩比 {compression:.1f}:1\")\n\n\n=== MaskArchive方法：归档存储 ===\n创建时间: 0.002s\n文件数量: 1 个归档文件\n总大小: 4.7 KB\n包含掩膜: 4 个\n掩膜列表: ['lobes', 'segments', 'lesions', 'whole_lung']\n\n=== 效率对比 ===\n文件管理: 4 个独立文件 → 1 个归档文件\n存储大小: 1.7 KB → 4.7 KB",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#归档访问与查询",
+    "href": "2.3_mask_archive.html#归档访问与查询",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "6. 归档访问与查询",
+    "text": "6. 归档访问与查询\n\n# 演示归档的访问功能\nprint(\"=== 归档访问演示 ===\")\n\n# 重新打开归档进行读取\nreader = MaskArchive(\"lung_analysis.mska\", mode=\"r\")\n\n# 查询可用掩膜\nprint(f\"归档中的掩膜: {reader.all_names()}\")\n\n# 单独加载特定掩膜\nprint(\"\\n单独访问掩膜:\")\nloaded_lobes = reader.load_segmask(\"lobes\")\nprint(f\"肺叶掩膜: {list(loaded_lobes.mapping.items())}\")\n\nloaded_lesions = reader.load_segmask(\"lesions\")  \nprint(f\"病灶掩膜: {list(loaded_lesions.mapping.items())}\")\n\n# 验证数据完整性\nprint(f\"\\n数据完整性验证:\")\nprint(f\"原始肺叶形状: {lobe_mask.shape}\")\nprint(f\"加载肺叶形状: {loaded_lobes.data.shape}\")\nprint(f\"数据一致性: {np.array_equal(lobe_mask, loaded_lobes.data)}\")\n\n# 演示语义查询 (基于加载的掩膜)\nleft_upper_lobe_mask = loaded_lobes.get_binary_mask_by_names(\"left_upper_lobe\")\nnodule_1_mask = loaded_lesions.get_binary_mask_by_names(\"nodule_1\")\nprint(f\"左上叶掩膜像素数: {np.sum(left_upper_lobe_mask)}\")\nprint(f\"病灶1掩膜像素数: {np.sum(nodule_1_mask)}\")\n\n=== 归档访问演示 ===\n归档中的掩膜: ['lobes', 'segments', 'lesions', 'whole_lung']\n\n单独访问掩膜:\n肺叶掩膜: [('left_upper_lobe', 1), ('left_lower_lobe', 2), ('right_upper_lobe', 3), ('right_middle_lobe', 4), ('right_lower_lobe', 5)]\n病灶掩膜: [('nodule_1', 1), ('nodule_2', 2), ('mass_1', 3)]\n\n数据完整性验证:\n原始肺叶形状: (1, 64, 64)\n加载肺叶形状: (1, 64, 64)\n数据一致性: True\n左上叶掩膜像素数: 300\n病灶1掩膜像素数: 25",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#使用建议",
+    "href": "2.3_mask_archive.html#使用建议",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "7. 使用建议",
+    "text": "7. 使用建议\n\n适用场景\n推荐使用 MaskArchive 的情况： - 需要管理大量相关掩膜（&gt;10个文件） - 所有掩膜共享相同的空间参考 - 需要简化文件传输和备份 - 追求存储空间优化\n继续使用独立文件的情况： - 掩膜数量较少（&lt;5个文件） - 不同掩膜有不同的空间参数 - 需要频繁单独修改特定掩膜 - 与现有工具链的兼容性考虑\n\n\n技术限制\n\n空间一致性要求：所有掩膜必须具有相同的 shape、spacing、origin\n名称唯一性：归档中每个掩膜必须有唯一的名称标识\n增量添加：支持动态添加新掩膜，但不支持删除现有掩膜",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.3_mask_archive.html#总结",
+    "href": "2.3_mask_archive.html#总结",
+    "title": "MaskArchive：多掩膜归档管理",
+    "section": "总结",
+    "text": "总结\nMaskArchive 提供了一种简单有效的多掩膜管理方案。通过将相关的掩膜合并到单一归档文件中，它能够简化文件管理、优化存储空间，并为复杂的多层级掩膜组织提供技术支持。\n虽然不是革命性的功能，但在处理大量掩膜文件时，MaskArchive 确实能够带来实用的管理便利。选择使用归档还是独立文件，主要取决于具体的应用场景和文件管理需求。\n\n# 清理测试文件\nimport os\ncleanup_files = [\"lung_lobes.msk\", \"lung_segments.msk\", \"lung_lesions.msk\", \n                 \"whole_lung.msk\", \"lung_analysis.mska\"]\nfor f in cleanup_files:\n    if os.path.exists(f):\n        os.remove(f)\nprint(\"测试文件已清理\")\n\n测试文件已清理",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MaskArchive：多掩膜归档管理"
+    ]
+  },
+  {
+    "objectID": "2.2_mask_label_mapping.html",
+    "href": "2.2_mask_label_mapping.html",
+    "title": "MedMask 的语义映射管理",
+    "section": "",
+    "text": "在前文中，我们识别了医学分割掩膜存储中的一个核心挑战：语义信息的外部依赖管理。传统方法中，像素值与其语义含义（如”肝脏”、“脾脏”）的映射关系必须通过外部配置文件或硬编码来维护，这导致了数据不自洽、同步困难和版本管理复杂等问题。\n本文将深入介绍 MedMask 如何通过内置的双向语义映射系统来根本性地解决这一问题。我们将展示 LabelMapping 类的核心设计理念、SegmentationMask 的语义集成机制，以及这种设计如何在实际医学影像工作流中带来显著的效率提升和错误减少。",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MedMask 的语义映射管理"
+    ]
+  },
+  {
+    "objectID": "2.2_mask_label_mapping.html#摘要",
+    "href": "2.2_mask_label_mapping.html#摘要",
+    "title": "MedMask 的语义映射管理",
+    "section": "",
+    "text": "在前文中，我们识别了医学分割掩膜存储中的一个核心挑战：语义信息的外部依赖管理。传统方法中，像素值与其语义含义（如”肝脏”、“脾脏”）的映射关系必须通过外部配置文件或硬编码来维护，这导致了数据不自洽、同步困难和版本管理复杂等问题。\n本文将深入介绍 MedMask 如何通过内置的双向语义映射系统来根本性地解决这一问题。我们将展示 LabelMapping 类的核心设计理念、SegmentationMask 的语义集成机制，以及这种设计如何在实际医学影像工作流中带来显著的效率提升和错误减少。",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MedMask 的语义映射管理"
+    ]
+  },
+  {
+    "objectID": "2.2_mask_label_mapping.html#传统方法的语义管理困境",
+    "href": "2.2_mask_label_mapping.html#传统方法的语义管理困境",
+    "title": "MedMask 的语义映射管理",
+    "section": "1. 传统方法的语义管理困境",
+    "text": "1. 传统方法的语义管理困境\n在传统的医学分割工作流中，掩膜文件本身只包含数值标签（如1、2、3），其语义含义需要通过外部机制来定义和维护。目前主流的语义管理方式有两种：\n\n方式一：外置配置文件描述\n通过独立的配置文件（如JSON、YAML、CSV）来维护标签与语义的对应关系。\n\nimport numpy as np\nimport json\n\n# 掩膜数据\nmask_array = np.array([\n    [0, 0, 1, 1],\n    [0, 2, 2, 1], \n    [3, 3, 0, 0]\n])\n\n# 外置配置文件 label_config.json\nconfig = {\n    \"1\": \"liver\",\n    \"2\": \"spleen\", \n    \"3\": \"kidney\"\n}\n\n# 需要额外维护配置文件\nwith open('label_config.json', 'w') as f:\n    json.dump(config, f)\n\nprint(\"方式一：外置配置文件\")\nprint(f\"掩膜文件: 形状{mask_array.shape}, 标签{np.unique(mask_array)}\")\nprint(f\"配置文件: {config}\")\n\n方式一：外置配置文件\n掩膜文件: 形状(3, 4), 标签[0 1 2 3]\n配置文件: {'1': 'liver', '2': 'spleen', '3': 'kidney'}\n\n\n主要缺陷： - 文件管理复杂化：每个掩膜都需要配套的配置文件，增加了文件管理负担 - 数据完整性风险：配置文件容易被意外删除、修改或损坏，导致数据无法解读 - 版本同步困难：掩膜文件与配置文件需要严格保持版本一致，容易出现不匹配\n\n\n方式二：文件名或内部键值描述\n利用文件命名约定或NPZ格式的内部键值来承载语义信息。\n\n# 文件名描述方式\n# liver_segmentation.nii.gz\n# spleen_segmentation.nii.gz  \n# kidney_segmentation.nii.gz\n\n# NPZ内部键值描述方式（变体）\nnp.savez_compressed('multi_organ.npz', \n    liver=mask_array == 1,\n    spleen=mask_array == 2, \n    kidney=mask_array == 3\n)\n\nloaded = np.load('multi_organ.npz')\nprint(\"方式二：文件名/键值描述\")\nprint(f\"NPZ键值: {list(loaded.keys())}\")\n\n方式二：文件名/键值描述\nNPZ键值: ['liver', 'spleen', 'kidney']\n\n\n主要缺陷： - 信息承载能力有限：文件名长度受限，无法描述复杂的标签关系和层级结构 - 标签数量瓶颈：当标签数量较多时（如100+器官），文件名或键值管理变得不可行 - 标准化困难：缺乏统一的命名规范，不同团队可能采用不同的约定，影响互操作性",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MedMask 的语义映射管理"
+    ]
+  },
+  {
+    "objectID": "2.2_mask_label_mapping.html#medmask-的语义映射解决方案",
+    "href": "2.2_mask_label_mapping.html#medmask-的语义映射解决方案",
+    "title": "MedMask 的语义映射管理",
+    "section": "2. MedMask 的语义映射解决方案",
+    "text": "2. MedMask 的语义映射解决方案\n\n核心设计理念：内嵌式双向映射\nMedMask 通过 LabelMapping 类实现了语义信息与像素数据的一体化存储。这种设计确保了掩膜文件在任何环境下都是完全自洽的，无需外部依赖即可完整解读。\n\nfrom medmask.core.mapping import LabelMapping\n\n# MedMask方法：创建内嵌语义映射\nmapping = LabelMapping({\n    \"liver\": 1,\n    \"spleen\": 2, \n    \"kidney\": 3\n})\n\nprint(\"双向映射能力:\")\nprint(f\"正向查询: liver -&gt; {mapping['liver']}\")\nprint(f\"反向查询: {mapping.inverse(1)} &lt;- 1\")\nprint(f\"属性访问: mapping.spleen = {mapping.spleen}\")\nprint(f\"函数调用: mapping('kidney') = {mapping('kidney')}\")\n\n双向映射能力:\n正向查询: liver -&gt; 1\n反向查询: liver &lt;- 1\n属性访问: mapping.spleen = 2\n函数调用: mapping('kidney') = 3\n\n\n\n\nLabelMapping 类的技术特性\nLabelMapping 类提供了完整的双向映射功能，支持多种访问模式以适应不同的编程习惯：\n\n# 1. 字典式访问\nliver_label = mapping[\"liver\"]\n\n# 2. 属性式访问（便于IDE自动补全）\nspleen_label = mapping.spleen\n\n# 3. 函数调用式访问\nkidney_label = mapping(\"kidney\")\n\n# 4. 反向查询\norgan_name = mapping.inverse(1)\n\n# 5. 存在性检查\nhas_liver = \"liver\" in mapping._name_to_label\nhas_label_4 = mapping.has_label(4)\n\nprint(f\"多种访问方式的一致性验证:\")\nprint(f\"字典访问: {liver_label}, 属性访问: {mapping.liver}, 函数调用: {mapping('liver')}\")\nprint(f\"反向查询验证: 标签1对应{organ_name}\")\nprint(f\"存在性检查: 有liver? {has_liver}, 有标签4? {has_label_4}\")\n\n多种访问方式的一致性验证:\n字典访问: 1, 属性访问: 1, 函数调用: 1\n反向查询验证: 标签1对应liver\n存在性检查: 有liver? True, 有标签4? False\n\n\n\n\n持久化与版本控制\n语义映射支持JSON序列化，确保了跨平台的兼容性和版本控制的便利性：\n\n# 序列化为JSON\njson_repr = mapping.to_json()\nprint(f\"JSON序列化结果: {json_repr}\")\n\n# 从JSON反序列化\nrestored_mapping = LabelMapping.from_json(json_repr)\nprint(f\"反序列化验证: {restored_mapping}\")\n\n# 验证完整性\nprint(f\"序列化前后一致性: {mapping._name_to_label == restored_mapping._name_to_label}\")\n\nJSON序列化结果: {\"liver\": 1, \"spleen\": 2, \"kidney\": 3}\n反序列化验证: {'liver': 1, 'spleen': 2, 'kidney': 3}\n序列化前后一致性: True",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MedMask 的语义映射管理"
+    ]
+  },
+  {
+    "objectID": "2.2_mask_label_mapping.html#segmentationmask-的语义集成",
+    "href": "2.2_mask_label_mapping.html#segmentationmask-的语义集成",
+    "title": "MedMask 的语义映射管理",
+    "section": "3. SegmentationMask 的语义集成",
+    "text": "3. SegmentationMask 的语义集成\n\n统一的语义-空间数据模型\nSegmentationMask 类将语义映射、空间信息和像素数据统一管理，形成了完整的医学掩膜表示：\n\nfrom medmask import SegmentationMask\nfrom spacetransformer import Space\n\n# 创建空间信息\nspace = Space(shape=(1, 3, 4), spacing=(1.0, 1.0, 1.0))\n\n# 创建完整的语义掩膜\nsegmask = SegmentationMask(\n    mask_array=mask_array[np.newaxis, :, :],  # 添加Z维度\n    mapping={\"liver\": 1, \"spleen\": 2, \"kidney\": 3},\n    space=space\n)\n\nprint(f\"集成后的掩膜信息:\")\nprint(f\"形状: {segmask.data.shape}\")\nprint(f\"空间: spacing={segmask.space.spacing}\")\nprint(f\"语义映射: {dict(segmask.mapping.items())}\")\n\n集成后的掩膜信息:\n形状: (1, 3, 4)\n空间: spacing=(1.0, 1.0, 1.0)\n语义映射: {'liver': 1, 'spleen': 2, 'kidney': 3}\n\n\n\n\n语义化查询接口与代码可维护性\n通过内嵌的语义映射，用户可以直接使用器官名称来查询和操作掩膜数据，这不仅提高了代码的可读性，更重要的是根本性地改善了代码的可维护性。\n\n# 按名称查询单个器官\nliver_mask = segmask.get_binary_mask_by_names(\"liver\")\nprint(f\"肝脏掩膜: 非零像素数 = {np.sum(liver_mask)}\")\n\n# 按名称查询多个器官\nabdominal_organs = segmask.get_binary_mask_by_names([\"liver\", \"spleen\"])\nprint(f\"腹部器官掩膜: 非零像素数 = {np.sum(abdominal_organs)}\")\n\n# 按标签查询（保持向后兼容）\nliver_by_label = segmask.get_binary_mask_by_labels(1)\nprint(f\"按标签查询验证: {np.array_equal(liver_mask, liver_by_label)}\")\n\n肝脏掩膜: 非零像素数 = 3\n腹部器官掩膜: 非零像素数 = 5\n按标签查询验证: True\n\n\n可维护性的关键优势在于代码与数据表示的解耦：\n传统方法的维护困境：\n# 传统代码需要硬编码 label-value 对应关系\nLIVER_LABEL = 1\nSPLEEN_LABEL = 2\nKIDNEY_LABEL = 3\n\n# 当算法版本升级，标签值可能发生变化\n# 每次标签值变化，所有相关方都需要同步更新代码\n# v1.0: liver=1, spleen=2, kidney=3\n# v2.0: liver=5, spleen=8, kidney=12\nMedMask 方法的维护优势：\n# 代码完全不依赖具体的标签值\ndef process_organs(segmask):\n    liver_region = segmask.get_binary_mask_by_names(\"liver\")\n    return liver_region\n\n# 无论算法版本如何变化，只要器官名称不变，代码保持不变\n# v1.0: {\"liver\": 1, \"spleen\": 2}  ← 代码无需修改\n# v2.0: {\"liver\": 5, \"spleen\": 8}  ← 代码无需修改\n# v3.0: {\"liver\": 12, \"spleen\": 15} ← 代码无需修改\n这种设计实现了代码与数据版本的完全解耦：开发者只需要维护目标器官的名称列表，而不需要关心具体的数值编码。当分割算法升级、标签分配策略调整时，业务逻辑代码完全不受影响，大幅降低了系统维护成本和版本迁移风险。\n\n\n增量构建与动态扩展\n对于复杂的分割任务，MedMask支持渐进式构建掩膜，每次添加一个器官标签：\n\n# 懒加载初始化：创建空掩膜\nempty_mask = SegmentationMask.lazy_init(bit_depth=8, space=space)\n\n# 模拟分割结果：逐步添加器官\nliver_region = np.zeros((1, 3, 4), dtype=bool)\nliver_region[0, 0:2, 1:3] = True\n\nspleen_region = np.zeros((1, 3, 4), dtype=bool) \nspleen_region[0, 1:3, 2:4] = True\n\n# 动态添加标签\nempty_mask.add_label(liver_region, label=1, name=\"liver\")\nempty_mask.add_label(spleen_region, label=2, name=\"spleen\")\n\nprint(f\"动态构建结果:\")\nprint(f\"标签数量: {len(empty_mask.mapping)}\")\nprint(f\"器官列表: {list(empty_mask.mapping)}\")\n\n# 验证查询功能\ncombined_organs = empty_mask.get_binary_mask_by_names([\"liver\", \"spleen\"])\nprint(f\"组合查询: 覆盖像素数 = {np.sum(combined_organs)}\")\n\n动态构建结果:\n标签数量: 2\n器官列表: ['liver', 'spleen']\n组合查询: 覆盖像素数 = 7\n\n\n\n\n错误预防机制\nMedMask的设计会防止反复写入同一个键值：\n\n# MedMask的错误预防能力\nprint(\"\\nMedMask的自动错误预防:\")\ntry:\n    # 尝试添加重复标签（系统自动阻止）\n    test_mask = SegmentationMask.lazy_init(8, space=Space(shape=(2, 2, 2)))\n    test_mask.add_label(np.ones((2, 2, 2), dtype=bool), 1, \"organ_a\")\n    test_mask.add_label(np.ones((2, 2, 2), dtype=bool), 1, \"organ_b\")  # 重复标签\nexcept ValueError as e:\n    print(f\"自动检测并阻止错误: {e}\")\n\n\nMedMask的自动错误预防:\n自动检测并阻止错误: Label 1 already exists in the mask array.",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MedMask 的语义映射管理"
+    ]
+  },
+  {
+    "objectID": "2.2_mask_label_mapping.html#总结",
+    "href": "2.2_mask_label_mapping.html#总结",
+    "title": "MedMask 的语义映射管理",
+    "section": "4. 总结",
+    "text": "4. 总结\nMedMask 的语义映射系统通过以下核心创新，彻底解决了传统医学掩膜格式在语义管理方面的根本性缺陷：\n\n技术创新点\n\n内嵌式双向映射：将语义信息直接集成到掩膜文件中，实现数据完全自洽，消除外部依赖。\n多模式访问接口：支持字典、属性、函数调用等多种访问方式，适应不同的编程习惯和IDE环境。\n运行时一致性验证：在数据操作过程中自动检测和阻止语义-标签不一致，从源头预防数据错误。\nJSON标准化序列化：确保跨平台兼容性和版本控制友好性，支持复杂项目的长期维护。\n\n\n\n实际价值体现\n\n\n\n传统方法\nMedMask方法\n改进效果\n\n\n\n\n外部配置文件维护\n内嵌语义映射\n消除同步负担\n\n\n手动数据验证\n自动一致性检查\n减少人为错误\n\n\n硬编码标签查询\n语义化查询接口\n提高代码可读性\n\n\n团队沟通协调\n自描述数据格式\n简化协作流程\n\n\n\n通过这种系统性的设计改进，MedMask不仅解决了语义管理的技术问题，更重要的是为医学影像分析工作流带来了根本性的效率提升和质量保障。开发团队可以将更多精力集中在核心的医学算法开发上，而不是琐碎的数据管理细节。",
+    "crumbs": [
+      "首页",
+      "MedMask 技术",
+      "MedMask 的语义映射管理"
+    ]
+  },
+  {
     "objectID": "1.6_dicom_compatibility_simple.html",
     "href": "1.6_dicom_compatibility_simple.html",
     "title": "流式读取与兼容性",

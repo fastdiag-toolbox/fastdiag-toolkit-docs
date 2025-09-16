@@ -1,0 +1,274 @@
+---
+title: "MaskArchive：多掩膜归档管理"
+format:
+  html:
+    code-fold: false
+    toc: true
+jupyter: dicube-docs
+---
+
+## 摘要
+
+**MaskArchive** 是 MedMask 提供的多掩膜归档功能，核心作用是将多个分割掩膜绑定到同一个归档文件中。当需要管理大量相关掩膜时（如全身器官分割、多层级解剖结构），这一功能可以将原本分散的多个文件合并为单一归档，简化文件管理。
+
+**关键限制**：归档中的所有掩膜必须共享相同的空间参考信息（`shape`、`spacing`、`origin`），确保空间一致性。
+
+## 1. 问题场景：肺部多层级分割
+
+在肺部分析中，常需要同时处理不同粒度的结构：
+
+- **5个肺叶**：左上叶、左下叶、右上叶、右中叶、右下叶（互不重叠）
+- **18个肺段**：每个肺叶下的亚结构（互不重叠，但与肺叶重叠）  
+- **N个病灶**：肺结节、肿块等（可与肺叶、肺段重叠）
+- **1个全肺**：整体肺区域（与所有结构重叠）
+
+传统方法需要管理 5+18+N+1 个独立文件，而 MaskArchive 可以将它们合并到一个归档中。
+
+## 2. 模拟数据构建
+
+我们用2D掩膜来模拟这一场景：
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from medmask import SegmentationMask, MaskArchive
+from spacetransformer import Space
+from pathlib import Path
+import time
+
+# 创建模拟的2D肺部图像 (1, 64, 64) - 单层CT切片
+shape = (1, 64, 64)
+space = Space(shape=shape, spacing=(1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0))
+
+# 构建肺叶掩膜 (5个肺叶，互不重叠)
+lobe_mask = np.zeros(shape, dtype=np.uint8)
+lobe_mask[0, 10:30, 10:25] = 1  # 左上叶
+lobe_mask[0, 35:55, 10:25] = 2  # 左下叶  
+lobe_mask[0, 10:25, 40:55] = 3  # 右上叶
+lobe_mask[0, 30:45, 40:55] = 4  # 右中叶
+lobe_mask[0, 50:60, 40:55] = 5  # 右下叶
+
+lobe_mapping = {
+    "left_upper_lobe": 1,
+    "left_lower_lobe": 2,
+    "right_upper_lobe": 3,
+    "right_middle_lobe": 4,
+    "right_lower_lobe": 5
+}
+
+# 构建肺段掩膜 (10个肺段，与肺叶重叠)
+segment_mask = np.zeros(shape, dtype=np.uint8)
+# 左上叶的段
+segment_mask[0, 10:18, 10:18] = 1   
+segment_mask[0, 18:25, 12:20] = 2   
+segment_mask[0, 22:30, 17:25] = 3   
+# 左下叶的段
+segment_mask[0, 35:42, 10:18] = 4   
+segment_mask[0, 42:50, 12:20] = 5   
+segment_mask[0, 48:55, 17:25] = 6   
+# 右上叶的段
+segment_mask[0, 10:18, 40:48] = 7   
+segment_mask[0, 18:25, 42:50] = 8   
+# 右中叶的段
+segment_mask[0, 30:38, 40:48] = 9   
+segment_mask[0, 38:45, 42:50] = 10  
+
+segment_mapping = {
+    "LUL_S1": 1, "LUL_S2": 2, "LUL_S3": 3,
+    "LLL_S4": 4, "LLL_S5": 5, "LLL_S6": 6,
+    "RUL_S1": 7, "RUL_S2": 8,
+    "RML_S4": 9, "RML_S5": 10
+}
+
+# 构建病灶掩膜 (3个病灶，可与肺叶重叠)
+lesion_mask = np.zeros(shape, dtype=np.uint8)
+lesion_mask[0, 15:20, 15:20] = 1    # 病灶1：位于左上叶
+lesion_mask[0, 40:45, 15:20] = 2    # 病灶2：位于左下叶
+lesion_mask[0, 25:30, 45:50] = 3    # 病灶3：位于右中叶
+
+lesion_mapping = {
+    "nodule_1": 1,
+    "nodule_2": 2,
+    "mass_1": 3
+}
+
+# 构建全肺掩膜 (包含所有肺叶区域)
+whole_lung_mask = np.zeros(shape, dtype=np.uint8)
+whole_lung_mask[0, 8:62, 8:57] = 1  # 整个肺部区域，稍微扩大范围
+
+whole_lung_mapping = {"whole_lung": 1}
+
+print("模拟数据构建完成:")
+print(f"空间信息: {shape}")
+print(f"肺叶标签数: {len(lobe_mapping)}")
+print(f"肺段标签数: {len(segment_mapping)}")
+print(f"病灶标签数: {len(lesion_mapping)}")
+print(f"全肺标签数: {len(whole_lung_mapping)}")
+```
+
+## 3. 可视化掩膜结构
+
+```{python}
+# 可视化四种掩膜的空间分布
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+axes = axes.flatten()
+
+masks = [
+    (lobe_mask[0], "Lung Lobes (5 lobes)", "Set3"),
+    (segment_mask[0], "Lung Segments (10 segments)", "Set3"), 
+    (lesion_mask[0], "Lung Lesions (3 lesions)", "Set3"),
+    (whole_lung_mask[0], "Whole Lung (1 region)", "Set3")
+]
+
+for i, (mask, title, cmap) in enumerate(masks):
+    axes[i].imshow(mask, cmap=cmap, alpha=0.8)
+    axes[i].set_title(title, fontsize=12)
+    axes[i].axis('off')
+
+plt.tight_layout()
+plt.show()
+
+print("Mask overlap relationships:")
+print("- Segments overlap with lobes (segments are sub-structures of lobes)")  
+print("- Lesions overlap with lobes and segments (lesions are located within lobes)")
+print("- Whole lung overlaps with all structures (whole lung contains all regions)")
+```
+
+## 4. 传统方法：独立文件存储
+
+```{python}
+# 方法1: 传统的独立文件存储
+print("=== 传统方法：独立文件存储 ===")
+start_time = time.time()
+
+# 创建四个独立的SegmentationMask文件
+lobe_segmask = SegmentationMask(lobe_mask, lobe_mapping, space=space)
+segment_segmask = SegmentationMask(segment_mask, segment_mapping, space=space)
+lesion_segmask = SegmentationMask(lesion_mask, lesion_mapping, space=space)
+whole_lung_segmask = SegmentationMask(whole_lung_mask, whole_lung_mapping, space=space)
+
+# 保存为独立文件
+lobe_segmask.save("lung_lobes.msk")
+segment_segmask.save("lung_segments.msk") 
+lesion_segmask.save("lung_lesions.msk")
+whole_lung_segmask.save("whole_lung.msk")
+
+traditional_time = time.time() - start_time
+
+# 计算独立文件的总大小
+independent_files = ["lung_lobes.msk", "lung_segments.msk", "lung_lesions.msk", "whole_lung.msk"]
+total_size = sum(Path(f).stat().st_size for f in independent_files)
+
+print(f"创建时间: {traditional_time:.3f}s")
+print(f"文件数量: {len(independent_files)} 个")
+print(f"总大小: {total_size / 1024:.1f} KB")
+for f in independent_files:
+    size = Path(f).stat().st_size
+    print(f"  - {f}: {size / 1024:.1f} KB")
+```
+
+## 5. MaskArchive方法：归档存储
+
+```{python}
+# 方法2: MaskArchive归档存储
+print("\n=== MaskArchive方法：归档存储 ===")
+start_time = time.time()
+
+# 创建归档并添加所有掩膜
+archive = MaskArchive("lung_analysis.mska", mode="w", space=space)
+
+# 添加各层级掩膜到归档
+archive.add_segmask(lobe_segmask, "lobes")
+archive.add_segmask(segment_segmask, "segments")
+archive.add_segmask(lesion_segmask, "lesions") 
+archive.add_segmask(whole_lung_segmask, "whole_lung")
+
+archive_time = time.time() - start_time
+archive_size = Path("lung_analysis.mska").stat().st_size
+
+print(f"创建时间: {archive_time:.3f}s")
+print(f"文件数量: 1 个归档文件")
+print(f"总大小: {archive_size / 1024:.1f} KB")
+print(f"包含掩膜: {len(archive.all_names())} 个")
+print(f"掩膜列表: {archive.all_names()}")
+
+# 效率对比
+print(f"\n=== 效率对比 ===")
+print(f"文件管理: {len(independent_files)} 个独立文件 → 1 个归档文件")
+print(f"存储大小: {total_size / 1024:.1f} KB → {archive_size / 1024:.1f} KB")
+if total_size > archive_size:
+    compression = total_size / archive_size
+    print(f"存储优化: 压缩比 {compression:.1f}:1")
+```
+
+## 6. 归档访问与查询
+
+```{python}
+# 演示归档的访问功能
+print("=== 归档访问演示 ===")
+
+# 重新打开归档进行读取
+reader = MaskArchive("lung_analysis.mska", mode="r")
+
+# 查询可用掩膜
+print(f"归档中的掩膜: {reader.all_names()}")
+
+# 单独加载特定掩膜
+print("\n单独访问掩膜:")
+loaded_lobes = reader.load_segmask("lobes")
+print(f"肺叶掩膜: {list(loaded_lobes.mapping.items())}")
+
+loaded_lesions = reader.load_segmask("lesions")  
+print(f"病灶掩膜: {list(loaded_lesions.mapping.items())}")
+
+# 验证数据完整性
+print(f"\n数据完整性验证:")
+print(f"原始肺叶形状: {lobe_mask.shape}")
+print(f"加载肺叶形状: {loaded_lobes.data.shape}")
+print(f"数据一致性: {np.array_equal(lobe_mask, loaded_lobes.data)}")
+
+# 演示语义查询 (基于加载的掩膜)
+left_upper_lobe_mask = loaded_lobes.get_binary_mask_by_names("left_upper_lobe")
+nodule_1_mask = loaded_lesions.get_binary_mask_by_names("nodule_1")
+print(f"左上叶掩膜像素数: {np.sum(left_upper_lobe_mask)}")
+print(f"病灶1掩膜像素数: {np.sum(nodule_1_mask)}")
+```
+
+## 7. 使用建议
+
+### 适用场景
+
+**推荐使用 MaskArchive 的情况**：
+- 需要管理大量相关掩膜（>10个文件）
+- 所有掩膜共享相同的空间参考
+- 需要简化文件传输和备份
+- 追求存储空间优化
+
+**继续使用独立文件的情况**：
+- 掩膜数量较少（<5个文件）
+- 不同掩膜有不同的空间参数
+- 需要频繁单独修改特定掩膜
+- 与现有工具链的兼容性考虑
+
+### 技术限制
+
+1. **空间一致性要求**：所有掩膜必须具有相同的 `shape`、`spacing`、`origin`
+2. **名称唯一性**：归档中每个掩膜必须有唯一的名称标识
+3. **增量添加**：支持动态添加新掩膜，但不支持删除现有掩膜
+
+## 总结
+
+MaskArchive 提供了一种简单有效的多掩膜管理方案。通过将相关的掩膜合并到单一归档文件中，它能够简化文件管理、优化存储空间，并为复杂的多层级掩膜组织提供技术支持。
+
+虽然不是革命性的功能，但在处理大量掩膜文件时，MaskArchive 确实能够带来实用的管理便利。选择使用归档还是独立文件，主要取决于具体的应用场景和文件管理需求。
+
+```{python}
+# 清理测试文件
+import os
+cleanup_files = ["lung_lobes.msk", "lung_segments.msk", "lung_lesions.msk", 
+                 "whole_lung.msk", "lung_analysis.mska"]
+for f in cleanup_files:
+    if os.path.exists(f):
+        os.remove(f)
+print("测试文件已清理")
+```
