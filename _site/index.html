@@ -302,7 +302,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#spacetransformer---3d-空间变换库" id="toc-spacetransformer---3d-空间变换库" class="nav-link" data-scroll-target="#spacetransformer---3d-空间变换库">🌐 SpaceTransformer - 3D 空间变换库</a></li>
   </ul></li>
   <li><a href="#安装方法" id="toc-安装方法" class="nav-link" data-scroll-target="#安装方法">安装方法</a></li>
-  <li><a href="#快速使用示例" id="toc-快速使用示例" class="nav-link" data-scroll-target="#快速使用示例">快速使用示例</a></li>
   <li><a href="#详细文档" id="toc-详细文档" class="nav-link" data-scroll-target="#详细文档">详细文档</a></li>
   </ul>
 </nav>
@@ -332,20 +331,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="问题背景" class="level2">
 <h2 class="anchored" data-anchor-id="问题背景">问题背景</h2>
-<p>传统医学影像处理面临着严重的性能瓶颈：</p>
-<ul>
-<li><strong>DICOM 碎片化存储</strong>：单个 CT/MR 研究包含数百个小文件，I/O 效率低下</li>
-<li><strong>元数据冗余</strong>：每个切片重复相同的患者/研究信息，浪费存储空间</li>
-<li><strong>坐标系统混乱</strong>：缺乏统一的 3D 空间变换处理方案</li>
-<li><strong>掩膜处理效率低</strong>：分割结果存储和处理缺乏专门优化</li>
-</ul>
+<p>在笔者投身医学图像AI领域的这些年里，深刻体会到这个学科的独特魅力与挑战。Python与PyTorch无疑已成为我们探索未知、构建模型的通用语言，推动着整个领域的飞速发展。我们站在巨人的肩膀上，python 生态中的 pydicom、SimpleITK、nibabel 等经典工具链为我们处理复杂的医学影像数据提供了可能，前人的卓越贡献值得我们每一个人致敬。</p>
+<p>然而，我们也不得不承认，这些传统的轮子在面对今天的深度学习工作流时，显得有些“水土不服”。笔者和身边的许多同行，都曾或多或少地在一些基础问题上反复挣扎：老旧的数据格式与现代AI框架的接口难以严丝合缝地对接；新人需要耗费大量时间，在无数次踩坑和试错后，才能建立起对医学影像坐标系、数据加载等问题的基本认知。</p>
+<p>更让人难受的是，这个领域的“说明书”实在太少了。除了3D Slicer等少数项目提供了相对完善的文档外，大量的关键内容都深埋在ITK和VTK庞杂的代码库深处。很多时候，我们为了定位一个看似简单的bug，不得不翻遍GitHub issue、stackoverflow、各路神仙的博客，从零散的讨论中拼凑出问题的成因。这种探索过程虽然不乏“解谜”的乐趣，但对于追求高效研发的我们而言，无疑是一种巨大的时间成本。</p>
+<p>正是这些日常工作中的痛点，促使笔者开始思考：我们是否能有一套更现代、更高效、更符合AI时代开发习惯的基础工具，来将我们从这些重复性的泥潭中解放出来，从而能更专注于算法和模型本身的创新？这便是我们开发FastDiag Toolkit的初衷。</p>
 </section>
 <section id="解决方案" class="level2">
 <h2 class="anchored" data-anchor-id="解决方案">解决方案</h2>
-<p>FastDiag Toolkit 提供三个核心库来解决这些问题：</p>
+<p>FastDiag Toolkit 提供了三个核心库：</p>
 <section id="dicube---医学影像存储库" class="level3">
 <h3 class="anchored" data-anchor-id="dicube---医学影像存储库">📦 DiCube - 医学影像存储库</h3>
-<p>高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。</p>
+<p>高效的 3D 医学影像存储格式，dicom 的上位替代。</p>
 <p><strong>核心特性：</strong></p>
 <ul>
 <li>单文件存储（.dcbs），消除文件系统开销</li>
@@ -357,7 +353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="medmask---医学掩膜处理库" class="level3">
 <h3 class="anchored" data-anchor-id="medmask---医学掩膜处理库">🎭 MedMask - 医学掩膜处理库</h3>
-<p>专业的医学影像分割掩膜压缩和处理解决方案。</p>
+<p>专业的医学影像分割掩膜压缩和处理解决方案，nii.gz 的上位替代。</p>
 <p><strong>核心特性：</strong></p>
 <ul>
 <li>50+ 倍压缩比（Zstandard 算法）</li>
@@ -368,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="spacetransformer---3d-空间变换库" class="level3">
 <h3 class="anchored" data-anchor-id="spacetransformer---3d-空间变换库">🌐 SpaceTransformer - 3D 空间变换库</h3>
-<p>优雅的 3D 医学影像几何变换处理方案。</p>
+<p>优雅的 3D 医学影像几何变换处理方案，simpleitk 的上位替代。</p>
 <p><strong>核心特性：</strong></p>
 <ul>
 <li>完整的 3D 空间几何描述（Space 概念）</li>
@@ -390,24 +386,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install medmask</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install spacetransformer-core</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install spacetransformer-torch  <span class="co"># GPU 加速版本</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="快速使用示例" class="level2">
-<h2 class="anchored" data-anchor-id="快速使用示例">快速使用示例</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DiCube：DICOM 到高效存储格式</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> dicube.load_from_dicom_folder(<span class="st">'dicom_folder/'</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>dicube.save(image, <span class="st">'output.dcbs'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># MedMask：掩膜压缩存储</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> medmask</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> medmask.SegmentationMask(data, {<span class="st">"liver"</span>: <span class="dv">1</span>}, space<span class="op">=</span>space)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>mask.save(<span class="st">'liver.msk'</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># SpaceTransformer：3D 空间变换</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.torch <span class="im">import</span> warp_image</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>target_space <span class="op">=</span> space.apply_flip(axis<span class="op">=</span><span class="dv">2</span>).apply_shape((<span class="dv">256</span>, <span class="dv">256</span>, <span class="dv">50</span>))</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> warp_image(image, space, target_space)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="详细文档" class="level2">
 <h2 class="anchored" data-anchor-id="详细文档">详细文档</h2>

@@ -218,10 +218,9 @@ plot_result(original_img, sitk_segment, sitk_keypoint, "SimpleITK", true_keypoin
 
 **SimpleITK的问题分析**：
 
-- **参数管理复杂**：需要手动管理spacing, origin, direction等多个相互关联的参数
-- **坐标变换繁琐**：手动计算多级坐标变换，容易出现轴序错误
 - **重采样配置冗长**：每次重采样都需要配置多个参数
 - **代码可读性差**：业务逻辑被大量底层配置代码掩盖
+- **轴序问题**：这张图xy对称，所以体现不出来，但实际上很容易出现轴序错误
 
 ## 方法二：scipy.ndimage实现
 
@@ -274,11 +273,7 @@ plot_result(original_img, scipy_segment, scipy_keypoint, "scipy.ndimage", true_k
 ```
 
 **scipy.ndimage的问题分析**：
-
-- **坐标系统模糊**：缺乏明确的坐标系统定义，变换结果难以预测
-- **zoom函数陷阱**：逆变换时尺寸计算容易出现舍入误差
-- **无物理单位概念**：只处理像素级别的变换，缺乏物理空间的概念
-- **错误处理复杂**：尺寸不匹配等边界情况需要大量额外代码
+- **zoom函数**：逆变换时尺寸计算容易出现舍入误差
 
 ## 方法三：PyTorch interpolate实现
 
@@ -342,7 +337,6 @@ plot_result(original_img, torch_segment, torch_keypoint, "PyTorch interpolate", 
 
 - **align_corners混淆**：True和False设置导致不同的坐标映射公式，容易出错
 - **维度管理冗余**：需要手动添加和移除batch、channel维度
-- **坐标变换公式复杂**：手动实现像素中心对齐的数学公式
 - **nearest 有偏**：可以明显发现预测的mask 和原图是有偏的
 
 ## 方法四：SpaceTransformer实现
@@ -405,7 +399,7 @@ plot_result(original_img, st_segment, st_keypoint, "SpaceTransformer", true_keyp
 
 **精度对比**：除SpaceTransformer外，其他主流库均存在不同程度的坐标偏移问题。其中，PyTorch的实现甚至出现了明显的分割掩膜偏移，这在医学图像分析中可能导致严重的临床后果。SpaceTransformer通过精确的空间描述，有效避免了这类精度损失。
 
-**开发效率对比**：从代码复杂度角度，SpaceTransformer展现出明显优势。传统方法需要手动管理复杂的坐标变换链、参数配置和维度处理，而SpaceTransformer通过声明式的空间定义和自动化的变换计算，将原本数十行的实现精简为几行核心逻辑，大幅提升了开发效率和代码可维护性。
+**开发效率对比**：从代码复杂度角度，SpaceTransformer展现出明显优势。传统方法需要手动管理复杂的坐标变换链、参数配置和维度处理，需要维护很多中间变量，对于不同的元素采取不同的变换方法，而SpaceTransformer通过声明式的空间定义和自动化的变换计算，将原本数十行的实现精简为几行核心逻辑，大幅提升了开发效率和代码可维护性。
 
 **架构设计优势**：SpaceTransformer采用了计算逻辑与业务逻辑分离的设计理念，把复杂、易错底层计算逻辑进行包装，使得空间变换操作对用户透明，开发者可以专注于算法本身而非底层的坐标计算细节。
 

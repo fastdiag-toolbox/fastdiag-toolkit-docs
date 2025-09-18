@@ -5,20 +5,21 @@ subtitle: "高效的医学影像处理工具包"
 
 ## 问题背景
 
-传统医学影像处理面临着严重的性能瓶颈：
+在笔者投身医学图像AI领域的这些年里，深刻体会到这个学科的独特魅力与挑战。Python与PyTorch无疑已成为我们探索未知、构建模型的通用语言，推动着整个领域的飞速发展。我们站在巨人的肩膀上，python 生态中的 pydicom、SimpleITK、nibabel 等经典工具链为我们处理复杂的医学影像数据提供了可能，前人的卓越贡献值得我们每一个人致敬。
 
-- **DICOM 碎片化存储**：单个 CT/MR 研究包含数百个小文件，I/O 效率低下
-- **元数据冗余**：每个切片重复相同的患者/研究信息，浪费存储空间
-- **坐标系统混乱**：缺乏统一的 3D 空间变换处理方案
-- **掩膜处理效率低**：分割结果存储和处理缺乏专门优化
+然而，我们也不得不承认，这些传统的轮子在面对今天的深度学习工作流时，显得有些“水土不服”。笔者和身边的许多同行，都曾或多或少地在一些基础问题上反复挣扎：老旧的数据格式与现代AI框架的接口难以严丝合缝地对接；新人需要耗费大量时间，在无数次踩坑和试错后，才能建立起对医学影像坐标系、数据加载等问题的基本认知。
+
+更让人难受的是，这个领域的“说明书”实在太少了。除了3D Slicer等少数项目提供了相对完善的文档外，大量的关键内容都深埋在ITK和VTK庞杂的代码库深处。很多时候，我们为了定位一个看似简单的bug，不得不翻遍GitHub issue、stackoverflow、各路神仙的博客，从零散的讨论中拼凑出问题的成因。这种探索过程虽然不乏“解谜”的乐趣，但对于追求高效研发的我们而言，无疑是一种巨大的时间成本。
+
+正是这些日常工作中的痛点，促使笔者开始思考：我们是否能有一套更现代、更高效、更符合AI时代开发习惯的基础工具，来将我们从这些重复性的泥潭中解放出来，从而能更专注于算法和模型本身的创新？这便是我们开发FastDiag Toolkit的初衷。
 
 ## 解决方案
 
-FastDiag Toolkit 提供三个核心库来解决这些问题：
+FastDiag Toolkit 提供了三个核心库：
 
 ### 📦 DiCube - 医学影像存储库
 
-高效的 3D 医学影像存储格式，完全兼容 DICOM 标准。
+高效的 3D 医学影像存储格式，dicom 的上位替代。
 
 **核心特性：**
 
@@ -31,7 +32,7 @@ FastDiag Toolkit 提供三个核心库来解决这些问题：
 
 ### 🎭 MedMask - 医学掩膜处理库
 
-专业的医学影像分割掩膜压缩和处理解决方案。
+专业的医学影像分割掩膜压缩和处理解决方案，nii.gz 的上位替代。
 
 **核心特性：**
 
@@ -43,7 +44,7 @@ FastDiag Toolkit 提供三个核心库来解决这些问题：
 
 ### 🌐 SpaceTransformer - 3D 空间变换库
 
-优雅的 3D 医学影像几何变换处理方案。
+优雅的 3D 医学影像几何变换处理方案，simpleitk 的上位替代。
 
 **核心特性：**
 
@@ -66,26 +67,6 @@ pip install dicube
 pip install medmask
 pip install spacetransformer-core
 pip install spacetransformer-torch  # GPU 加速版本
-```
-
-## 快速使用示例
-
-```python
-# DiCube：DICOM 到高效存储格式
-import dicube
-image = dicube.load_from_dicom_folder('dicom_folder/')
-dicube.save(image, 'output.dcbs')
-
-# MedMask：掩膜压缩存储
-import medmask
-mask = medmask.SegmentationMask(data, {"liver": 1}, space=space)
-mask.save('liver.msk')
-
-# SpaceTransformer：3D 空间变换
-from spacetransformer.core import Space
-from spacetransformer.torch import warp_image
-target_space = space.apply_flip(axis=2).apply_shape((256, 256, 50))
-result = warp_image(image, space, target_space)
 ```
 
 ## 详细文档

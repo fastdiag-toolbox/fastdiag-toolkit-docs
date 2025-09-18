@@ -335,7 +335,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="测试场景设计" class="level2">
 <h2 class="anchored" data-anchor-id="测试场景设计">测试场景设计</h2>
 <p>为了客观评估不同库的表现，我们设计了一个简化但具有代表性的测试场景：</p>
-<div id="07e51787" class="cell" data-execution_count="1">
+<div id="f748ba69" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -462,7 +462,7 @@ ROI区域: (10:25, 10:25)
 <section id="方法一simpleitk实现" class="level2">
 <h2 class="anchored" data-anchor-id="方法一simpleitk实现">方法一：SimpleITK实现</h2>
 <p>SimpleITK是医学图像处理的标准库，提供了完整的ITK功能接口。</p>
-<div id="e91d09cf" class="cell" data-execution_count="2">
+<div id="3bc4058b" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_simpleitk(img):</span>
@@ -559,16 +559,15 @@ ROI区域: (10:25, 10:25)
 </div>
 <p><strong>SimpleITK的问题分析</strong>：</p>
 <ul>
-<li><strong>参数管理复杂</strong>：需要手动管理spacing, origin, direction等多个相互关联的参数</li>
-<li><strong>坐标变换繁琐</strong>：手动计算多级坐标变换，容易出现轴序错误</li>
 <li><strong>重采样配置冗长</strong>：每次重采样都需要配置多个参数</li>
 <li><strong>代码可读性差</strong>：业务逻辑被大量底层配置代码掩盖</li>
+<li><strong>轴序问题</strong>：这张图xy对称，所以体现不出来，但实际上很容易出现轴序错误</li>
 </ul>
 </section>
 <section id="方法二scipy.ndimage实现" class="level2">
 <h2 class="anchored" data-anchor-id="方法二scipy.ndimage实现">方法二：scipy.ndimage实现</h2>
 <p>scipy.ndimage是通用的N维图像处理库，在科学计算社区广泛使用。</p>
-<div id="5b0deca1" class="cell" data-execution_count="3">
+<div id="4370a810" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> ndimage</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.ndimage <span class="im">import</span> zoom</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -625,18 +624,12 @@ ROI区域: (10:25, 10:25)
 </div>
 </div>
 </div>
-<p><strong>scipy.ndimage的问题分析</strong>：</p>
-<ul>
-<li><strong>坐标系统模糊</strong>：缺乏明确的坐标系统定义，变换结果难以预测</li>
-<li><strong>zoom函数陷阱</strong>：逆变换时尺寸计算容易出现舍入误差</li>
-<li><strong>无物理单位概念</strong>：只处理像素级别的变换，缺乏物理空间的概念</li>
-<li><strong>错误处理复杂</strong>：尺寸不匹配等边界情况需要大量额外代码</li>
-</ul>
+<p><strong>scipy.ndimage的问题分析</strong>： - <strong>zoom函数</strong>：逆变换时尺寸计算容易出现舍入误差</p>
 </section>
 <section id="方法三pytorch-interpolate实现" class="level2">
 <h2 class="anchored" data-anchor-id="方法三pytorch-interpolate实现">方法三：PyTorch interpolate实现</h2>
 <p>PyTorch的functional.interpolate是深度学习中最常用的图像变换工具。</p>
-<div id="6788148d" class="cell" data-execution_count="4">
+<div id="6b53d62e" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -705,13 +698,12 @@ ROI区域: (10:25, 10:25)
 <ul>
 <li><strong>align_corners混淆</strong>：True和False设置导致不同的坐标映射公式，容易出错</li>
 <li><strong>维度管理冗余</strong>：需要手动添加和移除batch、channel维度</li>
-<li><strong>坐标变换公式复杂</strong>：手动实现像素中心对齐的数学公式</li>
 <li><strong>nearest 有偏</strong>：可以明显发现预测的mask 和原图是有偏的</li>
 </ul>
 </section>
 <section id="方法四spacetransformer实现" class="level2">
 <h2 class="anchored" data-anchor-id="方法四spacetransformer实现">方法四：SpaceTransformer实现</h2>
-<div id="056c04d6" class="cell" data-execution_count="5">
+<div id="510235eb" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.torch <span class="im">import</span> warp_image</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> warp_point</span>
@@ -779,7 +771,7 @@ ROI区域: (10:25, 10:25)
 <h2 class="anchored" data-anchor-id="实验结果分析与总结">实验结果分析与总结</h2>
 <p>通过上述对比实验，我们可以清晰地观察到各个库在空间变换精度和实现复杂度方面的显著差异：</p>
 <p><strong>精度对比</strong>：除SpaceTransformer外，其他主流库均存在不同程度的坐标偏移问题。其中，PyTorch的实现甚至出现了明显的分割掩膜偏移，这在医学图像分析中可能导致严重的临床后果。SpaceTransformer通过精确的空间描述，有效避免了这类精度损失。</p>
-<p><strong>开发效率对比</strong>：从代码复杂度角度，SpaceTransformer展现出明显优势。传统方法需要手动管理复杂的坐标变换链、参数配置和维度处理，而SpaceTransformer通过声明式的空间定义和自动化的变换计算，将原本数十行的实现精简为几行核心逻辑，大幅提升了开发效率和代码可维护性。</p>
+<p><strong>开发效率对比</strong>：从代码复杂度角度，SpaceTransformer展现出明显优势。传统方法需要手动管理复杂的坐标变换链、参数配置和维度处理，需要维护很多中间变量，对于不同的元素采取不同的变换方法，而SpaceTransformer通过声明式的空间定义和自动化的变换计算，将原本数十行的实现精简为几行核心逻辑，大幅提升了开发效率和代码可维护性。</p>
 <p><strong>架构设计优势</strong>：SpaceTransformer采用了计算逻辑与业务逻辑分离的设计理念，把复杂、易错底层计算逻辑进行包装，使得空间变换操作对用户透明，开发者可以专注于算法本身而非底层的坐标计算细节。</p>
 <p>在接下来的章节中，我们将深入分析这些问题的根本原因，并详细阐述SpaceTransformer的设计原理和技术实现，帮助读者全面理解其在医学图像空间变换领域的技术优势。</p>
 
