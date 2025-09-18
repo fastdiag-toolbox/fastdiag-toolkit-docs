@@ -1,6 +1,6 @@
 
 ---
-title: "Medmask 的压缩效率"
+title: "高效压缩算法"
 format:
   html:
     code-fold: false

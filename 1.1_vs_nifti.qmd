@@ -1,5 +1,5 @@
 ---
-title: "DiCube vs NifTi"
+title: "与NIfTI格式对比"
 format:
   html:
     code-fold: false

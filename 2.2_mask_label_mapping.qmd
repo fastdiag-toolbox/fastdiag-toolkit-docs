@@ -1,5 +1,5 @@
 ---
-title: "MedMask 的语义映射管理"
+title: "语义映射系统"
 format:
   html:
     code-fold: false

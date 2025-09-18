@@ -1,6 +1,6 @@
 
 ---
-title: "医学图像分割掩膜存储的四大痛点"
+title: "掩膜存储痛点分析"
 format:
   html:
     code-fold: false

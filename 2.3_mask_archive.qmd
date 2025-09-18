@@ -1,5 +1,5 @@
 ---
-title: "MaskArchive：多掩膜归档管理"
+title: "多掩膜归档管理"
 format:
   html:
     code-fold: false

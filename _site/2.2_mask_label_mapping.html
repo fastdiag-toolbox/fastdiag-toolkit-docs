@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>MedMask 的语义映射管理 – FastDiag Toolkit 文档</title>
+<title>语义映射系统 – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -150,11 +150,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./1.3_dicom_status.html">
- <span class="dropdown-text">4. DICOM状态管理</span></a>
+ <span class="dropdown-text">4. DICOM序列状态</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.4_sort_method.html">
- <span class="dropdown-text">5. 切片排序算法</span></a>
+ <span class="dropdown-text">5. 切片排序方法</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.5_axis_order.html">
@@ -189,6 +189,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
     </ul>
   </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-spacetransformer-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">SpaceTransformer 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-spacetransformer-教程">    
+        <li>
+    <a class="dropdown-item" href="./3.0_spacetransformer_motivation.html">
+ <span class="dropdown-text">1. 空间变换库对比与动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./3.1_space_concept_fundamentals.html">
+ <span class="dropdown-text">2. Space概念详解</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -207,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.2_mask_label_mapping.html">MedMask 的语义映射管理</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.2_mask_label_mapping.html">语义映射系统</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -243,43 +258,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">为什么需要DiCube？</span></a>
+ <span class="menu-text">设计理念与动机</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DiCube vs NifTi</span></a>
+ <span class="menu-text">与NIfTI格式对比</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DicomMeta</span></a>
+ <span class="menu-text">元数据存储机制</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM Status</span></a>
+ <span class="menu-text">DICOM序列状态</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM 排序</span></a>
+ <span class="menu-text">切片排序方法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dicube的轴序</span></a>
+ <span class="menu-text">三维轴序约定</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">流式读取与兼容性</span></a>
+ <span class="menu-text">DICOM兼容性保证</span></a>
   </div>
 </li>
       </ul>
@@ -296,25 +311,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+ <span class="menu-text">掩膜存储痛点分析</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Medmask 的压缩效率</span></a>
+ <span class="menu-text">高效压缩算法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.2_mask_label_mapping.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">MedMask 的语义映射管理</span></a>
+ <span class="menu-text">语义映射系统</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.3_mask_archive.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MaskArchive：多掩膜归档管理</span></a>
+ <span class="menu-text">多掩膜归档管理</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">SpaceTransformer 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.0_spacetransformer_motivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">空间变换库对比与动机</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Space概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -359,9 +397,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.2_mask_label_mapping.html">MedMask 的语义映射管理</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.2_mask_label_mapping.html">语义映射系统</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">MedMask 的语义映射管理</h1>
+<h1 class="title">语义映射系统</h1>
 </div>
 
 
@@ -389,7 +427,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="方式一外置配置文件描述" class="level3">
 <h3 class="anchored" data-anchor-id="方式一外置配置文件描述">方式一：外置配置文件描述</h3>
 <p>通过独立的配置文件（如JSON、YAML、CSV）来维护标签与语义的对应关系。</p>
-<div id="4a3e8b40" class="cell" data-execution_count="1">
+<div id="727f18ee" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -425,7 +463,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="方式二文件名或内部键值描述" class="level3">
 <h3 class="anchored" data-anchor-id="方式二文件名或内部键值描述">方式二：文件名或内部键值描述</h3>
 <p>利用文件命名约定或NPZ格式的内部键值来承载语义信息。</p>
-<div id="59c6664e" class="cell" data-execution_count="2">
+<div id="b4382b43" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 文件名描述方式</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># liver_segmentation.nii.gz</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># spleen_segmentation.nii.gz  </span></span>
@@ -454,7 +492,7 @@ NPZ键值: ['liver', 'spleen', 'kidney']</code></pre>
 <section id="核心设计理念内嵌式双向映射" class="level3">
 <h3 class="anchored" data-anchor-id="核心设计理念内嵌式双向映射">核心设计理念：内嵌式双向映射</h3>
 <p>MedMask 通过 <code>LabelMapping</code> 类实现了语义信息与像素数据的一体化存储。这种设计确保了掩膜文件在任何环境下都是完全自洽的，无需外部依赖即可完整解读。</p>
-<div id="863f0002" class="cell" data-execution_count="3">
+<div id="93d719b0" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask.core.mapping <span class="im">import</span> LabelMapping</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># MedMask方法：创建内嵌语义映射</span></span>
@@ -481,7 +519,7 @@ NPZ键值: ['liver', 'spleen', 'kidney']</code></pre>
 <section id="labelmapping-类的技术特性" class="level3">
 <h3 class="anchored" data-anchor-id="labelmapping-类的技术特性">LabelMapping 类的技术特性</h3>
 <p><code>LabelMapping</code> 类提供了完整的双向映射功能，支持多种访问模式以适应不同的编程习惯：</p>
-<div id="52ea33e2" class="cell" data-execution_count="4">
+<div id="746b1479" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 字典式访问</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>liver_label <span class="op">=</span> mapping[<span class="st">"liver"</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -513,7 +551,7 @@ NPZ键值: ['liver', 'spleen', 'kidney']</code></pre>
 <section id="持久化与版本控制" class="level3">
 <h3 class="anchored" data-anchor-id="持久化与版本控制">持久化与版本控制</h3>
 <p>语义映射支持JSON序列化，确保了跨平台的兼容性和版本控制的便利性：</p>
-<div id="67edb765" class="cell" data-execution_count="5">
+<div id="14a96c97" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 序列化为JSON</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>json_repr <span class="op">=</span> mapping.to_json()</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"JSON序列化结果: </span><span class="sc">{</span>json_repr<span class="sc">}</span><span class="ss">"</span>)</span>
@@ -537,7 +575,7 @@ NPZ键值: ['liver', 'spleen', 'kidney']</code></pre>
 <section id="统一的语义-空间数据模型" class="level3">
 <h3 class="anchored" data-anchor-id="统一的语义-空间数据模型">统一的语义-空间数据模型</h3>
 <p><code>SegmentationMask</code> 类将语义映射、空间信息和像素数据统一管理，形成了完整的医学掩膜表示：</p>
-<div id="ae8236ce" class="cell" data-execution_count="6">
+<div id="12b0b7b2" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask <span class="im">import</span> SegmentationMask</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer <span class="im">import</span> Space</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -566,7 +604,7 @@ NPZ键值: ['liver', 'spleen', 'kidney']</code></pre>
 <section id="语义化查询接口与代码可维护性" class="level3">
 <h3 class="anchored" data-anchor-id="语义化查询接口与代码可维护性">语义化查询接口与代码可维护性</h3>
 <p>通过内嵌的语义映射，用户可以直接使用器官名称来查询和操作掩膜数据，这不仅提高了代码的可读性，更重要的是<strong>根本性地改善了代码的可维护性</strong>。</p>
-<div id="73a00e88" class="cell" data-execution_count="7">
+<div id="206c6d14" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 按名称查询单个器官</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>liver_mask <span class="op">=</span> segmask.get_binary_mask_by_names(<span class="st">"liver"</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"肝脏掩膜: 非零像素数 = </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(liver_mask)<span class="sc">}</span><span class="ss">"</span>)</span>
@@ -610,7 +648,7 @@ NPZ键值: ['liver', 'spleen', 'kidney']</code></pre>
 <section id="增量构建与动态扩展" class="level3">
 <h3 class="anchored" data-anchor-id="增量构建与动态扩展">增量构建与动态扩展</h3>
 <p>对于复杂的分割任务，MedMask支持渐进式构建掩膜，每次添加一个器官标签：</p>
-<div id="44cb4cc4" class="cell" data-execution_count="8">
+<div id="ab540944" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 懒加载初始化：创建空掩膜</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>empty_mask <span class="op">=</span> SegmentationMask.lazy_init(bit_depth<span class="op">=</span><span class="dv">8</span>, space<span class="op">=</span>space)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -643,7 +681,7 @@ NPZ键值: ['liver', 'spleen', 'kidney']</code></pre>
 <section id="错误预防机制" class="level3">
 <h3 class="anchored" data-anchor-id="错误预防机制">错误预防机制</h3>
 <p>MedMask的设计会防止反复写入同一个键值：</p>
-<div id="61f7ed07" class="cell" data-execution_count="9">
+<div id="9b29e4fb" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MedMask的错误预防能力</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">MedMask的自动错误预防:"</span>)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>

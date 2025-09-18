@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>MaskArchive：多掩膜归档管理 – FastDiag Toolkit 文档</title>
+<title>多掩膜归档管理 – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -150,11 +150,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./1.3_dicom_status.html">
- <span class="dropdown-text">4. DICOM状态管理</span></a>
+ <span class="dropdown-text">4. DICOM序列状态</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.4_sort_method.html">
- <span class="dropdown-text">5. 切片排序算法</span></a>
+ <span class="dropdown-text">5. 切片排序方法</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.5_axis_order.html">
@@ -189,6 +189,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
     </ul>
   </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-spacetransformer-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">SpaceTransformer 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-spacetransformer-教程">    
+        <li>
+    <a class="dropdown-item" href="./3.0_spacetransformer_motivation.html">
+ <span class="dropdown-text">1. 空间变换库对比与动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./3.1_space_concept_fundamentals.html">
+ <span class="dropdown-text">2. Space概念详解</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -207,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.3_mask_archive.html">MaskArchive：多掩膜归档管理</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.3_mask_archive.html">多掩膜归档管理</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -243,43 +258,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">为什么需要DiCube？</span></a>
+ <span class="menu-text">设计理念与动机</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DiCube vs NifTi</span></a>
+ <span class="menu-text">与NIfTI格式对比</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DicomMeta</span></a>
+ <span class="menu-text">元数据存储机制</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM Status</span></a>
+ <span class="menu-text">DICOM序列状态</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM 排序</span></a>
+ <span class="menu-text">切片排序方法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dicube的轴序</span></a>
+ <span class="menu-text">三维轴序约定</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">流式读取与兼容性</span></a>
+ <span class="menu-text">DICOM兼容性保证</span></a>
   </div>
 </li>
       </ul>
@@ -296,25 +311,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+ <span class="menu-text">掩膜存储痛点分析</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Medmask 的压缩效率</span></a>
+ <span class="menu-text">高效压缩算法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.2_mask_label_mapping.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask 的语义映射管理</span></a>
+ <span class="menu-text">语义映射系统</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.3_mask_archive.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">MaskArchive：多掩膜归档管理</span></a>
+ <span class="menu-text">多掩膜归档管理</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">SpaceTransformer 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.0_spacetransformer_motivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">空间变换库对比与动机</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Space概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -348,9 +386,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.3_mask_archive.html">MaskArchive：多掩膜归档管理</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2.0_mask.html">MedMask 技术</a></li><li class="breadcrumb-item"><a href="./2.3_mask_archive.html">多掩膜归档管理</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">MaskArchive：多掩膜归档管理</h1>
+<h1 class="title">多掩膜归档管理</h1>
 </div>
 
 
@@ -387,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="模拟数据构建" class="level2">
 <h2 class="anchored" data-anchor-id="模拟数据构建">2. 模拟数据构建</h2>
 <p>我们用2D掩膜来模拟这一场景：</p>
-<div id="24b678ec" class="cell" data-execution_count="1">
+<div id="f2554917" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask <span class="im">import</span> SegmentationMask, MaskArchive</span>
@@ -475,7 +513,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="可视化掩膜结构" class="level2">
 <h2 class="anchored" data-anchor-id="可视化掩膜结构">3. 可视化掩膜结构</h2>
-<div id="12627361" class="cell" data-execution_count="2">
+<div id="dfee0416" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 可视化四种掩膜的空间分布</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
@@ -516,7 +554,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="传统方法独立文件存储" class="level2">
 <h2 class="anchored" data-anchor-id="传统方法独立文件存储">4. 传统方法：独立文件存储</h2>
-<div id="190e96a3" class="cell" data-execution_count="3">
+<div id="9cc59a07" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 方法1: 传统的独立文件存储</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 传统方法：独立文件存储 ==="</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
@@ -559,7 +597,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="maskarchive方法归档存储" class="level2">
 <h2 class="anchored" data-anchor-id="maskarchive方法归档存储">5. MaskArchive方法：归档存储</h2>
-<div id="df384222" class="cell" data-execution_count="4">
+<div id="02e83609" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 方法2: MaskArchive归档存储</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== MaskArchive方法：归档存储 ==="</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
@@ -606,7 +644,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="归档访问与查询" class="level2">
 <h2 class="anchored" data-anchor-id="归档访问与查询">6. 归档访问与查询</h2>
-<div id="b85e3c81" class="cell" data-execution_count="5">
+<div id="4aa989b7" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示归档的访问功能</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 归档访问演示 ==="</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -672,7 +710,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="总结">总结</h2>
 <p>MaskArchive 提供了一种简单有效的多掩膜管理方案。通过将相关的掩膜合并到单一归档文件中，它能够简化文件管理、优化存储空间，并为复杂的多层级掩膜组织提供技术支持。</p>
 <p>虽然不是革命性的功能，但在处理大量掩膜文件时，MaskArchive 确实能够带来实用的管理便利。选择使用归档还是独立文件，主要取决于具体的应用场景和文件管理需求。</p>
-<div id="09b1caa4" class="cell" data-execution_count="6">
+<div id="0eed086c" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试文件</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>cleanup_files <span class="op">=</span> [<span class="st">"lung_lobes.msk"</span>, <span class="st">"lung_segments.msk"</span>, <span class="st">"lung_lesions.msk"</span>, </span>

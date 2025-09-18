@@ -1,5 +1,5 @@
 ---
-title: "为什么需要DiCube？"
+title: "设计理念与动机"
 format:
   html:
     code-fold: false

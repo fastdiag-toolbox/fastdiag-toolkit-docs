@@ -1,5 +1,5 @@
 ---
-title: Dicube的轴序
+title: 三维轴序约定
 format:
   html:
     code-fold: false

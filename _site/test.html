@@ -150,11 +150,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./1.3_dicom_status.html">
- <span class="dropdown-text">4. DICOM状态管理</span></a>
+ <span class="dropdown-text">4. DICOM序列状态</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.4_sort_method.html">
- <span class="dropdown-text">5. 切片排序算法</span></a>
+ <span class="dropdown-text">5. 切片排序方法</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.5_axis_order.html">
@@ -186,6 +186,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="./2.3_mask_archive.html">
  <span class="dropdown-text">4. 多掩膜归档管理</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-spacetransformer-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">SpaceTransformer 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-spacetransformer-教程">    
+        <li>
+    <a class="dropdown-item" href="./3.0_spacetransformer_motivation.html">
+ <span class="dropdown-text">1. 空间变换库对比与动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./3.1_space_concept_fundamentals.html">
+ <span class="dropdown-text">2. Space概念详解</span></a>
   </li>  
     </ul>
   </li>
@@ -243,43 +258,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">为什么需要DiCube？</span></a>
+ <span class="menu-text">设计理念与动机</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DiCube vs NifTi</span></a>
+ <span class="menu-text">与NIfTI格式对比</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DicomMeta</span></a>
+ <span class="menu-text">元数据存储机制</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM Status</span></a>
+ <span class="menu-text">DICOM序列状态</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM 排序</span></a>
+ <span class="menu-text">切片排序方法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dicube的轴序</span></a>
+ <span class="menu-text">三维轴序约定</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">流式读取与兼容性</span></a>
+ <span class="menu-text">DICOM兼容性保证</span></a>
   </div>
 </li>
       </ul>
@@ -296,25 +311,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+ <span class="menu-text">掩膜存储痛点分析</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Medmask 的压缩效率</span></a>
+ <span class="menu-text">高效压缩算法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.2_mask_label_mapping.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask 的语义映射管理</span></a>
+ <span class="menu-text">语义映射系统</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.3_mask_archive.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MaskArchive：多掩膜归档管理</span></a>
+ <span class="menu-text">多掩膜归档管理</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">SpaceTransformer 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.0_spacetransformer_motivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">空间变换库对比与动机</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Space概念详解</span></a>
   </div>
 </li>
       </ul>

@@ -1,5 +1,5 @@
 ---
-title: "DICOM 排序"
+title: "切片排序方法"
 format:
   html:
     code-fold: false

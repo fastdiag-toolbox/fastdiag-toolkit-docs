@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DICOM 排序 – FastDiag Toolkit 文档</title>
+<title>切片排序方法 – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -150,11 +150,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./1.3_dicom_status.html">
- <span class="dropdown-text">4. DICOM状态管理</span></a>
+ <span class="dropdown-text">4. DICOM序列状态</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.4_sort_method.html">
- <span class="dropdown-text">5. 切片排序算法</span></a>
+ <span class="dropdown-text">5. 切片排序方法</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.5_axis_order.html">
@@ -189,6 +189,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
     </ul>
   </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-spacetransformer-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">SpaceTransformer 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-spacetransformer-教程">    
+        <li>
+    <a class="dropdown-item" href="./3.0_spacetransformer_motivation.html">
+ <span class="dropdown-text">1. 空间变换库对比与动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./3.1_space_concept_fundamentals.html">
+ <span class="dropdown-text">2. Space概念详解</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -207,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">DICOM 排序</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">切片排序方法</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -243,43 +258,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">为什么需要DiCube？</span></a>
+ <span class="menu-text">设计理念与动机</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DiCube vs NifTi</span></a>
+ <span class="menu-text">与NIfTI格式对比</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DicomMeta</span></a>
+ <span class="menu-text">元数据存储机制</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM Status</span></a>
+ <span class="menu-text">DICOM序列状态</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">DICOM 排序</span></a>
+ <span class="menu-text">切片排序方法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dicube的轴序</span></a>
+ <span class="menu-text">三维轴序约定</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">流式读取与兼容性</span></a>
+ <span class="menu-text">DICOM兼容性保证</span></a>
   </div>
 </li>
       </ul>
@@ -296,25 +311,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+ <span class="menu-text">掩膜存储痛点分析</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Medmask 的压缩效率</span></a>
+ <span class="menu-text">高效压缩算法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.2_mask_label_mapping.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask 的语义映射管理</span></a>
+ <span class="menu-text">语义映射系统</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.3_mask_archive.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MaskArchive：多掩膜归档管理</span></a>
+ <span class="menu-text">多掩膜归档管理</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">SpaceTransformer 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.0_spacetransformer_motivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">空间变换库对比与动机</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Space概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -344,9 +382,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">DICOM 排序</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.4_sort_method.html">切片排序方法</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">DICOM 排序</h1>
+<h1 class="title">切片排序方法</h1>
 </div>
 
 
@@ -388,7 +426,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="排序方法的可视化验证" class="level2">
 <h2 class="anchored" data-anchor-id="排序方法的可视化验证">排序方法的可视化验证</h2>
 <p>让我们通过三视图的方式来直观地观察和验证右手坐标系排序的效果。通过查看横断面、冠状面和矢状面的图像，我们可以清楚地了解图像的空间排列是否正确：</p>
-<div id="8370bac3" class="cell" data-execution_count="1">
+<div id="b4f6ed71" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube <span class="im">import</span> SortMethod</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DicomMeta – FastDiag Toolkit 文档</title>
+<title>元数据存储机制 – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -150,11 +150,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./1.3_dicom_status.html">
- <span class="dropdown-text">4. DICOM状态管理</span></a>
+ <span class="dropdown-text">4. DICOM序列状态</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.4_sort_method.html">
- <span class="dropdown-text">5. 切片排序算法</span></a>
+ <span class="dropdown-text">5. 切片排序方法</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.5_axis_order.html">
@@ -189,6 +189,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
     </ul>
   </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-spacetransformer-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">SpaceTransformer 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-spacetransformer-教程">    
+        <li>
+    <a class="dropdown-item" href="./3.0_spacetransformer_motivation.html">
+ <span class="dropdown-text">1. 空间变换库对比与动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./3.1_space_concept_fundamentals.html">
+ <span class="dropdown-text">2. Space概念详解</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -207,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.2_meta_storage.html">DicomMeta</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.2_meta_storage.html">元数据存储机制</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -243,43 +258,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">为什么需要DiCube？</span></a>
+ <span class="menu-text">设计理念与动机</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DiCube vs NifTi</span></a>
+ <span class="menu-text">与NIfTI格式对比</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">DicomMeta</span></a>
+ <span class="menu-text">元数据存储机制</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM Status</span></a>
+ <span class="menu-text">DICOM序列状态</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM 排序</span></a>
+ <span class="menu-text">切片排序方法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dicube的轴序</span></a>
+ <span class="menu-text">三维轴序约定</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">流式读取与兼容性</span></a>
+ <span class="menu-text">DICOM兼容性保证</span></a>
   </div>
 </li>
       </ul>
@@ -296,25 +311,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+ <span class="menu-text">掩膜存储痛点分析</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Medmask 的压缩效率</span></a>
+ <span class="menu-text">高效压缩算法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.2_mask_label_mapping.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask 的语义映射管理</span></a>
+ <span class="menu-text">语义映射系统</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.3_mask_archive.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MaskArchive：多掩膜归档管理</span></a>
+ <span class="menu-text">多掩膜归档管理</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">SpaceTransformer 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.0_spacetransformer_motivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">空间变换库对比与动机</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Space概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -342,9 +380,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.2_meta_storage.html">DicomMeta</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.2_meta_storage.html">元数据存储机制</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">DicomMeta</h1>
+<h1 class="title">元数据存储机制</h1>
 </div>
 
 
@@ -365,7 +403,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="传统dicom的历史包袱元数据冗余">1. 传统DICOM的“历史包袱”：元数据冗余</h2>
 <p>DICOM 作为医学影像的基石，其设计源于上世纪末，采用了“一文件一图像（切片）”的存储模式。这种模式在当时是合理的，但随着影像设备采集的图像层数急剧增加（从几十层到数千层），其固有的<strong>元数据冗余</strong>问题成为了一个巨大的性能瓶颈和存储负担。</p>
 <p>在一个包含数百个 <code>.dcm</code> 文件的CT序列中，绝大部分描述患者身份、检查信息、设备参数的元数据在每个文件中都被完整地复制了一遍。只有像切片位置、实例编号这类与特定切片相关的少数信息是变化的。</p>
-<div id="48b91062" class="cell" data-execution_count="1">
+<div id="296bf465" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -399,7 +437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="拥抱标准基于dicom-json构建">2. 拥抱标准：基于DICOM JSON构建</h2>
 <p>为了让DICOM更好地融入现代Web和数据科学生态，DICOM标准委员会在 PS3.18 部分正式引入了 <a href="https://www.google.com/search?q=https://dicom.nema.org/medical/dicom/current/output/html/part18.html%23chapter_F">DICOM JSON模型</a>。它为DICOM元数据提供了一种标准化的、人类可读的JSON表示形式，极大地简化了非医疗专业软件对DICOM信息的解析和利用。</p>
 <p>DiCube 没有重新发明轮子，而是完全遵从这一现代化标准来组织其内部的元数据。</p>
-<div id="163ef0be" class="cell" data-execution_count="2">
+<div id="8d1605b9" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># PyDICOM原生支持将元数据导出为DICOM JSON</span></span>
@@ -433,7 +471,7 @@ Tag 00200013 (VR: IS): 73</code></pre>
 <li><strong>非共享 (Per-Slice) 元数据</strong>: 每个切片独有的信息，如 <code>InstanceNumber</code>、<code>ImagePositionPatient</code>、<code>SliceLocation</code> 等。这部分数据会为每个切片单独存储。</li>
 </ul>
 <p>当从DICOM文件夹加载数据时，DiCube会自动分析并分离这两类元数据。</p>
-<div id="c544e060" class="cell" data-execution_count="3">
+<div id="6029d8b4" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 从DICOM文件夹加载数据，DiCube在内部自动完成元数据分离</span></span>
@@ -831,7 +869,7 @@ I2000             200        -1282.2   [-102.08, -31.26, 1282.2]         202944.
 </div>
 </div>
 <p>这种智能分离机制带来了立竿见影的好处：元数据存储占用急剧减少，并且访问序列级信息（如患者姓名）时无需遍历，实现了O(1)时间复杂度的查找。</p>
-<div id="9b5ea215" class="cell" data-execution_count="4">
+<div id="f1b7fff7" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 检查共享元数据</span></span>
@@ -858,7 +896,7 @@ InstanceNumber (是否为共享数据: False)
 <h2 class="anchored" data-anchor-id="极致的压缩效率json-与-zstandard-的天作之合">4. 极致的压缩效率：JSON 与 Zstandard 的天作之合</h2>
 <p>分离元数据解决了冗余，但如何高效地存储这些结构化的文本信息呢？DiCube 选择了由Facebook开发的现代化压缩算法 <strong>Zstandard (zstd)</strong>。</p>
 <p>Zstd 特别擅长压缩具有重复模式的结构化文本数据（如JSON），在压缩比和解压速度上均显著优于传统的 gzip。</p>
-<div id="6003aac3" class="cell" data-execution_count="5">
+<div id="f083791c" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 估算原始DICOM头文件的总大小</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dicom_header_total_size <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>all_files <span class="op">=</span> <span class="bu">list</span>(Path(dicom_dir).glob(<span class="st">"*"</span>))</span>
@@ -892,8 +930,8 @@ InstanceNumber (是否为共享数据: False)
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"元数据压缩比高达: </span><span class="sc">{</span>dicom_header_total_size <span class="op">/</span> dicube_meta_size<span class="sc">:.1f}</span><span class="ss">x"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>原始DICOM头文件总大小 (估算): 2280.90 KB
-DiCube Zstd压缩后元数据大小: 25.69 KB
-元数据压缩比高达: 88.8x</code></pre>
+DiCube Zstd压缩后元数据大小: 25.72 KB
+元数据压缩比高达: 88.7x</code></pre>
 </div>
 </div>
 <p>超过 80 倍的压缩比！这表明 <code>DicomMeta</code> 的共享机制与 zstd 压缩形成了完美的组合拳，将元数据存储开销降至最低。</p>
@@ -902,7 +940,7 @@ DiCube Zstd压缩后元数据大小: 25.69 KB
 <h2 class="anchored" data-anchor-id="提升开发体验commontags-枚举">5. 提升开发体验：CommonTags 枚举</h2>
 <p>直接操作 <code>(0010,0010)</code> 这样的十六进制标签不仅难以记忆，而且容易出错。为了提升代码的可读性和健壮性，DiCube 提供了一个便捷的 <code>CommonTags</code> 枚举类，收录了绝大部分常用的DICOM标签。</p>
 <p>开发者可以通过语义化的名称来访问元数据，使代码更加清晰、易于维护。</p>
-<div id="a0a3e5dd" class="cell" data-execution_count="6">
+<div id="5c7f6ff0" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用CommonTags枚举类，代码更具可读性</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>positions <span class="op">=</span> meta.get_values(CommonTags.ImagePositionPatient)</span>
@@ -924,7 +962,7 @@ DiCube Zstd压缩后元数据大小: 25.69 KB
 <li><strong>DiCube方式</strong>：只需打开1个文件，解压一小块元数据，并直接访问解析好的列表。</li>
 </ul>
 <!-- end list -->
-<div id="02bb62c7" class="cell" data-execution_count="7">
+<div id="c3099163" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 传统DICOM方式：遍历所有文件</span></span>
@@ -948,10 +986,10 @@ DiCube Zstd压缩后元数据大小: 25.69 KB
 <span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理临时文件</span></span>
 <span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>os.remove(<span class="st">"temp_demo.dcbs"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>传统DICOM I/O耗时: 147.86 毫秒
-DiCube DicomMeta 耗时: 3.45 毫秒
+<pre><code>传统DICOM I/O耗时: 149.66 毫秒
+DiCube DicomMeta 耗时: 3.30 毫秒
 
-性能提升: 42.8 倍</code></pre>
+性能提升: 45.4 倍</code></pre>
 </div>
 </div>
 <p>几十倍的性能提升是显而易见的。这背后是 I/O 模式的根本性变革：从多次、琐碎的文件操作，转变为一次性、集中的数据块读取。</p>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DiCube vs NifTi – FastDiag Toolkit 文档</title>
+<title>与NIfTI格式对比 – FastDiag Toolkit 文档</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -150,11 +150,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./1.3_dicom_status.html">
- <span class="dropdown-text">4. DICOM状态管理</span></a>
+ <span class="dropdown-text">4. DICOM序列状态</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.4_sort_method.html">
- <span class="dropdown-text">5. 切片排序算法</span></a>
+ <span class="dropdown-text">5. 切片排序方法</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1.5_axis_order.html">
@@ -189,6 +189,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
     </ul>
   </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-spacetransformer-教程" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">SpaceTransformer 教程</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-spacetransformer-教程">    
+        <li>
+    <a class="dropdown-item" href="./3.0_spacetransformer_motivation.html">
+ <span class="dropdown-text">1. 空间变换库对比与动机</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./3.1_space_concept_fundamentals.html">
+ <span class="dropdown-text">2. Space概念详解</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -207,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.1_vs_nifti.html">DiCube vs NifTi</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.1_vs_nifti.html">与NIfTI格式对比</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -243,43 +258,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.0_motivation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">为什么需要DiCube？</span></a>
+ <span class="menu-text">设计理念与动机</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.1_vs_nifti.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">DiCube vs NifTi</span></a>
+ <span class="menu-text">与NIfTI格式对比</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.2_meta_storage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DicomMeta</span></a>
+ <span class="menu-text">元数据存储机制</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.3_dicom_status.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM Status</span></a>
+ <span class="menu-text">DICOM序列状态</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.4_sort_method.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DICOM 排序</span></a>
+ <span class="menu-text">切片排序方法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.5_axis_order.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Dicube的轴序</span></a>
+ <span class="menu-text">三维轴序约定</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1.6_dicom_compatibility_simple.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">流式读取与兼容性</span></a>
+ <span class="menu-text">DICOM兼容性保证</span></a>
   </div>
 </li>
       </ul>
@@ -296,25 +311,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.0_mask.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">医学图像分割掩膜存储的四大痛点</span></a>
+ <span class="menu-text">掩膜存储痛点分析</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.1_mask_compression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Medmask 的压缩效率</span></a>
+ <span class="menu-text">高效压缩算法</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.2_mask_label_mapping.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MedMask 的语义映射管理</span></a>
+ <span class="menu-text">语义映射系统</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2.3_mask_archive.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MaskArchive：多掩膜归档管理</span></a>
+ <span class="menu-text">多掩膜归档管理</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">SpaceTransformer 技术</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.0_spacetransformer_motivation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">空间变换库对比与动机</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Space概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -351,9 +389,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.1_vs_nifti.html">DiCube vs NifTi</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation.html">DiCube 核心技术</a></li><li class="breadcrumb-item"><a href="./1.1_vs_nifti.html">与NIfTI格式对比</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">DiCube vs NifTi</h1>
+<h1 class="title">与NIfTI格式对比</h1>
 </div>
 
 
@@ -378,7 +416,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="坐标系统混乱不同库的各自为政" class="level3">
 <h3 class="anchored" data-anchor-id="坐标系统混乱不同库的各自为政">1.1. 坐标系统混乱：不同库的“各自为政”</h3>
 <p>NIfTI 格式最令人困惑的问题之一，是其空间坐标定义的不统一。使用不同的标准库读取同一个 NIfTI 文件，竟然会得到截然不同的空间定位结果。这种不一致性为后续的图像配准、融合以及定量分析埋下了巨大的隐患。</p>
-<div id="0fd35b19" class="cell" data-execution_count="1">
+<div id="f93b23ef" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nibabel <span class="im">as</span> nib</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -456,7 +494,7 @@ SimpleITK Z Orientation: [0. 0. 1.]</code></pre>
 <li><strong><code>sform</code> (standard form)</strong>：主要用于记录图像<strong>对齐到某个标准空间模板（如 MNI 或 Talairach 脑模板）后</strong>的空间信息。这个矩阵通常是图像配准（registration）过程的产物。</li>
 </ul>
 <p>一个 NIfTI 文件可以同时包含 <code>qform</code> 和 <code>sform</code>，当两者不一致时，不同的读取库会根据自身的应用背景做出不同的选择：</p>
-<div id="6e437832" class="cell" data-execution_count="2">
+<div id="bffa5bc1" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 探查NIfTI文件内部的双重变换矩阵</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>qform <span class="op">=</span> nib_image.get_qform()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sform <span class="op">=</span> nib_image.get_sform()</span>
@@ -489,7 +527,7 @@ sform (对齐至标准空间):
 <h3 class="anchored" data-anchor-id="临床元数据的大量丢失">1.4. 临床元数据的大量丢失</h3>
 <p>从 DICOM 转换为 NIfTI 的过程是“有损”的，但损失的并非像素数据，而是宝贵的元数据（Metadata）。DICOM 文件内嵌了数百个描述患者、检查、设备、序列参数等信息的标签，这些信息对于临床诊断、质量控制和法律追溯至关重要。</p>
 <p>NIfTI 格式的设计初衷是服务于匿名的图像算法研究，因此它几乎丢弃了所有与空间定位无关的元数据。</p>
-<div id="ae0cee3c" class="cell" data-execution_count="3">
+<div id="4c73e3e8" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -522,7 +560,7 @@ NIfTI格式仅保留了图像尺寸、像素间距、原点和方向等基本空
 <section id="压缩效率不足" class="level3">
 <h3 class="anchored" data-anchor-id="压缩效率不足">1.5. 压缩效率不足</h3>
 <p>为了节省存储空间，NIfTI 文件通常使用 <code>.nii.gz</code> 的扩展名，即采用 gzip 进行压缩。Gzip 是一种通用的、无损的压缩算法，但它并非为医学影像这类具有高度空间相关性的数据而优化。因此，其压缩比通常相当有限。</p>
-<div id="2d6fc217" class="cell" data-execution_count="4">
+<div id="0b887524" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 对比原始DICOM和NIfTI格式的存储大小</span></span>
@@ -557,7 +595,7 @@ NIfTI (gzip压缩后)大小: 53.42 MB
 <h3 class="anchored" data-anchor-id="统一且明确的坐标系统坚守lps标准">2.1. 统一且明确的坐标系统：坚守LPS+标准</h3>
 <p>DiCube 彻底摒弃了 NIfTI 模棱两可的双重坐标定义，统一采用 DICOM 标准的 LPS+ 坐标系。这确保了从 DICOM 到 DiCube 的转换过程中，空间信息得到精确、无歧义的保留，保证了与 PACS 系统和各类医学影像软件的无缝对接。</p>
 <p>让我们将 DiCube、SimpleITK（读取DICOM）和 Nibabel（读取NIfTI）的处理结果进行直接对比：</p>
-<div id="fbab9229" class="cell" data-execution_count="5">
+<div id="d5afa594" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -586,7 +624,7 @@ Nibabel     (从NIfTI): [ 102.08   31.26 1282.2 ] (RAS+)
 <section id="完整的元数据保留与往返能力" class="level3">
 <h3 class="anchored" data-anchor-id="完整的元数据保留与往返能力">2.2. 完整的元数据保留与往返能力</h3>
 <p>DiCube 的核心特性之一是实现了 DICOM 元数据的<strong>无损往返（Lossless Round-trip）</strong>。它将原始 DICOM 文件中的所有元数据（包括私有标签）完整地封装在 DiCube 文件内部。这意味着，你可以随时从 DiCube 文件中恢复出与原始文件一模一样的 DICOM 序列。</p>
-<div id="9cf24633" class="cell" data-execution_count="6">
+<div id="676bef43" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 将DiCube对象保存为.dcbs文件，然后再转换回DICOM文件夹</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, <span class="st">'dicube-testdata/test.dcbs'</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, <span class="st">'dicube-testdata/roundtrip_test'</span>)</span>
@@ -631,7 +669,7 @@ Nibabel     (从NIfTI): [ 102.08   31.26 1282.2 ] (RAS+)
 <li><strong>标准兼容</strong>：作为 DICOM 标准的一部分，确保了长期的兼容性和互操作性。</li>
 </ul>
 <!-- end list -->
-<div id="7143382f" class="cell" data-execution_count="7">
+<div id="403fd5f8" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 压缩效果对比</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dcb_size <span class="op">=</span> os.path.getsize(<span class="st">'dicube-testdata/test.dcbs'</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -644,9 +682,9 @@ Nibabel     (从NIfTI): [ 102.08   31.26 1282.2 ] (RAS+)
 <pre><code>--- 压缩效率对比 ---
 原始DICOM:      102.23 MB
 NIfTI (gzip):   53.42 MB (压缩比: 1.91x)
-DiCube (HTJ2K): 29.06 MB (压缩比: 3.52x)
+DiCube (HTJ2K): 29.03 MB (压缩比: 3.52x)
 
-DiCube相比NIfTI，文件体积减小了: 45.6%</code></pre>
+DiCube相比NIfTI，文件体积减小了: 45.7%</code></pre>
 </div>
 </div>
 <p>显著的压缩效率提升意味着更低的存储成本和更快的网络传输速度。</p>
@@ -654,7 +692,7 @@ DiCube相比NIfTI，文件体积减小了: 45.6%</code></pre>
 <section id="优化的io性能" class="level3">
 <h3 class="anchored" data-anchor-id="优化的io性能">2.4. 优化的I/O性能</h3>
 <p>除了压缩率，DiCube 的文件结构和 HTJ2K 解码器也为快速读取进行了优化。在大部分场景下，加载 DiCube 文件比加载 gzip 压缩的 NIfTI 文件更快。</p>
-<div id="3a36b345" class="cell" data-execution_count="8">
+<div id="0f1b883e" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 性能对比测试</span></span>
@@ -674,13 +712,13 @@ DiCube相比NIfTI，文件体积减小了: 45.6%</code></pre>
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
 <span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"NIfTI 在此测试中加载更快。"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>NIfTI (.nii.gz) 加载耗时: 527 ms
-DiCube (.dcbs) 加载耗时: 138 ms
-DiCube 加载性能提升: 283%</code></pre>
+<pre><code>NIfTI (.nii.gz) 加载耗时: 566 ms
+DiCube (.dcbs) 加载耗时: 149 ms
+DiCube 加载性能提升: 280%</code></pre>
 </div>
 </div>
 <p>更快的加载速度对于交互式应用和大规模数据处理流水线都至关重要。</p>
-<div id="fdfdee6b" class="cell" data-execution_count="9">
+<div id="2c673783" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试生成的文件和文件夹</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
