@@ -23,7 +23,7 @@ FastDiag Toolkit 提供了三个核心库：
 
 **核心特性：**
 
-- 单文件存储（.dcbs），消除文件系统开销
+- 单文件存储（.dcbs），消除 dicom 零散化给文件系统的负担
 - HTJ2K 无损压缩，3倍存储压缩，5倍速度提升
 - 元数据去重，减少冗余信息
 - 完整 DICOM 往返转换支持
@@ -38,6 +38,7 @@ FastDiag Toolkit 提供了三个核心库：
 
 - 50+ 倍压缩比（Zstandard 算法）
 - 16 倍读取速度提升
+- 内嵌语义映射
 - 支持多粒度器官组合和重叠掩膜
 
 **GitHub：** [https://github.com/fastdiag-toolbox/medmask](https://github.com/fastdiag-toolbox/medmask)
@@ -48,10 +49,10 @@ FastDiag Toolkit 提供了三个核心库：
 
 **核心特性：**
 
-- 完整的 3D 空间几何描述（Space 概念）
-- 可组合的空间变换操作
-- GPU 加速的图像重采样
-- 与深度学习框架无缝集成
+- Space 优先几何抽象：通过形状/间距/原点/方向，自动推导精确坐标映射
+- 规划与执行分离：在抽象的 space 上链式描述各种空间变换，实际变换只要单次采样
+- 精准对齐零偏差：图像/掩膜/关键点严格一致，规避 align_corners 与轴序陷阱
+- GPU 加速与生态互通：PyTorch 后端重采样
 
 **GitHub：** 
 

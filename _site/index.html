@@ -344,7 +344,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>高效的 3D 医学影像存储格式，dicom 的上位替代。</p>
 <p><strong>核心特性：</strong></p>
 <ul>
-<li>单文件存储（.dcbs），消除文件系统开销</li>
+<li>单文件存储（.dcbs），消除 dicom 零散化给文件系统的负担</li>
 <li>HTJ2K 无损压缩，3倍存储压缩，5倍速度提升</li>
 <li>元数据去重，减少冗余信息</li>
 <li>完整 DICOM 往返转换支持</li>
@@ -358,6 +358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>50+ 倍压缩比（Zstandard 算法）</li>
 <li>16 倍读取速度提升</li>
+<li>内嵌语义映射</li>
 <li>支持多粒度器官组合和重叠掩膜</li>
 </ul>
 <p><strong>GitHub：</strong> <a href="https://github.com/fastdiag-toolbox/medmask">https://github.com/fastdiag-toolbox/medmask</a></p>
@@ -367,10 +368,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>优雅的 3D 医学影像几何变换处理方案，simpleitk 的上位替代。</p>
 <p><strong>核心特性：</strong></p>
 <ul>
-<li>完整的 3D 空间几何描述（Space 概念）</li>
-<li>可组合的空间变换操作</li>
-<li>GPU 加速的图像重采样</li>
-<li>与深度学习框架无缝集成</li>
+<li>Space 优先几何抽象：通过形状/间距/原点/方向，自动推导精确坐标映射</li>
+<li>规划与执行分离：在抽象的 space 上链式描述各种空间变换，实际变换只要单次采样</li>
+<li>精准对齐零偏差：图像/掩膜/关键点严格一致，规避 align_corners 与轴序陷阱</li>
+<li>GPU 加速与生态互通：PyTorch 后端重采样</li>
 </ul>
 <p><strong>GitHub：</strong></p>
 <ul>

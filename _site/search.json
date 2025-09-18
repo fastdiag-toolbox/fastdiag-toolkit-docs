@@ -289,7 +289,7 @@
     "href": "index.html#解决方案",
     "title": "FastDiag Toolkit",
     "section": "解决方案",
-    "text": "解决方案\nFastDiag Toolkit 提供了三个核心库：\n\n📦 DiCube - 医学影像存储库\n高效的 3D 医学影像存储格式，dicom 的上位替代。\n核心特性：\n\n单文件存储（.dcbs），消除文件系统开销\nHTJ2K 无损压缩，3倍存储压缩，5倍速度提升\n元数据去重，减少冗余信息\n完整 DICOM 往返转换支持\n\nGitHub： https://github.com/fastdiag-toolbox/dicube\n\n\n🎭 MedMask - 医学掩膜处理库\n专业的医学影像分割掩膜压缩和处理解决方案，nii.gz 的上位替代。\n核心特性：\n\n50+ 倍压缩比（Zstandard 算法）\n16 倍读取速度提升\n支持多粒度器官组合和重叠掩膜\n\nGitHub： https://github.com/fastdiag-toolbox/medmask\n\n\n🌐 SpaceTransformer - 3D 空间变换库\n优雅的 3D 医学影像几何变换处理方案，simpleitk 的上位替代。\n核心特性：\n\n完整的 3D 空间几何描述（Space 概念）\n可组合的空间变换操作\nGPU 加速的图像重采样\n与深度学习框架无缝集成\n\nGitHub：\n\nhttps://github.com/fastdiag-toolbox/spacetransformer-core\nhttps://github.com/fastdiag-toolbox/spacetransformer-torch"
+    "text": "解决方案\nFastDiag Toolkit 提供了三个核心库：\n\n📦 DiCube - 医学影像存储库\n高效的 3D 医学影像存储格式，dicom 的上位替代。\n核心特性：\n\n单文件存储（.dcbs），消除 dicom 零散化给文件系统的负担\nHTJ2K 无损压缩，3倍存储压缩，5倍速度提升\n元数据去重，减少冗余信息\n完整 DICOM 往返转换支持\n\nGitHub： https://github.com/fastdiag-toolbox/dicube\n\n\n🎭 MedMask - 医学掩膜处理库\n专业的医学影像分割掩膜压缩和处理解决方案，nii.gz 的上位替代。\n核心特性：\n\n50+ 倍压缩比（Zstandard 算法）\n16 倍读取速度提升\n内嵌语义映射\n支持多粒度器官组合和重叠掩膜\n\nGitHub： https://github.com/fastdiag-toolbox/medmask\n\n\n🌐 SpaceTransformer - 3D 空间变换库\n优雅的 3D 医学影像几何变换处理方案，simpleitk 的上位替代。\n核心特性：\n\nSpace 优先几何抽象：通过形状/间距/原点/方向，自动推导精确坐标映射\n规划与执行分离：在抽象的 space 上链式描述各种空间变换，实际变换只要单次采样\n精准对齐零偏差：图像/掩膜/关键点严格一致，规避 align_corners 与轴序陷阱\nGPU 加速与生态互通：PyTorch 后端重采样\n\nGitHub：\n\nhttps://github.com/fastdiag-toolbox/spacetransformer-core\nhttps://github.com/fastdiag-toolbox/spacetransformer-torch"
   },
   {
     "objectID": "index.html#安装方法",
