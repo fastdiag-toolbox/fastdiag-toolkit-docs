@@ -11,38 +11,6 @@ website:
     left:
       - text: "首页"
         file: index.qmd
-      - text: "DiCube 教程"
-        menu:
-          - text: "1. 设计理念与动机"
-            file: 1.0_motivation.qmd
-          - text: "2. 与NIfTI格式对比"
-            file: 1.1_vs_nifti.qmd
-          - text: "3. 元数据存储机制"
-            file: 1.2_meta_storage.qmd
-          - text: "4. DICOM序列状态"
-            file: 1.3_dicom_status.qmd
-          - text: "5. 切片排序方法"
-            file: 1.4_sort_method.qmd
-          - text: "6. 三维轴序约定"
-            file: 1.5_axis_order.qmd
-          - text: "7. DICOM兼容性保证"
-            file: 1.6_dicom_compatibility_simple.qmd
-      - text: "MedMask 教程"
-        menu:
-          - text: "1. 掩膜存储痛点分析"
-            file: 2.0_mask.qmd
-          - text: "2. 高效压缩算法"
-            file: 2.1_mask_compression.qmd
-          - text: "3. 语义映射系统"
-            file: 2.2_mask_label_mapping.qmd
-          - text: "4. 多掩膜归档管理"
-            file: 2.3_mask_archive.qmd
-      - text: "SpaceTransformer 教程"
-        menu:
-          - text: "1. 空间变换库对比与动机"
-            file: 3.0_spacetransformer_motivation.qmd
-          - text: "2. Space概念详解"
-            file: 3.1_space_concept_fundamentals.qmd
     right:
       - icon: github
         href: https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs
@@ -52,7 +20,7 @@ website:
     style: "docked"
     search: true
     contents:
-      - section: "DiCube 核心技术"
+      - section: "DiCube"
         contents:
           - 1.0_motivation.qmd
           - 1.1_vs_nifti.qmd
@@ -61,13 +29,13 @@ website:
           - 1.4_sort_method.qmd
           - 1.5_axis_order.qmd
           - 1.6_dicom_compatibility_simple.qmd
-      - section: "MedMask 技术"
+      - section: "MedMask"
         contents:
           - 2.0_mask.qmd
           - 2.1_mask_compression.qmd
           - 2.2_mask_label_mapping.qmd
           - 2.3_mask_archive.qmd
-      - section: "SpaceTransformer 技术"
+      - section: "SpaceTransformer"
         contents:
           - 3.0_spacetransformer_motivation.qmd
           - 3.1_space_concept_fundamentals.qmd
