@@ -9,7 +9,9 @@
 **/*_files/
 *_files/
 # 但保留最终网站输出中的图片文件
-!_site/*/figure-html/
+!_site/
+!_site/**/*_files/
+!_site/**/*_files/**
 
 # Quarto freeze 缓存（包含执行结果）
 _freeze/
