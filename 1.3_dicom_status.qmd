@@ -20,12 +20,13 @@ DiCube主要为静态三维医学图像服务，其核心假设是整个3D图像
 
 ```{python}
 import dicube
-from dicube import get_dicom_status, read_dicom_dir, DicomStatus
+from dicube import get_dicom_status, DicomStatus
 from dicube.dicom import CommonTags
 
 # 读取示例数据
 dirname = 'dicube-testdata/dicom/sample_200'
-meta, _ = read_dicom_dir(dirname)
+img = dicube.load_from_dicom_folder(dirname)
+meta = img.dicom_meta
 status = get_dicom_status(meta)
 
 print(f"当前数据状态: {status.value}")

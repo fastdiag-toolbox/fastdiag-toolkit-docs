@@ -355,38 +355,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>连续的实例编号</strong>：InstanceNumber从1开始连续递增</li>
 <li><strong>完整的元数据</strong>：所有必需的DICOM标签都存在且有效</li>
 </ol>
-<div id="68ddeb96" class="cell" data-execution_count="1">
+<div id="0087368c" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube <span class="im">import</span> get_dicom_status, read_dicom_dir, DicomStatus</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube <span class="im">import</span> get_dicom_status, DicomStatus</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 读取示例数据</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dirname <span class="op">=</span> <span class="st">'dicube-testdata/dicom/sample_200'</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>meta, _ <span class="op">=</span> read_dicom_dir(dirname)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>status <span class="op">=</span> get_dicom_status(meta)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"当前数据状态: </span><span class="sc">{</span>status<span class="sc">.</span>value<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> dicube.load_from_dicom_folder(dirname)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>meta <span class="op">=</span> img.dicom_meta</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>status <span class="op">=</span> get_dicom_status(meta)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"当前数据状态: </span><span class="sc">{</span>status<span class="sc">.</span>value<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 像素间距检查</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>spacing_consistent <span class="op">=</span> meta.is_shared(CommonTags.PixelSpacing)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"像素间距统一: </span><span class="sc">{</span>spacing_consistent<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> spacing_consistent:</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    spacing <span class="op">=</span> meta.get_shared_value(CommonTags.PixelSpacing)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  统一间距: </span><span class="sc">{</span>spacing<span class="sc">}</span><span class="ss">mm"</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 图像尺寸检查</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>shape_consistent <span class="op">=</span> (meta.is_shared(CommonTags.Rows) <span class="kw">and</span> </span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                   meta.is_shared(CommonTags.Columns))</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"图像尺寸统一: </span><span class="sc">{</span>shape_consistent<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> shape_consistent:</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> meta.get_shared_value(CommonTags.Rows)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    cols <span class="op">=</span> meta.get_shared_value(CommonTags.Columns)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  统一尺寸: </span><span class="sc">{</span>cols<span class="sc">}</span><span class="ss">×</span><span class="sc">{</span>rows<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 图像方向检查</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>orientation_consistent <span class="op">=</span> meta.is_shared(CommonTags.ImageOrientationPatient)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"图像方向统一: </span><span class="sc">{</span>orientation_consistent<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 像素间距检查</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>spacing_consistent <span class="op">=</span> meta.is_shared(CommonTags.PixelSpacing)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"像素间距统一: </span><span class="sc">{</span>spacing_consistent<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> spacing_consistent:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    spacing <span class="op">=</span> meta.get_shared_value(CommonTags.PixelSpacing)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  统一间距: </span><span class="sc">{</span>spacing<span class="sc">}</span><span class="ss">mm"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 图像尺寸检查</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>shape_consistent <span class="op">=</span> (meta.is_shared(CommonTags.Rows) <span class="kw">and</span> </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>                   meta.is_shared(CommonTags.Columns))</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"图像尺寸统一: </span><span class="sc">{</span>shape_consistent<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> shape_consistent:</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> meta.get_shared_value(CommonTags.Rows)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    cols <span class="op">=</span> meta.get_shared_value(CommonTags.Columns)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  统一尺寸: </span><span class="sc">{</span>cols<span class="sc">}</span><span class="ss">×</span><span class="sc">{</span>rows<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 图像方向检查</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>orientation_consistent <span class="op">=</span> meta.is_shared(CommonTags.ImageOrientationPatient)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"图像方向统一: </span><span class="sc">{</span>orientation_consistent<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>当前数据状态: consistent
 像素间距统一: True
@@ -403,7 +404,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>DiCube使用四种模式来分类非Location相关的字段问题：<code>missing</code>、<code>non_uniform</code>、<code>gap</code>、<code>duplicate</code>。</p>
 <section id="missing-问题关键字段缺失" class="level3">
 <h3 class="anchored" data-anchor-id="missing-问题关键字段缺失">1. Missing 问题：关键字段缺失</h3>
-<div id="10a89165" class="cell" data-execution_count="2">
+<div id="cf91f5ef" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示missing问题的检测</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> copy</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom.dicom_tags <span class="im">import</span> get_tag_key</span>
@@ -440,7 +441,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="non_uniform-问题字段值不一致" class="level3">
 <h3 class="anchored" data-anchor-id="non_uniform-问题字段值不一致">2. Non_uniform 问题：字段值不一致</h3>
-<div id="2aa6b306" class="cell" data-execution_count="3">
+<div id="a79b8f39" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo_non_uniform_problems():</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== Non_uniform 问题演示 ==="</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -480,7 +481,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="duplicate-问题重复值" class="level3">
 <h3 class="anchored" data-anchor-id="duplicate-问题重复值">3. Duplicate 问题：重复值</h3>
-<div id="43ee2e87" class="cell" data-execution_count="4">
+<div id="7afe9a52" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo_duplicate_problems():</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== Duplicate 问题演示 ==="</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -514,7 +515,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="gap-问题数值跳跃" class="level3">
 <h3 class="anchored" data-anchor-id="gap-问题数值跳跃">4. Gap 问题：数值跳跃</h3>
-<div id="b340fb82" class="cell" data-execution_count="5">
+<div id="5f991eea" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo_gap_problems():</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== Gap 问题演示 ==="</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    </span>
