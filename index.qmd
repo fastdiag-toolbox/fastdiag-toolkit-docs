@@ -1,6 +1,7 @@
 ---
 title: "FastDiag Toolkit"
 subtitle: "高效的医学影像处理工具包"
+sidebar: zh
 ---
 
 ## 问题背景

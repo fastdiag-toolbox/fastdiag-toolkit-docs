@@ -5,13 +5,12 @@ format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
 ---
 ## 摘要
 
 医学图像分割掩膜通常是高度稀疏的，这为专门的压缩算法提供了优化空间。本文旨在对比 **MedMask** 格式与常用的 **NIfTI (.nii.gz)** 和 **NumPy (.npz)** 格式在存储二值（Binary）和多标签（Multi-label）掩膜时的压缩效率、编码及解码速度。最后，我们将深入探究 MedMask 的核心技术——**PackBits 预处理结合 Zstandard 压缩**——为何能针对稀疏掩膜实现卓越的压缩性能。
 
-## 1\. 统一基准测试框架
+## 1. 统一基准测试框架
 
 为了避免代码重复并确保测试的公平性，我们首先定义一个统一的基准测试框架。该框架可以处理不同的数据格式，并返回标准化的性能指标（文件大小、编码时间、解码时间）。
 
@@ -95,7 +94,7 @@ with open(mask_dir / 'nonzero_masks.txt', 'r') as f:
 print(f"加载了 {len(valid_files)} 个有效的掩膜文件用于测试。")
 ```
 
-## 2\. 二值掩膜（Binary Mask）性能对比
+## 2. 二值掩膜（Binary Mask）性能对比
 
 在此部分，我们测试单个器官掩膜的压缩性能。这类掩膜只包含一个标签，是典型的二值稀疏数据。
 
@@ -259,7 +258,7 @@ display(df_multi.style.format({
 在处理包含多个标签的单一掩膜文件时，MedMask 同样展现出卓越的压缩性能。从上表可以看出，存储相同的多标签数据，MedMask 格式生成的文件体积显著小于 NIfTI 和 NPZ。
 
 
-### 4\. 核心技术探究：PackBits + Zstandard 的威力
+### 4. 核心技术探究：PackBits + Zstandard 的威力
 
 MedMask 的高压缩率源于其针对不同掩膜类型的双层压缩策略。对于**二值掩膜（Binary Mask）**，它采用 **PackBits + Zstandard (Zstd)** 的组合；而对于多标签掩膜，则直接使用 Zstd。本节将重点探究为何 PackBits 预处理能为二值掩膜带来显著的性能提升。
 

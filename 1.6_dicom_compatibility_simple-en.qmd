@@ -1,0 +1,111 @@
+---
+title: "DICOM Compatibility"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## 1. Background: PACS Integration Needs
+
+DiCube must integrate seamlessly with existing DICOM ecosystems so PACS vendors can adopt it. `DcbStreamingReader` converts `.dcbs` files to DICOM on demand, emulating a traditional PACS backend. Downstream systems consume DiCube data without workflow changes.
+
+## 2. Streaming Reader
+
+### 2.1. Basic Usage
+
+```{python}
+import dicube
+from dicube.dicom import DcbStreamingReader
+
+dicom_dir = 'dicube-testdata/dicom/sample_10'
+dcb_file = 'dicube-testdata/sample_10.dcbs'
+
+dcb_image = dicube.load_from_dicom_folder(dicom_dir)
+dicube.save(dcb_image, dcb_file)
+dcb_stream = DcbStreamingReader(dcb_file)
+
+slice_0 = dcb_stream.get_dicom_for_frame(0)
+with open('dicube-testdata/sample_10_0.dcm', 'wb') as f:
+    f.write(slice_0)
+print(f"Generated DICOM bytes: {len(slice_0)}")
+```
+
+### 2.2. Processing + Visualization
+
+```{python}
+import pydicom
+import numpy as np
+import matplotlib.pyplot as plt
+from io import BytesIO
+
+def analyze_dicom_slice(slice_index):
+    buffer = BytesIO(dcb_stream.get_dicom_for_frame(slice_index))
+    dataset = pydicom.dcmread(buffer, force=True)
+
+    pixels = dataset.pixel_array.astype('float32')
+    if hasattr(dataset, 'RescaleIntercept'):
+        pixels += float(dataset.RescaleIntercept)
+
+    plt.figure(figsize=(8, 6))
+    plt.imshow(pixels, cmap='gray', vmin=-800, vmax=300)
+    plt.axis('off')
+    plt.title(f"Slice #{slice_index}")
+    plt.tight_layout()
+    plt.show()
+    return dataset
+
+for idx in [0, 4, 8]:
+    analyze_dicom_slice(idx)
+```
+
+Conversion happens only when requested—no need to pre-expand entire series, saving space and latency.
+
+## 3. HTJ2K Compatibility Landscape
+
+### 3.1. Standard Evolution
+
+DiCube uses HTJ2K (High Throughput JPEG 2000), standardized by DICOM in 2023. Compared to classic JPEG 2000:
+
+- 10–15× faster encoding/decoding
+- Same compression quality at equal ratios
+- Better suited to GPU/hardware acceleration
+
+### 3.2. Current Support
+
+- **Supported**
+  - PyDICOM ≥ 3.0.0 (with `pylibjpeg-openjpeg` > 2.0 + `pylibjpeg` > 2.0)
+  - Python-GDCM 3.0.26
+  - ITK-SNAP 4.4.0
+- **Not yet supported**
+  - Horos 4.0.1 (macOS viewer)
+  - SimpleITK 2.5.2
+
+### 3.3. Maximum Compatibility Option
+
+Fallback to uncompressed DICOM for legacy environments:
+
+```{python}
+uncompressed_dicom = dcb_stream.get_dicom_for_frame(0, force_uncompressed=True)
+```
+
+Pros:
+- Universally compatible
+- No decoder dependency
+- Zero risk of decode failure in transit
+
+Cons:
+- 5–10× larger files
+- Higher storage/bandwidth usage
+- Longer transfer times
+
+## 4. Deployment Strategy
+
+Adopt a gradual approach:
+
+1. Assess HTJ2K support in target PACS/clients.
+2. Use HTJ2K where supported; fallback to uncompressed for legacy systems.
+3. Monitor upstream library updates and expand HTJ2K coverage over time.
+
+This balances modern compression gains with real-world compatibility.

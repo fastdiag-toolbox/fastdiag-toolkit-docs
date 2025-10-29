@@ -1,0 +1,208 @@
+---
+title: "Efficient Compression"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## Summary
+
+Segmentation masks are highly sparse. We benchmark MedMask vs NIfTI (`.nii.gz`) and NumPy (`.npz`) for binary and multi-label masks, and explain why MedMask’s PackBits + Zstandard pipeline excels.
+
+## 1. Unified Benchmark Harness
+
+```{python}
+import os, time, gzip, tempfile
+import numpy as np, nibabel as nib, pandas as pd
+import zstandard as zstd
+from pathlib import Path
+from medmask import SegmentationMask
+from spacetransformer import Space
+
+mask_dir = Path('dicube-testdata/mask/s0000')
+with open(mask_dir / 'nonzero_masks.txt') as f:
+    valid_files = [line.strip() for line in f]
+print(f"Loaded {len(valid_files)} masks")
+
+def run_benchmark(format_type, data, space=None, label_mapping=None, original_path=None):
+    stats = {'size': 0, 'encode_time': 0, 'decode_time': 0}
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir) / f"tempfile.{format_type.split('_')[0]}"
+        start = time.time()
+        if format_type == 'nifti':
+            if original_path:
+                stats['size'] = original_path.stat().st_size
+            else:
+                affine = np.eye(4)
+                nib.save(nib.Nifti1Image(data.astype(np.uint8), affine), tmp_path.with_suffix('.nii.gz'))
+                stats['size'] = tmp_path.with_suffix('.nii.gz').stat().st_size
+        elif format_type == 'npz':
+            np.savez_compressed(tmp_path, mask=data)
+            stats['size'] = tmp_path.stat().st_size
+        elif format_type == 'medmask':
+            SegmentationMask(data, label_mapping, space=space).save(tmp_path)
+            stats['size'] = tmp_path.stat().st_size
+        stats['encode_time'] = (time.time()-start)*1000
+
+        if stats['size'] > 0:
+            start = time.time()
+            if format_type == 'npz':
+                _ = np.load(tmp_path)['mask']
+            elif format_type == 'medmask':
+                loaded = SegmentationMask.load(tmp_path)
+                if label_mapping:
+                    for name in label_mapping:
+                        _ = loaded.get_binary_mask_by_names(name)
+            stats['decode_time'] = (time.time()-start)*1000
+    return stats
+```
+
+## 2. Binary Masks
+
+```{python}
+binary_files = [
+    'gluteus_maximus_right.nii.gz',
+    'urinary_bladder.nii.gz',
+    'colon.nii.gz',
+    'iliopsoas_left.nii.gz',
+    'iliac_artery_left.nii.gz',
+    'small_bowel.nii.gz'
+]
+
+rows = []
+for fname in binary_files:
+    original_path = mask_dir / fname
+    nii = nib.load(original_path)
+    data = nii.get_fdata().astype(np.uint8)
+    space = Space.from_nifti(nii)
+    organ = fname.replace('.nii.gz', '')
+
+    stats_nifti = run_benchmark('nifti', data=data, original_path=original_path)
+    stats_npz = run_benchmark('npz', data=data)
+    stats_medmask = run_benchmark('medmask', data=data, space=space, label_mapping={organ:1})
+
+    rows.append({
+        'Mask': organ,
+        'Nonzero': int(np.count_nonzero(data)),
+        'NIfTI (KB)': stats_nifti['size']/1024,
+        'NPZ (KB)': stats_npz['size']/1024,
+        'MedMask (KB)': stats_medmask['size']/1024,
+        'NPZ encode (ms)': stats_npz['encode_time'],
+        'MedMask encode (ms)': stats_medmask['encode_time'],
+        'NPZ decode (ms)': stats_npz['decode_time'],
+        'MedMask decode (ms)': stats_medmask['decode_time']
+    })
+
+df_binary = pd.DataFrame(rows)
+if not df_binary.empty:
+    avg = df_binary.select_dtypes(include=np.number).mean()
+    avg['Mask'] = 'Average'
+    df_binary = pd.concat([df_binary, avg.to_frame().T], ignore_index=True)
+
+df_binary['MedMask vs NIfTI'] = df_binary['NIfTI (KB)'] / df_binary['MedMask (KB)']
+df_binary['NPZ vs NIfTI'] = df_binary['NIfTI (KB)'] / df_binary['NPZ (KB)']
+
+display(df_binary.style.format({
+    'NIfTI (KB)': '{:.1f}', 'NPZ (KB)': '{:.1f}', 'MedMask (KB)': '{:.1f}',
+    'NPZ encode (ms)': '{:.1f}', 'MedMask encode (ms)': '{:.1f}',
+    'NPZ decode (ms)': '{:.1f}', 'MedMask decode (ms)': '{:.1f}',
+    'MedMask vs NIfTI': '{:.1f}×', 'NPZ vs NIfTI': '{:.1f}×',
+    'Nonzero': '{:,}'
+}).hide(axis='index'))
+```
+
+MedMask dramatically shrinks sparse masks and matches NPZ timings.
+
+## 3. Multi-Label Masks
+
+```{python}
+test_groups = [
+    {'name': 'Gluteus muscles', 'files': ['gluteus_maximus_left.nii.gz','gluteus_maximus_right.nii.gz','gluteus_medius_left.nii.gz','gluteus_medius_right.nii.gz']},
+    {'name': 'Femur + Hip', 'files': ['femur_left.nii.gz','femur_right.nii.gz','hip_left.nii.gz','hip_right.nii.gz']},
+    {'name': 'Pelvic organs', 'files': ['urinary_bladder.nii.gz','colon.nii.gz','small_bowel.nii.gz']}
+]
+
+results = []
+for group in test_groups:
+    first_img = nib.load(mask_dir / group['files'][0])
+    space = Space.from_nifti(first_img)
+    multi = np.zeros(first_img.shape, dtype=np.uint8)
+    mapping = {}
+
+    for idx, fname in enumerate(group['files'], start=1):
+        fpath = mask_dir / fname
+        if not fpath.exists():
+            continue
+        data = nib.load(fpath).get_fdata().astype(np.uint8)
+        multi[data > 0] = idx
+        mapping[fname.replace('.nii.gz','')] = idx
+
+    stats_nifti = run_benchmark('nifti', data=multi, space=space)
+    stats_npz = run_benchmark('npz', data=multi)
+    stats_medmask = run_benchmark('medmask', data=multi, space=space, label_mapping=mapping)
+
+    results.append({
+        'Group': group['name'],
+        'Labels': len(group['files']),
+        'NIfTI (KB)': stats_nifti['size']/1024,
+        'NPZ (KB)': stats_npz['size']/1024,
+        'MedMask (KB)': stats_medmask['size']/1024,
+        'NPZ encode (ms)': stats_npz['encode_time'],
+        'MedMask encode (ms)': stats_medmask['encode_time'],
+        'NPZ decode (ms)': stats_npz['decode_time'],
+        'MedMask decode (ms)': stats_medmask['decode_time']
+    })
+
+df_multi = pd.DataFrame(results)
+if not df_multi.empty:
+    avg = df_multi.select_dtypes(include=np.number).mean()
+    avg['Group'] = 'Average'
+    df_multi = pd.concat([df_multi, avg.to_frame().T], ignore_index=True)
+
+df_multi['MedMask vs NIfTI'] = df_multi['NIfTI (KB)'] / df_multi['MedMask (KB)']
+df_multi['NPZ vs NIfTI'] = df_multi['NIfTI (KB)'] / df_multi['NPZ (KB)']
+
+display(df_multi.style.format({
+    'NIfTI (KB)': '{:.1f}', 'NPZ (KB)': '{:.1f}', 'MedMask (KB)': '{:.1f}',
+    'NPZ encode (ms)': '{:.1f}', 'MedMask encode (ms)': '{:.1f}',
+    'NPZ decode (ms)': '{:.1f}', 'MedMask decode (ms)': '{:.1f}',
+    'MedMask vs NIfTI': '{:.1f}×', 'NPZ vs NIfTI': '{:.1f}×'
+}).hide(axis='index'))
+```
+
+MedMask stays smaller even when storing many labels together.
+
+## 4. PackBits + Zstandard
+
+Binary masks benefit from bit packing before Zstd compression.
+
+```{python}
+mask_path = mask_dir / 'urinary_bladder.nii.gz'
+img = nib.load(mask_path)
+data = img.get_fdata()>0
+raw = data.tobytes()
+packbits = np.packbits(data).tobytes()
+
+raw_size = len(raw)
+packbits_size = len(packbits)
+
+gzip_size = len(gzip.compress(raw))
+zstd_size = len(zstd.ZstdCompressor().compress(raw))
+combo_size = len(zstd.ZstdCompressor().compress(packbits))
+
+print("Raw (KB):", raw_size/1024)
+print("PackBits (KB):", packbits_size/1024)
+print("Gzip (KB):", gzip_size/1024)
+print("Zstd (KB):", zstd_size/1024)
+print("PackBits + Zstd (KB):", combo_size/1024)
+```
+
+PackBits removes the structural waste of storing booleans in bytes (~8× reduction). Zstd then compresses the compact stream further.
+
+## Conclusion
+
+- Binary masks: PackBits preprocessing + Zstd delivers dramatic size reduction with comparable speed
+- Multi-label masks: Zstd alone still beats gzip/NPZ
+- MedMask adapts per mask type, yielding strong compression with fast encode/decode for clinical pipelines

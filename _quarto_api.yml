@@ -1,0 +1,40 @@
+quartodoc:
+  title: "API 参考文档"
+  dir: api_docs
+  package: null
+  style: pkgdown
+  sections:
+    - title: "DiCube API"
+      desc: "DiCube 医学影像存储库 API 文档"
+      package: dicube
+      contents:
+        - name: dicube
+          children: embedded
+    - title: "MedMask API"  
+      desc: "MedMask 医学掩膜处理库 API 文档"
+      package: medmask
+      contents:
+        - name: medmask
+          children: embedded
+    - title: "SpaceTransformer API"
+      desc: "SpaceTransformer 3D 空间变换库 API 文档"
+      contents:
+        - subtitle: "Core 模块"
+          desc: "核心空间变换功能"
+          package: spacetransformer.core
+          contents:
+            - name: spacetransformer.core
+              children: embedded
+        - subtitle: "Torch 模块"
+          desc: "GPU 加速的图像重采样功能"
+          package: spacetransformer.torch
+          contents:
+            - name: spacetransformer.torch
+              children: embedded
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3

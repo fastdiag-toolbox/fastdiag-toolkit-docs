@@ -1,15 +1,15 @@
 ---
-title: "Space概念详解"
+title: "Space 概念详解"
 format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
+sidebar: zh
 ---
 
-## Space概念：完整的3D图像几何描述
+## Space 概念：完整的 3D 图像几何描述
 
-每一幅医学图像都对应着物理世界中的一个规范采样网格。SpaceTransformer通过Space对象的六个要素来完整描述这个网格：形状、原点、间距和三个方向向量。
+每一幅医学图像都对应物理世界中的一个规范采样网格。SpaceTransformer 通过 `Space` 对象的六个要素来完整描述这个网格：形状、原点、间距与三个方向向量。
 
 ```{python}
 import numpy as np
@@ -29,7 +29,7 @@ standard_space = Space(
 # 展示标准规范采样网格
 ```
 
-为了直观展示Space变换效果，我们实现2D网格可视化：
+为了直观展示 Space 变换效果，我们实现 2D 网格可视化：
 
 ```{python}
 def visualize_sampling_grid(space, color='blue', show_axes=True, label_suffix=''):
@@ -37,12 +37,12 @@ def visualize_sampling_grid(space, color='blue', show_axes=True, label_suffix=''
     可视化采样网格的2D投影（绘制所有采样点）
     
     Args:
-        space: Space对象
+        space: Space 对象
         color: 绘制颜色
         show_axes: 是否显示坐标轴
         label_suffix: 标签后缀，用于区分不同的网格
     """
-    # 提取Y-Z平面的信息（忽略X维度）
+    # 提取 Y-Z 平面信息（忽略 X 维）
     shape_yz = space.shape[1:3]  # (height, width)
     
     # 创建所有索引点的网格
@@ -52,7 +52,7 @@ def visualize_sampling_grid(space, color='blue', show_axes=True, label_suffix=''
         indexing='ij'
     )
     
-    # 构建3D索引点（X维度设为0）
+    # 构建 3D 索引点（X 维设为 0）
     index_points = np.stack([
         np.zeros_like(y_indices.flatten()),  # X=0
         y_indices.flatten(),                 # Y索引
@@ -72,10 +72,10 @@ def visualize_sampling_grid(space, color='blue', show_axes=True, label_suffix=''
         plt.plot(origin_world[2], origin_world[1], 'o', 
                 color=color, markersize=8, alpha=0.8)
         
-        # 计算坐标轴长度（增加长度使其更明显）
+        # 计算坐标轴长度（适当拉长）
         axis_length = 1
         
-        # Y轴方向（在图中是垂直方向）
+        # Y 轴方向（图中为垂直）
         y_axis_end = origin_world[1:3] + np.array(space.y_orientation[1:3]) * axis_length
         plt.arrow(origin_world[2], origin_world[1], 
                  y_axis_end[1] - origin_world[2], y_axis_end[0] - origin_world[1],
@@ -87,7 +87,7 @@ def visualize_sampling_grid(space, color='blue', show_axes=True, label_suffix=''
         plt.text(y_axis_end[1] + y_text_offset[1], y_axis_end[0] + y_text_offset[0], 'Y', 
                 fontsize=12, color=color, ha='center', va='center', weight='bold')
         
-        # Z轴方向（在图中是水平方向）
+        # Z 轴方向（图中为水平）
         z_axis_end = origin_world[1:3] + np.array(space.z_orientation[1:3]) * axis_length
         plt.arrow(origin_world[2], origin_world[1],
                  z_axis_end[1] - origin_world[2], z_axis_end[0] - origin_world[1],
@@ -100,7 +100,7 @@ def visualize_sampling_grid(space, color='blue', show_axes=True, label_suffix=''
                 fontsize=12, color=color, ha='center', va='center', weight='bold')
 
 def setup_plot(figsize=(10, 8)):
-    """设置绘图的通用参数"""
+    """设置绘图通用参数"""
     plt.figure(figsize=figsize)
 
 def finalize_plot(title):
@@ -153,7 +153,7 @@ finalize_plot('Flip Transform (Y-axis)')
 ### 轴交换变换
 
 ```{python}
-# 创建轴交换的采样网格（创建非正方形网格以显示效果）
+# 创建轴交换的采样网格（使用非正方形网格以增强对比）
 rect_space = Space(
     shape=(1, 6, 12),  # 矩形网格
     origin=(0.0, 0.0, 0.0),
@@ -163,7 +163,7 @@ rect_space = Space(
     z_orientation=(0.0, 0.0, 1.0)
 )
 
-swapped_space = rect_space.apply_swap(1, 2)  # 交换Y轴和Z轴
+swapped_space = rect_space.apply_swap(1, 2)  # 交换 Y 轴与 Z 轴
 
 # 可视化轴交换变换的overlay效果
 setup_plot()
@@ -209,7 +209,7 @@ complex_target_space = (standard_space
     .apply_rotate(axis=0, angle=45, unit='degree')    # 旋转45度
 )
 
-# 可视化复杂变换链的overlay效果
+# 可视化复杂变换链的 overlay 效果
 setup_plot()
 visualize_sampling_grid(standard_space, color='blue', label_suffix=' (Original)')
 visualize_sampling_grid(complex_target_space, color='red', label_suffix=' (Crop→Resample→Rotate)')
@@ -217,7 +217,7 @@ finalize_plot('Complex Transform Chain (Crop → Resample → Rotate)')
 ```
 
 
-# float-point bbox sampling
+# 浮点边界框采样（float-point bbox sampling）
 ```{python}
 float_bbox_space = standard_space.apply_float_bbox(np.array([[0, 1], [2.5, 5.5], [2.5, 5.5]]), (12, 12, 12))
 
@@ -227,30 +227,30 @@ visualize_sampling_grid(float_bbox_space, color='red', label_suffix=' (Float Bou
 finalize_plot('Float Bounding Box Sampling (6x6 ROI)')
 ```
 
-## Space抽象框架的核心优势
+## Space 抽象框架的核心优势
 
-### 设计理念：Space中心 vs Transform中心
+### 设计理念：Space 中心 vs Transform 中心
 
-SpaceTransformer采用"Space中心"的设计理念，区别于torchvision等库的"Transform中心"模式。这一设计选择基于医学图像处理的本质特征：所有的对象的坐标都被世界坐标系定义。
+SpaceTransformer 采用“Space 中心”的设计理念，区别于 torchvision 等库的“Transform 中心”模式。该选择基于医学图像处理的本质：对象的坐标以世界坐标系为准。
 
-**Space中心设计**：每个数据对象（图像、点集、掩膜）都绑定唯一的空间描述符。当两个对象需要进行空间对齐时，通过比较它们的Space属性即可自动生成精确的变换关系。
+**Space 中心设计**：每个数据对象（图像、点集、掩膜）都绑定唯一空间描述符。当两个对象需要对齐时，通过比较它们的 `Space` 属性自动生成精确变换关系。
 
-**Transform中心的局限性**：变换操作本质上是相对的，缺乏绝对的空间基准。这导致多对象间的空间关系难以维护，容易产生累积误差。
+**Transform 中心的局限**：变换本质相对，缺乏绝对基准，导致多对象空间关系难维护，容易产生累积误差。
 
 ### 技术实现：规划与执行分离
 
-Space类实现了空间变换的规划阶段与执行阶段的完全解耦：
+`Space` 类实现了空间变换的“规划阶段”与“执行阶段”完全解耦：
 
-**规划阶段**：通过链式调用构建复杂的变换序列，所有操作都在抽象的几何空间进行，无需涉及实际像素数据。
+**规划阶段**：通过链式调用构建复杂变换序列，所有操作在抽象几何空间进行，无需触碰像素数据。
 
-**执行阶段**：`warp_image`函数分析完整的变换链，自动选择最优的插值路径，通过单次采样完成所有变换。
+**执行阶段**：`warp_image` 分析完整变换链，自动选择最优插值路径，以单次采样完成全部变换。
 
 ### 实际收益
 
-**几何精度保障**：变换顺序不再影响最终结果。例如"旋转→缩放"与"缩放→旋转"在Space层面完全等价，避免了传统方法中由于采样边界限制导致的信息丢失。
+**几何精度**：变换顺序不影响结果。“旋转→缩放”与“缩放→旋转”在 Space 层面等价，避免传统方法受采样边界影响的信息丢失。
 
-**内存效率优化**：消除了传统多步骤变换中的中间缓存需求。每个中间步骤都需要完整的图像内存拷贝，而Space方法仅在最终执行时分配一次目标内存。
+**内存效率**：消除多步骤变换中的中间缓存；传统每步都需要完整图像拷贝，而 Space 仅在最终执行时分配目标内存一次。
 
-**架构简洁性**：库中的`warp_xxx`接口处理所有类型的空间变换，无需针对不同数据类型（图像、点集、掩膜）维护独立的、复杂的变换逻辑。
+**架构简洁**：库中的 `warp_xxx` 接口处理所有类型变换，无需针对图像/点集/掩膜分别维护复杂逻辑。
 
-**接口易用性**：相比SimpleITK需要手动配置采样参数的复杂流程，SpaceTransformer提供了语义化的变换接口，同时保留了高级用户的底层控制能力。
+**接口易用**：相比 SimpleITK 需手工配置采样参数，SpaceTransformer 提供语义化接口，同时保留高级用户的底层控制力。

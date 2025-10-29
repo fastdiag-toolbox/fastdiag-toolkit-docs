@@ -134,6 +134,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text">GitHub</span></a>
@@ -279,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Space概念详解</span></a>
+ <span class="menu-text">Space 概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -297,10 +305,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#引言空间变换的普遍需求与实现困境" id="toc-引言空间变换的普遍需求与实现困境" class="nav-link active" data-scroll-target="#引言空间变换的普遍需求与实现困境">引言：空间变换的普遍需求与实现困境</a></li>
   <li><a href="#测试场景设计" id="toc-测试场景设计" class="nav-link" data-scroll-target="#测试场景设计">测试场景设计</a></li>
   <li><a href="#测试流水线定义" id="toc-测试流水线定义" class="nav-link" data-scroll-target="#测试流水线定义">测试流水线定义</a></li>
-  <li><a href="#方法一simpleitk实现" id="toc-方法一simpleitk实现" class="nav-link" data-scroll-target="#方法一simpleitk实现">方法一：SimpleITK实现</a></li>
-  <li><a href="#方法二scipy.ndimage实现" id="toc-方法二scipy.ndimage实现" class="nav-link" data-scroll-target="#方法二scipy.ndimage实现">方法二：scipy.ndimage实现</a></li>
-  <li><a href="#方法三pytorch-interpolate实现" id="toc-方法三pytorch-interpolate实现" class="nav-link" data-scroll-target="#方法三pytorch-interpolate实现">方法三：PyTorch interpolate实现</a></li>
-  <li><a href="#方法四spacetransformer实现" id="toc-方法四spacetransformer实现" class="nav-link" data-scroll-target="#方法四spacetransformer实现">方法四：SpaceTransformer实现</a></li>
+  <li><a href="#方法一simpleitk-实现" id="toc-方法一simpleitk-实现" class="nav-link" data-scroll-target="#方法一simpleitk-实现">方法一：SimpleITK 实现</a></li>
+  <li><a href="#方法二scipy.ndimage-实现" id="toc-方法二scipy.ndimage-实现" class="nav-link" data-scroll-target="#方法二scipy.ndimage-实现">方法二：scipy.ndimage 实现</a></li>
+  <li><a href="#方法三pytorch-interpolate-实现" id="toc-方法三pytorch-interpolate-实现" class="nav-link" data-scroll-target="#方法三pytorch-interpolate-实现">方法三：PyTorch interpolate 实现</a></li>
+  <li><a href="#方法四spacetransformer-实现" id="toc-方法四spacetransformer-实现" class="nav-link" data-scroll-target="#方法四spacetransformer-实现">方法四：SpaceTransformer 实现</a></li>
   <li><a href="#实验结果分析与总结" id="toc-实验结果分析与总结" class="nav-link" data-scroll-target="#实验结果分析与总结">实验结果分析与总结</a></li>
   </ul>
 </nav>
@@ -329,19 +337,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="引言空间变换的普遍需求与实现困境" class="level2">
 <h2 class="anchored" data-anchor-id="引言空间变换的普遍需求与实现困境">引言：空间变换的普遍需求与实现困境</h2>
+<p>结论：常见库在“裁剪 ROI → 重采样 → 分析 → 回传”的标准流程中，易出现坐标偏移、配置冗余与轴序混乱；SpaceTransformer 以声明式空间定义与统一变换接口，显著降低实现复杂度并保持精度。</p>
 <p>在医学图像分析流水线中，空间变换是一个核心且不可避免的环节。典型的工作流程包括：提取感兴趣区域（ROI）、重采样到标准尺寸、执行AI分析、将结果精确映射回原始图像空间。这一流程看似简单，但在实际实现中却充满了技术陷阱。</p>
-<p>本文通过一个具体的对比实验，展示当前主流空间变换库在处理这一标准流程时所面临的问题，并介绍SpaceTransformer如何通过统一的设计理念来解决这些挑战。</p>
+<p>本文通过一个具体对比实验，展示主流库在该流程中的问题，并介绍 SpaceTransformer 如何以统一设计解决这些挑战。</p>
 </section>
 <section id="测试场景设计" class="level2">
 <h2 class="anchored" data-anchor-id="测试场景设计">测试场景设计</h2>
 <p>为了客观评估不同库的表现，我们设计了一个简化但具有代表性的测试场景：</p>
-<div id="f748ba69" class="cell" data-execution_count="1">
+<div id="3d61e7c8" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_test_image():</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    创建测试图像：35x35背景 + 9x9中心正方形 + 中心关键点</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    创建测试图像：35×35 背景 + 9×9 中心正方形 + 中心关键点</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    这个设计模拟了医学图像中的典型结构：器官边界 + 内部标志点</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> np.zeros((<span class="dv">35</span>, <span class="dv">35</span>), dtype<span class="op">=</span>np.float32)</span>
@@ -372,7 +381,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.array([<span class="fl">0.0</span>, <span class="fl">0.0</span>])</span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># === 全局参数配置 ===</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># ROI提取参数 (偏移的bbox，模拟实际检测中的偏移)</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># ROI 提取参数（偏移的 bbox，模拟实际检测中的偏移）</span></span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>ROI_START_Y <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>ROI_START_X <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>ROI_SIZE <span class="op">=</span> <span class="dv">15</span></span>
@@ -391,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"ROI区域: (</span><span class="sc">{</span>ROI_START_Y<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>ROI_END_Y<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>ROI_START_X<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>ROI_END_X<span class="sc">}</span><span class="ss">)"</span>)</span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"目标尺寸: </span><span class="sc">{</span>TARGET_SIZE<span class="sc">}</span><span class="ss">x</span><span class="sc">{</span>TARGET_SIZE<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算真实的关键点位置（理论值）</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算真实关键点位置（理论值）</span></span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>true_keypoint <span class="op">=</span> np.array([<span class="dv">17</span>, <span class="dv">17</span>])  <span class="co"># 35x35图像的中心 (y, x)</span></span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_result(original_img, segment_result, keypoint_result, method_name, true_keypoint):</span>
@@ -430,350 +439,289 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
 <span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>plt.imshow(original_img, cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Test Image: 35x35 Background + 9x9 Square + Center Keypoint'</span>)</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Test Image: 35×35 Background + 9×9 Square + Center Keypoint'</span>)</span>
 <span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>plt.colorbar()</span>
 <span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>原始图像尺寸: (35, 35)
-目标物体覆盖范围: [13 13] 到 [21 21]
-ROI区域: (10:25, 10:25)
-目标尺寸: 32x32</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="3.0_spacetransformer_motivation_files/figure-html/cell-2-output-2.png" width="534" height="419" class="figure-img"></p>
-</figure>
-</div>
-</div>
 </div>
 </section>
 <section id="测试流水线定义" class="level2">
 <h2 class="anchored" data-anchor-id="测试流水线定义">测试流水线定义</h2>
 <p>我们将实现以下标准的医学图像处理流水线：</p>
 <ol type="1">
-<li><strong>ROI提取</strong>：从35x35图像中提取15x15的中心区域</li>
-<li><strong>重采样</strong>：将15x15区域缩放到32x32</li>
-<li><strong>分析处理</strong>：执行分割和关键点检测</li>
-<li><strong>结果回传</strong>：将32x32空间的结果精确映射回35x35原始空间</li>
+<li>ROI 提取：从 35×35 图像中提取 15×15 中心区域</li>
+<li>重采样：将 15×15 区域缩放到 32×32</li>
+<li>分析处理：执行分割与关键点检测</li>
+<li>结果回传：将 32×32 空间结果精确映射回 35×35 原始空间</li>
 </ol>
 <p>每个库的实现将被评估其代码复杂度、参数管理难度以及坐标变换的准确性。</p>
 </section>
-<section id="方法一simpleitk实现" class="level2">
-<h2 class="anchored" data-anchor-id="方法一simpleitk实现">方法一：SimpleITK实现</h2>
+<section id="方法一simpleitk-实现" class="level2">
+<h2 class="anchored" data-anchor-id="方法一simpleitk-实现">方法一：SimpleITK 实现</h2>
 <p>SimpleITK是医学图像处理的标准库，提供了完整的ITK功能接口。</p>
-<div id="3bc4058b" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_simpleitk(img):</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用SimpleITK实现完整流水线"""</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 转换为SimpleITK图像</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    sitk_img <span class="op">=</span> sitk.GetImageFromArray(img)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    sitk_img.SetSpacing([<span class="fl">1.0</span>, <span class="fl">1.0</span>])</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    sitk_img.SetOrigin([<span class="fl">0.0</span>, <span class="fl">0.0</span>])</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤1：ROI提取 (使用全局参数)</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    original_size <span class="op">=</span> sitk_img.GetSize()</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    roi_size <span class="op">=</span> [ROI_SIZE, ROI_SIZE] </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    roi_start <span class="op">=</span> [ROI_START_X, ROI_START_Y]  <span class="co"># 注意SimpleITK使用(X,Y)顺序</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    roi_img <span class="op">=</span> sitk.RegionOfInterest(sitk_img, roi_size, roi_start)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤2：重采样到目标尺寸</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    target_size <span class="op">=</span> [TARGET_SIZE, TARGET_SIZE]</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 计算新的spacing以保持物理尺寸</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    original_spacing <span class="op">=</span> roi_img.GetSpacing()</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    physical_size <span class="op">=</span> [roi_size[i] <span class="op">*</span> original_spacing[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    target_spacing <span class="op">=</span> [physical_size[i] <span class="op">/</span> target_size[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 配置重采样器</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputSpacing(target_spacing)</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    resampler.SetSize(target_size)</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputDirection(roi_img.GetDirection())</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    resampler.SetInterpolator(sitk.sitkLinear)</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> resampler.Execute(roi_img)</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    resampled_array <span class="op">=</span> sitk.GetArrayFromImage(resampled_img)</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤3：分析处理</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_array)</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    keypoint_result <span class="op">=</span> get_keypoint(resampled_array)</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤4：结果回传 - 这里是SimpleITK的复杂之处</span></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 需要手动计算多个坐标变换</span></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4a: 从目标尺寸回到ROI空间</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    scale_factor <span class="op">=</span> np.array(roi_size) <span class="op">/</span> np.array(target_size)</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    keypoint_in_roi <span class="op">=</span> keypoint_result <span class="op">*</span> scale_factor</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4b: 从ROI空间回到原始空间</span></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    keypoint_in_original <span class="op">=</span> keypoint_in_roi <span class="op">+</span> np.array([roi_start[<span class="dv">1</span>], roi_start[<span class="dv">0</span>]])</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 分割结果回传需要再次重采样</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    segment_sitk <span class="op">=</span> sitk.GetImageFromArray(segment_result.astype(np.float32))</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetSpacing(target_spacing)</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetOrigin(resampled_img.GetOrigin())</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 重采样回ROI尺寸</span></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>    back_resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputSpacing(original_spacing)</span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetSize(roi_size)</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetInterpolator(sitk.sitkNearestNeighbor)</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> back_resampler.Execute(segment_sitk)</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>    segment_roi_array <span class="op">=</span> sitk.GetArrayFromImage(segment_roi)</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 将ROI结果放回原始图像</span></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros(original_shape, dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>    segment_original[roi_start[<span class="dv">1</span>]:roi_start[<span class="dv">1</span>]<span class="op">+</span>roi_size[<span class="dv">1</span>], </span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>                    roi_start[<span class="dv">0</span>]:roi_start[<span class="dv">0</span>]<span class="op">+</span>roi_size[<span class="dv">0</span>]] <span class="op">=</span> segment_roi_array</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_in_original</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SimpleITK实现 ==="</span>)</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>sitk_segment, sitk_keypoint <span class="op">=</span> process_with_simpleitk(original_img)</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>sitk_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(sitk_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示SimpleITK结果</span></span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, sitk_segment, sitk_keypoint, <span class="st">"SimpleITK"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>=== SimpleITK实现 ===
-检测到的关键点坐标: [16.875 16.875]
-分割区域像素数: 81</code></pre>
+<div id="f00cd39e" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_simpleitk(img):</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用 SimpleITK 实现完整流水线"""</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 转换为 SimpleITK 图像</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    sitk_img <span class="op">=</span> sitk.GetImageFromArray(img)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    sitk_img.SetSpacing([<span class="fl">1.0</span>, <span class="fl">1.0</span>])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    sitk_img.SetOrigin([<span class="fl">0.0</span>, <span class="fl">0.0</span>])</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 1：ROI 提取（使用全局参数）</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    original_size <span class="op">=</span> sitk_img.GetSize()</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    roi_size <span class="op">=</span> [ROI_SIZE, ROI_SIZE] </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    roi_start <span class="op">=</span> [ROI_START_X, ROI_START_Y]  <span class="co"># 注意 SimpleITK 使用 (X,Y) 顺序</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    roi_img <span class="op">=</span> sitk.RegionOfInterest(sitk_img, roi_size, roi_start)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 2：重采样到目标尺寸</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    target_size <span class="op">=</span> [TARGET_SIZE, TARGET_SIZE]</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 计算新的spacing以保持物理尺寸</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    original_spacing <span class="op">=</span> roi_img.GetSpacing()</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    physical_size <span class="op">=</span> [roi_size[i] <span class="op">*</span> original_spacing[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    target_spacing <span class="op">=</span> [physical_size[i] <span class="op">/</span> target_size[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 配置重采样器</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputSpacing(target_spacing)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    resampler.SetSize(target_size)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputDirection(roi_img.GetDirection())</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    resampler.SetInterpolator(sitk.sitkLinear)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> resampler.Execute(roi_img)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    resampled_array <span class="op">=</span> sitk.GetArrayFromImage(resampled_img)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 3：分析处理</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_array)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    keypoint_result <span class="op">=</span> get_keypoint(resampled_array)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 4：结果回传 - 这里是 SimpleITK 的复杂之处</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 需要手动计算多个坐标变换</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4a: 从目标尺寸回到ROI空间</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    scale_factor <span class="op">=</span> np.array(roi_size) <span class="op">/</span> np.array(target_size)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    keypoint_in_roi <span class="op">=</span> keypoint_result <span class="op">*</span> scale_factor</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4b: 从ROI空间回到原始空间</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    keypoint_in_original <span class="op">=</span> keypoint_in_roi <span class="op">+</span> np.array([roi_start[<span class="dv">1</span>], roi_start[<span class="dv">0</span>]])</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 分割结果回传需要再次重采样</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    segment_sitk <span class="op">=</span> sitk.GetImageFromArray(segment_result.astype(np.float32))</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetSpacing(target_spacing)</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetOrigin(resampled_img.GetOrigin())</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 重采样回 ROI 尺寸</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    back_resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputSpacing(original_spacing)</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetSize(roi_size)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetInterpolator(sitk.sitkNearestNeighbor)</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> back_resampler.Execute(segment_sitk)</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>    segment_roi_array <span class="op">=</span> sitk.GetArrayFromImage(segment_roi)</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 将ROI结果放回原始图像</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros(original_shape, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    segment_original[roi_start[<span class="dv">1</span>]:roi_start[<span class="dv">1</span>]<span class="op">+</span>roi_size[<span class="dv">1</span>], </span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>                    roi_start[<span class="dv">0</span>]:roi_start[<span class="dv">0</span>]<span class="op">+</span>roi_size[<span class="dv">0</span>]] <span class="op">=</span> segment_roi_array</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_in_original</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SimpleITK实现 ==="</span>)</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>sitk_segment, sitk_keypoint <span class="op">=</span> process_with_simpleitk(original_img)</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>sitk_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(sitk_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示 SimpleITK 结果</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, sitk_segment, sitk_keypoint, <span class="st">"SimpleITK"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="3.0_spacetransformer_motivation_files/figure-html/cell-3-output-2.png" width="550" height="566" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p><strong>SimpleITK的问题分析</strong>：</p>
+<p><strong>SimpleITK 的问题分析</strong>：</p>
 <ul>
 <li><strong>重采样配置冗长</strong>：每次重采样都需要配置多个参数</li>
 <li><strong>代码可读性差</strong>：业务逻辑被大量底层配置代码掩盖</li>
 <li><strong>轴序问题</strong>：这张图xy对称，所以体现不出来，但实际上很容易出现轴序错误</li>
 </ul>
 </section>
-<section id="方法二scipy.ndimage实现" class="level2">
-<h2 class="anchored" data-anchor-id="方法二scipy.ndimage实现">方法二：scipy.ndimage实现</h2>
+<section id="方法二scipy.ndimage-实现" class="level2">
+<h2 class="anchored" data-anchor-id="方法二scipy.ndimage-实现">方法二：scipy.ndimage 实现</h2>
 <p>scipy.ndimage是通用的N维图像处理库，在科学计算社区广泛使用。</p>
-<div id="4370a810" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> ndimage</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.ndimage <span class="im">import</span> zoom</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_scipy(img):</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用scipy.ndimage实现流水线"""</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤1：ROI提取 (使用全局参数)</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    h, w <span class="op">=</span> img.shape</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    roi_img <span class="op">=</span> img[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤2：重采样到目标尺寸</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    zoom_factor <span class="op">=</span> TARGET_SIZE <span class="op">/</span> ROI_SIZE</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 注意：scipy的zoom函数坐标处理容易出错</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> zoom(roi_img, zoom_factor, order<span class="op">=</span><span class="dv">1</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤3：分析处理</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_img)</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    keypoint_result <span class="op">=</span> get_keypoint(resampled_img)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤4：结果回传</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4a: 关键点坐标变换</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    keypoint_in_roi <span class="op">=</span> keypoint_result <span class="op">/</span> zoom_factor</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    keypoint_in_original <span class="op">=</span> keypoint_in_roi <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4b: 分割结果回传</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># zoom函数的逆变换参数计算容易出错</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> zoom(segment_result.astype(np.float32), </span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>                      <span class="fl">1.0</span> <span class="op">/</span> zoom_factor, order<span class="op">=</span><span class="dv">0</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 放回原始图像</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_in_original</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== scipy.ndimage实现 ==="</span>)</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>scipy_segment, scipy_keypoint <span class="op">=</span> process_with_scipy(original_img)</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>scipy_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(scipy_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示scipy.ndimage结果</span></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, scipy_segment, scipy_keypoint, <span class="st">"scipy.ndimage"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>=== scipy.ndimage实现 ===
-检测到的关键点坐标: [17.265625 17.265625]
-分割区域像素数: 81</code></pre>
+<div id="5279c980" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> ndimage</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.ndimage <span class="im">import</span> zoom</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_scipy(img):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用 scipy.ndimage 实现流水线"""</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 1：ROI 提取（使用全局参数）</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    h, w <span class="op">=</span> img.shape</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    roi_img <span class="op">=</span> img[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 2：重采样到目标尺寸</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    zoom_factor <span class="op">=</span> TARGET_SIZE <span class="op">/</span> ROI_SIZE</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 注意：scipy的zoom函数坐标处理容易出错</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> zoom(roi_img, zoom_factor, order<span class="op">=</span><span class="dv">1</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 3：分析处理</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_img)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    keypoint_result <span class="op">=</span> get_keypoint(resampled_img)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 4：结果回传</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4a: 关键点坐标变换</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    keypoint_in_roi <span class="op">=</span> keypoint_result <span class="op">/</span> zoom_factor</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    keypoint_in_original <span class="op">=</span> keypoint_in_roi <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4b: 分割结果回传</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># zoom函数的逆变换参数计算容易出错</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> zoom(segment_result.astype(np.float32), </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>                      <span class="fl">1.0</span> <span class="op">/</span> zoom_factor, order<span class="op">=</span><span class="dv">0</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 放回原始图像</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_in_original</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== scipy.ndimage实现 ==="</span>)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>scipy_segment, scipy_keypoint <span class="op">=</span> process_with_scipy(original_img)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>scipy_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(scipy_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示 scipy.ndimage 结果</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, scipy_segment, scipy_keypoint, <span class="st">"scipy.ndimage"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="3.0_spacetransformer_motivation_files/figure-html/cell-4-output-2.png" width="550" height="566" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p><strong>scipy.ndimage的问题分析</strong>： - <strong>zoom函数</strong>：逆变换时尺寸计算容易出现舍入误差</p>
+<p><strong>scipy.ndimage 的问题分析</strong>： - <strong>zoom函数</strong>：逆变换时尺寸计算容易出现舍入误差</p>
 </section>
-<section id="方法三pytorch-interpolate实现" class="level2">
-<h2 class="anchored" data-anchor-id="方法三pytorch-interpolate实现">方法三：PyTorch interpolate实现</h2>
+<section id="方法三pytorch-interpolate-实现" class="level2">
+<h2 class="anchored" data-anchor-id="方法三pytorch-interpolate-实现">方法三：PyTorch interpolate 实现</h2>
 <p>PyTorch的functional.interpolate是深度学习中最常用的图像变换工具。</p>
-<div id="6b53d62e" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_pytorch(img):</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用PyTorch interpolate实现流水线"""</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 转换为PyTorch张量 (需要添加batch和channel维度)</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    tensor_img <span class="op">=</span> torch.from_numpy(img).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>).<span class="bu">float</span>()</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤1：ROI提取 (使用全局参数)</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    h, w <span class="op">=</span> img.shape</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    roi_tensor <span class="op">=</span> tensor_img[:, :, ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤2：重采样到目标尺寸</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PyTorch的align_corners参数经常导致混淆</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    resampled_tensor <span class="op">=</span> F.interpolate(roi_tensor, size<span class="op">=</span>(TARGET_SIZE, TARGET_SIZE), </span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                                   mode<span class="op">=</span><span class="st">'bilinear'</span>, align_corners<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> resampled_tensor.squeeze().numpy()</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤3：分析处理</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_img)</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    keypoint_result <span class="op">=</span> get_keypoint(resampled_img)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤4：结果回传</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PyTorch的坐标变换计算复杂，align_corners设置影响结果</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    scale_factor <span class="op">=</span> ROI_SIZE <span class="op">/</span> TARGET_SIZE</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    keypoint_in_original <span class="op">=</span> keypoint_result <span class="op">*</span> scale_factor <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 分割结果回传</span></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    segment_tensor <span class="op">=</span> torch.from_numpy(segment_result.astype(np.float32)).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>)</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    segment_roi_tensor <span class="op">=</span> F.interpolate(segment_tensor, size<span class="op">=</span>(ROI_SIZE, ROI_SIZE), </span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>                                     mode<span class="op">=</span><span class="st">'nearest'</span>)</span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> segment_roi_tensor.squeeze().numpy().astype(np.uint8)</span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 放回原始图像</span></span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_in_original</span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== PyTorch interpolate实现 ==="</span>)</span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>torch_segment, torch_keypoint <span class="op">=</span> process_with_pytorch(original_img)</span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>torch_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(torch_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示PyTorch结果</span></span>
-<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, torch_segment, torch_keypoint, <span class="st">"PyTorch interpolate"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>=== PyTorch interpolate实现 ===
-检测到的关键点坐标: [17.265625 17.265625]
-分割区域像素数: 96</code></pre>
+<div id="472b150f" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_pytorch(img):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用 PyTorch interpolate 实现流水线"""</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 转换为 PyTorch 张量（需要添加 batch 与 channel 维度）</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    tensor_img <span class="op">=</span> torch.from_numpy(img).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>).<span class="bu">float</span>()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 1：ROI 提取（使用全局参数）</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    h, w <span class="op">=</span> img.shape</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    roi_tensor <span class="op">=</span> tensor_img[:, :, ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 2：重采样到目标尺寸</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PyTorch的align_corners参数经常导致混淆</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    resampled_tensor <span class="op">=</span> F.interpolate(roi_tensor, size<span class="op">=</span>(TARGET_SIZE, TARGET_SIZE), </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                                   mode<span class="op">=</span><span class="st">'bilinear'</span>, align_corners<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> resampled_tensor.squeeze().numpy()</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 3：分析处理</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_img)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    keypoint_result <span class="op">=</span> get_keypoint(resampled_img)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 步骤 4：结果回传</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># PyTorch的坐标变换计算复杂，align_corners设置影响结果</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    scale_factor <span class="op">=</span> ROI_SIZE <span class="op">/</span> TARGET_SIZE</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    keypoint_in_original <span class="op">=</span> keypoint_result <span class="op">*</span> scale_factor <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 分割结果回传</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    segment_tensor <span class="op">=</span> torch.from_numpy(segment_result.astype(np.float32)).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    segment_roi_tensor <span class="op">=</span> F.interpolate(segment_tensor, size<span class="op">=</span>(ROI_SIZE, ROI_SIZE), </span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>                                     mode<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> segment_roi_tensor.squeeze().numpy().astype(np.uint8)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 放回原始图像</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_in_original</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== PyTorch interpolate实现 ==="</span>)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>torch_segment, torch_keypoint <span class="op">=</span> process_with_pytorch(original_img)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>torch_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(torch_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示 PyTorch 结果</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, torch_segment, torch_keypoint, <span class="st">"PyTorch interpolate"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="3.0_spacetransformer_motivation_files/figure-html/cell-5-output-2.png" width="550" height="566" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p><strong>PyTorch interpolate的问题分析</strong>：</p>
+<p><strong>PyTorch interpolate 的问题分析</strong>：</p>
 <ul>
-<li><strong>align_corners混淆</strong>：True和False设置导致不同的坐标映射公式，容易出错</li>
-<li><strong>维度管理冗余</strong>：需要手动添加和移除batch、channel维度</li>
-<li><strong>nearest 有偏</strong>：可以明显发现预测的mask 和原图是有偏的</li>
+<li>align_corners 混淆：True/False 产生不同坐标映射公式，易出错</li>
+<li>维度管理冗余：需手动添加/移除 batch、channel 维度</li>
+<li>最近邻偏移：可见预测的 mask 与原图存在偏移</li>
 </ul>
 </section>
-<section id="方法四spacetransformer实现" class="level2">
-<h2 class="anchored" data-anchor-id="方法四spacetransformer实现">方法四：SpaceTransformer实现</h2>
-<div id="510235eb" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.torch <span class="im">import</span> warp_image</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> warp_point</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_spacetransformer(img):</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用SpaceTransformer实现流水线"""</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 定义原始图像空间</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    original_space <span class="op">=</span> Space(</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        shape<span class="op">=</span>[<span class="dv">1</span>]<span class="op">+</span><span class="bu">list</span>(img.shape),</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        spacing<span class="op">=</span>(<span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>),</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        origin<span class="op">=</span>(<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 声明式定义目标空间：ROI提取 + 重采样 (使用全局参数)</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    target_space <span class="op">=</span> (original_space</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        .apply_bbox([(<span class="dv">0</span>,<span class="dv">1</span>), (ROI_START_Y, ROI_END_Y), (ROI_START_X, ROI_END_X)])  <span class="co"># 偏移ROI</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        .apply_shape((<span class="dv">1</span>, TARGET_SIZE, TARGET_SIZE))             <span class="co"># 重采样到目标尺寸</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 执行变换</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> warp_image(img[<span class="va">None</span>], original_space, target_space, </span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>                                mode<span class="op">=</span><span class="st">'trilinear'</span>, pad_value<span class="op">=</span><span class="dv">0</span>, cuda_device<span class="op">=</span><span class="st">'cpu'</span>,</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>                                numpy<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 分析处理</span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_img)</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    keypoint_2d <span class="op">=</span> get_keypoint(resampled_img)</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 将2D关键点转换为3D格式 (z=0, y, x) 供SpaceTransformer使用</span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    keypoint_3d <span class="op">=</span> np.array([[<span class="dv">0</span>, keypoint_2d[<span class="dv">0</span>], keypoint_2d[<span class="dv">1</span>]]])  <span class="co"># shape: (1, 3)</span></span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 结果回传：一行代码完成逆变换</span></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> warp_image(segment_result[<span class="va">None</span>],     target_space, original_space,</span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>                                       mode<span class="op">=</span><span class="st">'nearest'</span>, pad_value<span class="op">=</span><span class="dv">0</span>, cuda_device<span class="op">=</span><span class="st">'cpu'</span>,numpy<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    keypoint_3d_original <span class="op">=</span> warp_point(keypoint_3d, target_space, original_space)[<span class="dv">0</span>]</span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 转换回2D格式 (y, x)</span></span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint_3d_original[<span class="dv">0</span>, <span class="dv">1</span>:<span class="dv">3</span>]  </span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SpaceTransformer实现 ==="</span>)</span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>st_segment, st_keypoint <span class="op">=</span> process_with_spacetransformer(original_img)</span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>st_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(st_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示SpaceTransformer结果</span></span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, st_segment, st_keypoint, <span class="st">"SpaceTransformer"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>=== SpaceTransformer实现 ===
-检测到的关键点坐标: [17. 17.]
-分割区域像素数: 81.0</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="3.0_spacetransformer_motivation_files/figure-html/cell-6-output-2.png" width="550" height="566" class="figure-img"></p>
-</figure>
-</div>
-</div>
+<section id="方法四spacetransformer-实现" class="level2">
+<h2 class="anchored" data-anchor-id="方法四spacetransformer-实现">方法四：SpaceTransformer 实现</h2>
+<div id="ea10849a" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.torch <span class="im">import</span> warp_image</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> warp_point</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_spacetransformer(img):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""使用 SpaceTransformer 实现流水线"""</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 定义原始图像空间</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    original_space <span class="op">=</span> Space(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        shape<span class="op">=</span>[<span class="dv">1</span>]<span class="op">+</span><span class="bu">list</span>(img.shape),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        spacing<span class="op">=</span>(<span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        origin<span class="op">=</span>(<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 声明式定义目标空间：ROI 提取 + 重采样（使用全局参数）</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    target_space <span class="op">=</span> (original_space</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        .apply_bbox([(<span class="dv">0</span>,<span class="dv">1</span>), (ROI_START_Y, ROI_END_Y), (ROI_START_X, ROI_END_X)])  <span class="co"># 偏移ROI</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        .apply_shape((<span class="dv">1</span>, TARGET_SIZE, TARGET_SIZE))             <span class="co"># 重采样到目标尺寸</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 执行变换</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> warp_image(img[<span class="va">None</span>], original_space, target_space, </span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>                                mode<span class="op">=</span><span class="st">'trilinear'</span>, pad_value<span class="op">=</span><span class="dv">0</span>, cuda_device<span class="op">=</span><span class="st">'cpu'</span>,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>                                numpy<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 分析处理</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    segment_result <span class="op">=</span> get_segmentation(resampled_img)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    keypoint_2d <span class="op">=</span> get_keypoint(resampled_img)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 将 2D 关键点转换为 3D 格式 (z=0, y, x) 供 SpaceTransformer 使用</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    keypoint_3d <span class="op">=</span> np.array([[<span class="dv">0</span>, keypoint_2d[<span class="dv">0</span>], keypoint_2d[<span class="dv">1</span>]]])  <span class="co"># shape: (1, 3)</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 结果回传：一行代码完成逆变换</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> warp_image(segment_result[<span class="va">None</span>],     target_space, original_space,</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>                                       mode<span class="op">=</span><span class="st">'nearest'</span>, pad_value<span class="op">=</span><span class="dv">0</span>, cuda_device<span class="op">=</span><span class="st">'cpu'</span>,numpy<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    keypoint_3d_original <span class="op">=</span> warp_point(keypoint_3d, target_space, original_space)[<span class="dv">0</span>]</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 转换回2D格式 (y, x)</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint_3d_original[<span class="dv">0</span>, <span class="dv">1</span>:<span class="dv">3</span>]  </span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SpaceTransformer实现 ==="</span>)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>st_segment, st_keypoint <span class="op">=</span> process_with_spacetransformer(original_img)</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检测到的关键点坐标: </span><span class="sc">{</span>st_keypoint<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"分割区域像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(st_segment)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co"># 立即显示 SpaceTransformer 结果</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, st_segment, st_keypoint, <span class="st">"SpaceTransformer"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="实验结果分析与总结" class="level2">
 <h2 class="anchored" data-anchor-id="实验结果分析与总结">实验结果分析与总结</h2>
 <p>通过上述对比实验，我们可以清晰地观察到各个库在空间变换精度和实现复杂度方面的显著差异：</p>
-<p><strong>精度对比</strong>：除SpaceTransformer外，其他主流库均存在不同程度的坐标偏移问题。其中，PyTorch的实现甚至出现了明显的分割掩膜偏移，这在医学图像分析中可能导致严重的临床后果。SpaceTransformer通过精确的空间描述，有效避免了这类精度损失。</p>
-<p><strong>开发效率对比</strong>：从代码复杂度角度，SpaceTransformer展现出明显优势。传统方法需要手动管理复杂的坐标变换链、参数配置和维度处理，需要维护很多中间变量，对于不同的元素采取不同的变换方法，而SpaceTransformer通过声明式的空间定义和自动化的变换计算，将原本数十行的实现精简为几行核心逻辑，大幅提升了开发效率和代码可维护性。</p>
-<p><strong>架构设计优势</strong>：SpaceTransformer采用了计算逻辑与业务逻辑分离的设计理念，把复杂、易错底层计算逻辑进行包装，使得空间变换操作对用户透明，开发者可以专注于算法本身而非底层的坐标计算细节。</p>
-<p>在接下来的章节中，我们将深入分析这些问题的根本原因，并详细阐述SpaceTransformer的设计原理和技术实现，帮助读者全面理解其在医学图像空间变换领域的技术优势。</p>
+<p><strong>精度对比</strong>：除 SpaceTransformer 外，其他主流库均存在不同程度的坐标偏移。其中 PyTorch 的实现甚至出现明显的分割掩膜偏移，医学场景下可能导致严重后果。SpaceTransformer 通过精确空间描述，有效避免这类损失。</p>
+<p><strong>开发效率对比</strong>：从代码复杂度看，SpaceTransformer 优势明显。传统方法需手动管理坐标变换链、参数配置与维度处理，并针对不同元素维持不同变换；SpaceTransformer 以声明式空间定义与自动化计算，将几十行实现收敛为少量核心逻辑，显著提升可维护性。</p>
+<p><strong>架构设计优势</strong>：SpaceTransformer 采用“计算逻辑与业务逻辑分离”，封装复杂、易错的底层计算，使空间变换对用户透明，开发者可专注算法而非坐标细节。</p>
+<p>在接下来的章节中，我们将分析问题根源，阐述 SpaceTransformer 的设计原理与技术实现，帮助读者理解其在医学图像空间变换中的优势。</p>
 
 
 </section>

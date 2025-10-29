@@ -1,0 +1,97 @@
+---
+title: "Slice Sorting Methods"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## Why Sort DICOM Series?
+
+Pulling a series from PACS or storage usually yields hundreds of loose 2D slices with arbitrary filenames. To stack them into the correct 3D volume, we must decide **how to order the slices**.
+
+What looks simple hides conflicting requirements from clinical workflow, rendering engines, and AI pipelines. Each sorting rule has valid use cases yet can break under other scenarios.
+
+### Conflicting Needs In Practice
+
+- **Clinical reporting**: Radiologists reference lesions by `InstanceNumber` (e.g., “lesion on slice X”). Most PACS viewers default to `InstanceNumber`, so clinical workflows expect this order.
+- **AI standardization**: Models prefer anatomical order (“head→feet” or the inverse), typically using `SliceLocation` or `ImagePositionPatient`. This yields consistent spatial patterns for learning.
+- **Non‑standard scans**: Oblique acquisitions (e.g., cardiac MR) or reconstructions (e.g., coronal reformat) may lack `SliceLocation`, and picking the proper component from `ImagePositionPatient` is non‑trivial.
+- **3D rendering constraints**: Engines like VTK assume right‑handed coordinates; incorrect ordering can mirror the volume (“left/right swap”).
+
+Given these trade‑offs, **we recommend right‑handed coordinate sorting as the default**.
+
+### Why Default To Right‑Handed Order?
+
+- **Least modification cost**: Algorithms and renderers operate on full 3D arrays. Flipping or reordering requires heavy memory operations. Viewers, in contrast, can remap indices without moving pixels. Standardizing slices for compute‑heavy components keeps conversions lightweight downstream.
+- **Alignment with rendering/ITK/VTK**: Right‑handed ordering matches the dominant assumption in visualization toolkits, reducing extra transforms.
+- **Standard compliance**: It respects DICOM’s LPS+ convention.
+
+### Implementation
+
+Read `ImageOrientationPatient` to obtain in‑plane X/Y direction vectors. Their cross product yields the normal. Project each `ImagePositionPatient` onto the normal and sort ascending; this guarantees a right‑handed stack.
+
+### Real‑World Caveat
+
+A few vendors mis‑calibrate world coordinates and ship left‑handed geometry. Sorting alone cannot detect it and the result still mirrors. Detecting such anomalies requires additional analysis because metadata remains ambiguous.
+
+## Visual Verification
+
+Plot axial/coronal/sagittal slices to confirm correct spatial arrangement.
+
+```{python}
+import dicube
+from dicube import SortMethod
+import numpy as np
+import matplotlib.pyplot as plt
+
+dirname = 'dicube-testdata/dicom/sample_200'
+img_rh = dicube.load_from_dicom_folder(dirname, sort_method=SortMethod.POSITION_RIGHT_HAND)
+
+print("=== Right-Handed Sorting ===")
+print("Shape:", img_rh.raw_image.shape)
+print("Sort method: POSITION_RIGHT_HAND")
+
+def get_center_slices(image_data):
+    """Return center slices along three axes."""
+    z = image_data.shape[0] // 2
+    y = image_data.shape[1] // 2
+    x = image_data.shape[2] // 2
+    return {
+        'axial': image_data[z, :, :],
+        'coronal': image_data[:, y, :],
+        'sagittal': image_data[:, :, x]
+    }
+
+slices_rh = get_center_slices(img_rh.get_fdata())
+
+fig1, ax1 = plt.subplots(figsize=(8, 6))
+ax1.imshow(slices_rh['axial'], cmap='gray', origin='lower')
+ax1.set_title(f'Axial slice {img_rh.raw_image.shape[0]//2} / {img_rh.raw_image.shape[0]}')
+ax1.set_xlabel('Axis 2 (X): Right → Left')
+ax1.set_ylabel('Axis 1 (Y): Anterior → Posterior')
+plt.tight_layout(); plt.show()
+
+fig2, ax2 = plt.subplots(figsize=(8, 6))
+ax2.imshow(slices_rh['coronal'], cmap='gray', origin='lower')
+ax2.set_title(f'Coronal slice {img_rh.raw_image.shape[1]//2} / {img_rh.raw_image.shape[1]}')
+ax2.set_xlabel('Axis 2 (X): Right → Left')
+ax2.set_ylabel('Axis 0 (Z): Inferior → Superior')
+plt.tight_layout(); plt.show()
+
+fig3, ax3 = plt.subplots(figsize=(8, 6))
+ax3.imshow(slices_rh['sagittal'], cmap='gray', origin='lower')
+ax3.set_title(f'Sagittal slice {img_rh.raw_image.shape[2]//2} / {img_rh.raw_image.shape[2]}')
+ax3.set_xlabel('Axis 1 (Y): Anterior → Posterior')
+ax3.set_ylabel('Axis 0 (Z): Inferior → Superior')
+plt.tight_layout(); plt.show()
+```
+
+## Best Practices
+
+- **Rendering compatibility**: VTK/ITK assume right‑handed coordinates. Sorting accordingly avoids extra transforms.
+- **Standards compliance**: Matches DICOM’s LPS+ orientation.
+- **AI stability**: Prevents mirrored inputs across training/inference environments.
+- **Runtime efficiency**: Minimizes on‑the‑fly reordering in performance‑critical modules.
+

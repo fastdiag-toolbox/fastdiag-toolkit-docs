@@ -12,33 +12,62 @@ website:
       - text: "首页"
         file: index.qmd
     right:
+      - text: "中文"
+        file: index.qmd
+      - text: "English"
+        file: index-en.qmd
       - icon: github
         href: https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs
         text: "GitHub"
 
   sidebar:
-    style: "docked"
-    search: true
-    contents:
-      - section: "DiCube"
-        contents:
-          - 1.0_motivation.qmd
-          - 1.1_vs_nifti.qmd
-          - 1.2_meta_storage.qmd
-          - 1.3_dicom_status.qmd
-          - 1.4_sort_method.qmd
-          - 1.5_axis_order.qmd
-          - 1.6_dicom_compatibility_simple.qmd
-      - section: "MedMask"
-        contents:
-          - 2.0_mask.qmd
-          - 2.1_mask_compression.qmd
-          - 2.2_mask_label_mapping.qmd
-          - 2.3_mask_archive.qmd
-      - section: "SpaceTransformer"
-        contents:
-          - 3.0_spacetransformer_motivation.qmd
-          - 3.1_space_concept_fundamentals.qmd
+    - id: zh
+      style: docked
+      search: true
+      contents:
+        - section: "DiCube"
+          contents:
+            - 1.0_motivation.qmd
+            - 1.1_vs_nifti.qmd
+            - 1.2_meta_storage.qmd
+            - 1.3_dicom_status.qmd
+            - 1.4_sort_method.qmd
+            - 1.5_axis_order.qmd
+            - 1.6_dicom_compatibility_simple.qmd
+        - section: "MedMask"
+          contents:
+            - 2.0_mask.qmd
+            - 2.1_mask_compression.qmd
+            - 2.2_mask_label_mapping.qmd
+            - 2.3_mask_archive.qmd
+        - section: "SpaceTransformer"
+          contents:
+            - 3.0_spacetransformer_motivation.qmd
+            - 3.1_space_concept_fundamentals.qmd
+
+    - id: en
+      style: docked
+      search: true
+      contents:
+        - section: "DiCube"
+          contents:
+            - 1.0_motivation-en.qmd
+            - 1.1_vs_nifti-en.qmd
+            - 1.2_meta_storage-en.qmd
+            - 1.3_dicom_status-en.qmd
+            - 1.4_sort_method-en.qmd
+            - 1.5_axis_order-en.qmd
+            - 1.6_dicom_compatibility_simple-en.qmd
+        - section: "MedMask"
+          contents:
+            - 2.0_mask-en.qmd
+            - 2.1_mask_compression-en.qmd
+            - 2.2_mask_label_mapping-en.qmd
+            - 2.3_mask_archive-en.qmd
+        - section: "SpaceTransformer"
+          contents:
+            - 3.0_spacetransformer_motivation-en.qmd
+            - 3.1_space_concept_fundamentals-en.qmd
 
   page-footer:
     left: |
@@ -63,6 +92,7 @@ execute:
   cache: false
   daemon: false
   keep-md: false
+  eval: false
 
 filters:
   - quarto
@@ -71,6 +101,6 @@ lang: zh-CN
 
 jupyter:
   kernelspec:
-    name: "dicube-docs"
+    name: "python3"
     language: "python"
-    display_name: "DiCube Docs Python"
+    display_name: "Python 3"

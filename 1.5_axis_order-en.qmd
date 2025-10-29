@@ -1,0 +1,118 @@
+---
+title: "3D Axis Order Convention"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## 1. Problem: SimpleITK Axis Order Mismatch
+
+`SimpleITK.Image.GetSize()` reports dimensions in `(X, Y, Z)`, while `sitk.GetArrayFromImage(image)` returns a NumPy array with shape `(Z, Y, X)`. Example:
+
+```{python}
+import SimpleITK as sitk
+dirname = "dicube-testdata/dicom/sample_200"
+
+reader = sitk.ImageSeriesReader()
+dicom_names = reader.GetGDCMSeriesFileNames(dirname)
+reader.SetFileNames(dicom_names)
+sitk_image = reader.Execute()
+
+print("GetSize ->", sitk_image.GetSize(), "(X, Y, Z)")
+array = sitk.GetArrayFromImage(sitk_image)
+print("array.shape ->", array.shape, "(Z, Y, X)")
+```
+
+The mismatch comes from historical row‑major (C order) vs column‑major (Fortran order) memory layouts across ecosystems.
+
+## 2. Background: Row‑Major vs Column‑Major
+
+- Row‑major (C order): used by C/C++/Python/NumPy; a 3D image is accessed as `(Z, Y, X)`.
+- Column‑major (Fortran order): used by Fortran/MATLAB/R; follows `(X, Y, Z)`.
+
+ITK/VTK/DICOM inherit Fortran conventions, hence SimpleITK exposes `(X, Y, Z)` metadata while exposing raw memory to NumPy as `(Z, Y, X)` for zero‑copy.
+
+## 3. Zero‑Copy Conversion And Its Side Effects
+
+SimpleITK exposes ITK memory to NumPy without reordering. By adjusting `shape`/`strides`, NumPy interprets column‑major data as row‑major without copying.
+
+```{python}
+import numpy as np
+
+original = np.arange(10)
+print("Original linear data:", original)
+
+c_array = np.reshape(original, (2,5), order='C')
+print("\nC-order array:\n", c_array)
+print("C-order strides:", c_array.strides)
+
+f_array = np.reshape(original, (5,2), order='F')
+print("\nF-order array:\n", f_array)
+print("F-order strides:", f_array.strides)
+```
+
+Zero‑copy is fast but flips axes `(X,Y,Z) → (Z,Y,X)`, increasing cognitive load and risk.
+
+## 4. Practical Issues
+
+### 4.1. Cognitive Load
+
+- Metadata mismatch: `image.GetSpacing()` returns `(X,Y,Z)` but NumPy arrays use `(Z,Y,X)`.
+- Indexing mistakes: intuitive `array[x, y, z]` fails; correct form is `array[z, y, x]`.
+- API parameters: functions like `scipy.ndimage.zoom` expect matching axis order; easy to misalign.
+
+### 4.2. Performance Cost Of Manual Fixes
+
+Naively calling `.transpose(2,1,0)` produces a non‑contiguous view. Many libraries require contiguous arrays, forcing `np.ascontiguousarray()` (full copy + extra memory).
+
+```{python}
+import numpy as np, time
+
+large = np.random.rand(399,400,401).astype(np.float32)
+print("Original C-contiguous:", large.flags['C_CONTIGUOUS'])
+
+transposed = large.transpose(2,1,0)
+print("Transposed C-contiguous:", transposed.flags['C_CONTIGUOUS'])
+
+def benchmark(arr, name):
+    start = time.time(); _ = np.sum(arr[60:100] * 2.0 + 1.0); ms = (time.time()-start)*1000
+    print(f"  {name}: {ms:.2f} ms"); return ms
+
+orig_ms = benchmark(large, "original contiguous")
+view_ms = benchmark(transposed, "transposed view")
+print(f"  Slowdown: {(view_ms/orig_ms-1)*100:.1f}%")
+
+start = time.time(); contiguous = np.ascontiguousarray(transposed); copy_ms = (time.time()-start)*1000
+print(f"ascontiguousarray copy: {copy_ms:.1f} ms, extra memory: {contiguous.nbytes/1024/1024:.1f} MB")
+```
+
+Deep learning frameworks, CUDA/OpenCL, ONNX, and many imaging libraries require contiguous buffers—making the copy unavoidable.
+
+## 5. DiCube’s Approach: Unified Axis Order
+
+`dicube.load_from_dicom_folder()` resolves axis order once during load:
+
+1. Read data/metadata.
+2. Interpret memory as `(Z, Y, X)` in C‑contiguous fashion without copying.
+3. Flip space metadata so spacing/origin/orientation also follow `(Z, Y, X)`.
+
+Result: arrays and metadata align; downstream code can treat everything as `(Z, Y, X)`.
+
+```{python}
+import dicube
+
+dcb_image = dicube.load_from_dicom_folder(dirname, sort_method=dicube.SortMethod.POSITION_RIGHT_HAND)
+
+print("--- DiCube (consistent) ---")
+print("array.shape ->", dcb_image.get_fdata().shape, "(Z, Y, X)")
+print("space.spacing ->", dcb_image.space.spacing, "(Z, Y, X)")
+
+print("\n--- SimpleITK (mixed) ---")
+print("array.shape ->", array.shape, "(Z, Y, X)")
+print("image.GetSpacing() ->", sitk_image.GetSpacing(), "(X, Y, Z)")
+```
+
+DiCube avoids extra rearrangements while exposing an intuitive API, eliminating axis confusion and fragile conversions.
+
