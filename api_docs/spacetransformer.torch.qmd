@@ -1,0 +1,5 @@
+# spacetransformer.torch { #spacetransformer.torch }
+
+`torch`
+
+GPU accelerated resampling functionality. Users typically import directly from top-level ``spacetransformer``.

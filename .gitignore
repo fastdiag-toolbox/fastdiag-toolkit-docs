@@ -20,6 +20,9 @@ _freeze/
 **/*.quarto_ipynb
 *.quarto_ipynb
 
+# quartodoc 生成的 interlinks inventory（如果未使用可忽略）
+objects.json
+
 # ==========================================
 # 数据文件（本地专有数据）
 # ==========================================

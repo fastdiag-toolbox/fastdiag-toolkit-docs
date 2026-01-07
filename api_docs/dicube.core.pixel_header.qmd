@@ -1,0 +1,109 @@
+# dicube.core.pixel_header { #dicube.core.pixel_header }
+
+`core.pixel_header`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [PixelDataHeader](#dicube.core.pixel_header.PixelDataHeader) | Header class for storing pixel data information in medical images. |
+
+### PixelDataHeader { #dicube.core.pixel_header.PixelDataHeader }
+
+```python
+core.pixel_header.PixelDataHeader(
+    RescaleSlope=1.0,
+    RescaleIntercept=0.0,
+    OriginalPixelDtype='uint16',
+    PixelDtype='uint16',
+    WindowCenter=None,
+    WindowWidth=None,
+    MaxVal=None,
+    MinVal=None,
+    Extras=dict(),
+)
+```
+
+Header class for storing pixel data information in medical images.
+
+Stores metadata including:
+- Rescale factors (slope/intercept)
+- Original pixel data type
+- Window settings (center/width)
+- Value range (min/max)
+- Additional metadata in extras
+
+Attributes:
+    RescaleSlope (float): Slope for linear transformation.
+    RescaleIntercept (float): Intercept for linear transformation.
+    PixelDtype (str): Pixel data type string (after convert to dcb file).
+    OriginalPixelDtype (str): Original pixel data type string (before convert to dcb file).
+    WindowCenter (float, optional): Window center value for display.
+    WindowWidth (float, optional): Window width value for display.
+    MaxVal (float, optional): Maximum pixel value.
+    MinVal (float, optional): Minimum pixel value.
+    Extras (Dict[str, any]): Dictionary for additional metadata.
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [from_dict](#dicube.core.pixel_header.PixelDataHeader.from_dict) | Create a PixelDataHeader from a dictionary. |
+| [from_json](#dicube.core.pixel_header.PixelDataHeader.from_json) | Create a PixelDataHeader from a JSON string. |
+| [to_dict](#dicube.core.pixel_header.PixelDataHeader.to_dict) | Convert the header to a dictionary for serialization. |
+| [to_json](#dicube.core.pixel_header.PixelDataHeader.to_json) | Serialize the header to a JSON string. |
+
+##### from_dict { #dicube.core.pixel_header.PixelDataHeader.from_dict }
+
+```python
+core.pixel_header.PixelDataHeader.from_dict(d)
+```
+
+Create a PixelDataHeader from a dictionary.
+
+Args:
+    d (dict): Dictionary containing header data.
+
+Returns:
+    PixelDataHeader: A new instance with values from the dictionary.
+
+##### from_json { #dicube.core.pixel_header.PixelDataHeader.from_json }
+
+```python
+core.pixel_header.PixelDataHeader.from_json(json_str)
+```
+
+Create a PixelDataHeader from a JSON string.
+
+Args:
+    json_str (str): JSON string containing header data.
+
+Returns:
+    PixelDataHeader: A new instance created from the JSON data.
+
+##### to_dict { #dicube.core.pixel_header.PixelDataHeader.to_dict }
+
+```python
+core.pixel_header.PixelDataHeader.to_dict()
+```
+
+Convert the header to a dictionary for serialization.
+
+Merges extras field into the main dictionary and removes
+the redundant extras key.
+
+Returns:
+    dict: Dictionary representation of the header.
+
+##### to_json { #dicube.core.pixel_header.PixelDataHeader.to_json }
+
+```python
+core.pixel_header.PixelDataHeader.to_json()
+```
+
+Serialize the header to a JSON string.
+
+Returns:
+    str: JSON string representation of the header.

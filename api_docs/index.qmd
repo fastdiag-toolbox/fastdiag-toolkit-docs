@@ -1,0 +1,64 @@
+# API 参考文档 {.doc .doc-index}
+
+## DiCube API
+
+DiCube 医学影像存储库 API 文档
+
+| | |
+| --- | --- |
+| [dicube](dicube.qmd#dicube) | DiCube: Python library for efficient storage and processing of 3D medical images. |
+| [dicube.core](dicube.core.qmd#dicube.core) | Core module for DiCube library. |
+| [dicube.core.image](dicube.core.image.qmd#dicube.core.image) |  |
+| [dicube.core.io](dicube.core.io.qmd#dicube.core.io) |  |
+| [dicube.core.pixel_header](dicube.core.pixel_header.qmd#dicube.core.pixel_header) |  |
+| [dicube.dicom](dicube.dicom.qmd#dicube.dicom) |  |
+| [dicube.dicom.dcb_streaming](dicube.dicom.dcb_streaming.qmd#dicube.dicom.dcb_streaming) | DCB Streaming Reader for PACS Viewer |
+| [dicube.dicom.dicom_builder](dicube.dicom.dicom_builder.qmd#dicube.dicom.dicom_builder) | Unified DICOM Dataset Builder |
+| [dicube.dicom.dicom_meta](dicube.dicom.dicom_meta.qmd#dicube.dicom.dicom_meta) |  |
+| [dicube.dicom.dicom_status](dicube.dicom.dicom_status.qmd#dicube.dicom.dicom_status) |  |
+| [dicube.dicom.dicom_tags](dicube.dicom.dicom_tags.qmd#dicube.dicom.dicom_tags) |  |
+| [dicube.storage](dicube.storage.qmd#dicube.storage) | Storage module for DiCube library. |
+| [dicube.storage.dcb_file](dicube.storage.dcb_file.qmd#dicube.storage.dcb_file) |  |
+| [dicube.storage.pixel_utils](dicube.storage.pixel_utils.qmd#dicube.storage.pixel_utils) |  |
+| [dicube.exceptions](dicube.exceptions.qmd#dicube.exceptions) | Exceptions module for DiCube. |
+| [dicube.validation](dicube.validation.qmd#dicube.validation) | Validation utilities for DiCube library. |
+| [dicube.utils](dicube.utils.qmd#dicube.utils) | Utility module for DiCube. |
+
+## MedMask API
+
+MedMask 医学掩膜处理库 API 文档
+
+| | |
+| --- | --- |
+| [medmask](medmask.qmd#medmask) | MedMask - Medical Image Mask Compression and Processing Library |
+| [medmask.core](medmask.core.qmd#medmask.core) | Core functionality for medical mask processing. |
+| [medmask.core.mapping](medmask.core.mapping.qmd#medmask.core.mapping) |  |
+| [medmask.core.segmask](medmask.core.segmask.qmd#medmask.core.segmask) |  |
+| [medmask.compression](medmask.compression.qmd#medmask.compression) |  |
+| [medmask.compression.zstd_codec](medmask.compression.zstd_codec.qmd#medmask.compression.zstd_codec) |  |
+| [medmask.storage](medmask.storage.qmd#medmask.storage) |  |
+| [medmask.storage.archivefile](medmask.storage.archivefile.qmd#medmask.storage.archivefile) |  |
+| [medmask.storage.maskfile](medmask.storage.maskfile.qmd#medmask.storage.maskfile) |  |
+| [medmask.utils](medmask.utils.qmd#medmask.utils) |  |
+| [medmask.utils.utils](medmask.utils.utils.qmd#medmask.utils.utils) |  |
+
+## SpaceTransformer API
+
+SpaceTransformer 3D 空间变换库 API 文档
+
+| | |
+| --- | --- |
+| [spacetransformer](spacetransformer.qmd#spacetransformer) |  |
+| [spacetransformer.core](spacetransformer.core.qmd#spacetransformer.core) |  |
+| [spacetransformer.core.space](spacetransformer.core.space.qmd#spacetransformer.core.space) | 3D medical image geometric space representation and transformations. |
+| [spacetransformer.core.transform](spacetransformer.core.transform.qmd#spacetransformer.core.transform) | 4x4 homogeneous coordinate transformation matrices for 3D medical images. |
+| [spacetransformer.core.pointset_warpers](spacetransformer.core.pointset_warpers.qmd#spacetransformer.core.pointset_warpers) | Point and vector transformation utilities for 3D medical images. |
+| [spacetransformer.core.relation_check](spacetransformer.core.relation_check.qmd#spacetransformer.core.relation_check) | Spatial relationship checking utilities for 3D medical image spaces. |
+| [spacetransformer.core.validation](spacetransformer.core.validation.qmd#spacetransformer.core.validation) | Validation utilities for SpaceTransformer parameters. |
+| [spacetransformer.core.exceptions](spacetransformer.core.exceptions.qmd#spacetransformer.core.exceptions) | Exception classes for SpaceTransformer library. |
+| [spacetransformer.torch](spacetransformer.torch.qmd#spacetransformer.torch) | GPU accelerated resampling functionality. Users typically import directly from top-level ``spacetransformer``. |
+| [spacetransformer.torch.image_warpers](spacetransformer.torch.image_warpers.qmd#spacetransformer.torch.image_warpers) | GPU-accelerated image resampling for 3D medical images. |
+| [spacetransformer.torch.affine_builder](spacetransformer.torch.affine_builder.qmd#spacetransformer.torch.affine_builder) | Grid generation utilities for PyTorch grid_sample operations. |
+| [spacetransformer.torch.gpu_utils](spacetransformer.torch.gpu_utils.qmd#spacetransformer.torch.gpu_utils) | GPU error handling utilities for SpaceTransformer PyTorch operations. |
+| [spacetransformer.torch.utils](spacetransformer.torch.utils.qmd#spacetransformer.torch.utils) | Utility functions for PyTorch operations in SpaceTransformer. |
+| [spacetransformer.torch.validation](spacetransformer.torch.validation.qmd#spacetransformer.torch.validation) | Validation utilities for PyTorch-specific operations. |

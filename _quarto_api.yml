@@ -1,36 +1,108 @@
 quartodoc:
   title: "API 参考文档"
   dir: api_docs
-  package: null
+  package: dicube
   style: pkgdown
   sections:
     - title: "DiCube API"
       desc: "DiCube 医学影像存储库 API 文档"
-      package: dicube
+      package: null
       contents:
         - name: dicube
           children: embedded
+        - name: dicube.core
+          children: embedded
+        - name: dicube.core.image
+          children: embedded
+        - name: dicube.core.io
+          children: embedded
+        - name: dicube.core.pixel_header
+          children: embedded
+        - name: dicube.dicom
+          children: embedded
+        - name: dicube.dicom.dcb_streaming
+          children: embedded
+        - name: dicube.dicom.dicom_builder
+          children: embedded
+        - name: dicube.dicom.dicom_meta
+          children: embedded
+        - name: dicube.dicom.dicom_status
+          children: embedded
+        - name: dicube.dicom.dicom_tags
+          children: embedded
+        - name: dicube.storage
+          children: embedded
+        - name: dicube.storage.dcb_file
+          children: embedded
+        - name: dicube.storage.pixel_utils
+          children: embedded
+        - name: dicube.exceptions
+          children: embedded
+        - name: dicube.validation
+          children: embedded
+        - name: dicube.utils
+          children: embedded
     - title: "MedMask API"  
       desc: "MedMask 医学掩膜处理库 API 文档"
-      package: medmask
+      package: null
       contents:
         - name: medmask
+          include_imports: true
+          children: embedded
+        - name: medmask.core
+          children: embedded
+        - name: medmask.core.mapping
+          children: embedded
+        - name: medmask.core.segmask
+          children: embedded
+        - name: medmask.compression
+          children: embedded
+        - name: medmask.compression.zstd_codec
+          children: embedded
+        - name: medmask.storage
+          children: embedded
+        - name: medmask.storage.archivefile
+          children: embedded
+        - name: medmask.storage.maskfile
+          children: embedded
+        - name: medmask.utils
+          children: embedded
+        - name: medmask.utils.utils
           children: embedded
     - title: "SpaceTransformer API"
       desc: "SpaceTransformer 3D 空间变换库 API 文档"
+      package: null
       contents:
-        - subtitle: "Core 模块"
-          desc: "核心空间变换功能"
-          package: spacetransformer.core
-          contents:
-            - name: spacetransformer.core
-              children: embedded
-        - subtitle: "Torch 模块"
-          desc: "GPU 加速的图像重采样功能"
-          package: spacetransformer.torch
-          contents:
-            - name: spacetransformer.torch
-              children: embedded
+        - name: spacetransformer
+          include_imports: true
+          children: embedded
+        - name: spacetransformer.core
+          include_imports: true
+          children: embedded
+        - name: spacetransformer.core.space
+          children: embedded
+        - name: spacetransformer.core.transform
+          children: embedded
+        - name: spacetransformer.core.pointset_warpers
+          children: embedded
+        - name: spacetransformer.core.relation_check
+          children: embedded
+        - name: spacetransformer.core.validation
+          children: embedded
+        - name: spacetransformer.core.exceptions
+          children: embedded
+        - name: spacetransformer.torch
+          children: embedded
+        - name: spacetransformer.torch.image_warpers
+          children: embedded
+        - name: spacetransformer.torch.affine_builder
+          children: embedded
+        - name: spacetransformer.torch.gpu_utils
+          children: embedded
+        - name: spacetransformer.torch.utils
+          children: embedded
+        - name: spacetransformer.torch.validation
+          children: embedded
 
 format:
   html:

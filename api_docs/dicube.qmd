@@ -1,0 +1,146 @@
+# dicube { #dicube }
+
+``
+
+DiCube: Python library for efficient storage and processing of 3D medical images.
+
+DiCube provides functionality for working with DICOM image data while preserving
+complete metadata. It offers efficient storage formats, image processing capabilities,
+and interoperability with various medical image formats.
+
+Main functionality:
+- Load/save 3D medical images with complete DICOM metadata
+- Efficient binary storage format with multiple compression options
+- Spatial transformation and orientation handling
+- Conversion between different medical image formats
+
+Example:
+    >>> import dicube
+    >>> # Load from DICOM folder
+    >>> image = dicube.load_from_dicom_folder("path/to/dicom_folder")
+    >>> # Save to DCB file
+    >>> dicube.save(image, "output.dcb")
+    >>> # Access the data
+    >>> pixel_data = image.get_fdata()
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [get_num_threads](#dicube.get_num_threads) | Get the global number of threads for parallel processing. |
+| [load](#dicube.load) | Load a DicomCubeImage from a file. |
+| [load_from_dicom_folder](#dicube.load_from_dicom_folder) | Load a DicomCubeImage from a DICOM folder. |
+| [load_from_nifti](#dicube.load_from_nifti) | Load a DicomCubeImage from a NIfTI file. |
+| [save](#dicube.save) | Save a DicomCubeImage to a file. |
+| [save_to_dicom_folder](#dicube.save_to_dicom_folder) | Save a DicomCubeImage as a DICOM folder. |
+| [save_to_nifti](#dicube.save_to_nifti) | Save a DicomCubeImage as a NIfTI file. |
+| [set_num_threads](#dicube.set_num_threads) | Set the global number of threads for parallel processing. |
+
+### get_num_threads { #dicube.get_num_threads }
+
+```python
+get_num_threads()
+```
+
+Get the global number of threads for parallel processing.
+
+Returns:
+    int: Current number of threads setting.
+
+### load { #dicube.load }
+
+```python
+load(file_path, skip_meta=False)
+```
+
+Load a DicomCubeImage from a file.
+
+Args:
+    file_path (str): Path to the input file.
+
+Returns:
+    DicomCubeImage: The loaded image object.
+
+### load_from_dicom_folder { #dicube.load_from_dicom_folder }
+
+```python
+load_from_dicom_folder(folder_path, sort_method=SortMethod.INSTANCE_NUMBER_ASC)
+```
+
+Load a DicomCubeImage from a DICOM folder.
+
+Args:
+    folder_path (str): Path to the DICOM folder.
+    sort_method (SortMethod): Method to sort DICOM files. 
+                             Defaults to SortMethod.INSTANCE_NUMBER_ASC.
+    **kwargs: Additional parameters.
+
+Returns:
+    DicomCubeImage: The loaded image object.
+
+### load_from_nifti { #dicube.load_from_nifti }
+
+```python
+load_from_nifti(file_path)
+```
+
+Load a DicomCubeImage from a NIfTI file.
+
+Args:
+    file_path (str): Path to the NIfTI file.
+    **kwargs: Additional parameters.
+
+Returns:
+    DicomCubeImage: The loaded image object.
+
+### save { #dicube.save }
+
+```python
+save(image, file_path, file_type='s')
+```
+
+Save a DicomCubeImage to a file.
+
+Args:
+    image (DicomCubeImage): The image object to save.
+    file_path (str): Output file path.
+    file_type (str): File type, "s" (speed priority), "a" (compression priority), 
+                    or "l" (lossy compression). Defaults to "s".
+
+### save_to_dicom_folder { #dicube.save_to_dicom_folder }
+
+```python
+save_to_dicom_folder(image, folder_path)
+```
+
+Save a DicomCubeImage as a DICOM folder.
+
+Args:
+    image (DicomCubeImage): The image object to save.
+    folder_path (str): Output directory path.
+
+### save_to_nifti { #dicube.save_to_nifti }
+
+```python
+save_to_nifti(image, file_path)
+```
+
+Save a DicomCubeImage as a NIfTI file.
+
+Args:
+    image (DicomCubeImage): The image object to save.
+    file_path (str): Output file path.
+
+Raises:
+    ImportError: When nibabel is not installed.
+
+### set_num_threads { #dicube.set_num_threads }
+
+```python
+set_num_threads(num_threads)
+```
+
+Set the global number of threads for parallel processing.
+
+Args:
+    num_threads (int): Number of threads for parallel processing tasks.

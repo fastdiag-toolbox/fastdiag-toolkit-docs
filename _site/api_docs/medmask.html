@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.21">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>medmask – FastDiag Toolkit 文档</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ea1d7ac60288e0f1efdbc993fd8432ae.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-af53e07c3e3c7930d59d423e0ac82114.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">FastDiag Toolkit 文档</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="搜索"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">首页</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api_docs/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text">GitHub</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">该页面内容</h2>
+   
+  <ul>
+  <li><a href="#medmask" id="toc-medmask" class="nav-link active" data-scroll-target="#medmask">medmask</a>
+  <ul class="collapse">
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul class="collapse">
+  <li><a href="#medmask.LabelMapping" id="toc-medmask.LabelMapping" class="nav-link" data-scroll-target="#medmask.LabelMapping">LabelMapping</a></li>
+  <li><a href="#medmask.MaskArchive" id="toc-medmask.MaskArchive" class="nav-link" data-scroll-target="#medmask.MaskArchive">MaskArchive</a></li>
+  <li><a href="#medmask.MaskFile" id="toc-medmask.MaskFile" class="nav-link" data-scroll-target="#medmask.MaskFile">MaskFile</a></li>
+  <li><a href="#medmask.SegmentationMask" id="toc-medmask.SegmentationMask" class="nav-link" data-scroll-target="#medmask.SegmentationMask">SegmentationMask</a></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul class="collapse">
+  <li><a href="#medmask.load_mask" id="toc-medmask.load_mask" class="nav-link" data-scroll-target="#medmask.load_mask">load_mask</a></li>
+  <li><a href="#medmask.match_allowed_values" id="toc-medmask.match_allowed_values" class="nav-link" data-scroll-target="#medmask.match_allowed_values">match_allowed_values</a></li>
+  <li><a href="#medmask.save_mask" id="toc-medmask.save_mask" class="nav-link" data-scroll-target="#medmask.save_mask">save_mask</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="medmask" class="level1">
+<h1>medmask</h1>
+<p>``</p>
+<p>MedMask - Medical Image Mask Compression and Processing Library</p>
+<p>A specialized library for efficient compression, storage, and processing of medical image segmentation masks.</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#medmask.LabelMapping">LabelMapping</a></td>
+<td>A simplified label mapping class that provides bidirectional mapping functionality.</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.MaskArchive">MaskArchive</a></td>
+<td>Container storing multiple segmentation masks in one file.</td>
+</tr>
+<tr class="odd">
+<td><a href="#medmask.MaskFile">MaskFile</a></td>
+<td>Light-weight file format for a single segmentation mask (.msk).</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.SegmentationMask">SegmentationMask</a></td>
+<td>Represents a 3-D segmentation mask with semantic labels.</td>
+</tr>
+</tbody>
+</table>
+<section id="medmask.LabelMapping" class="level3">
+<h3 class="anchored" data-anchor-id="medmask.LabelMapping">LabelMapping</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>LabelMapping(name_to_label<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A simplified label mapping class that provides bidirectional mapping functionality.</p>
+<p>This class maintains two mappings: 1. Forward mapping (name -&gt; label): Maps semantic names to label values. 2. Reverse mapping (label -&gt; name): Maps label values back to semantic names.</p>
+<p>The mapping ensures uniqueness of both names and labels.</p>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#medmask.LabelMapping.from_json">from_json</a></td>
+<td>Initialize a label mapping from a JSON string.</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.LabelMapping.has_label">has_label</a></td>
+<td>Check if a label exists in the mapping.</td>
+</tr>
+<tr class="odd">
+<td><a href="#medmask.LabelMapping.inverse">inverse</a></td>
+<td>Get semantic name by label value (reverse mapping).</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.LabelMapping.items">items</a></td>
+<td>Get an iterator of name-label pairs.</td>
+</tr>
+<tr class="odd">
+<td><a href="#medmask.LabelMapping.to_json">to_json</a></td>
+<td>Convert the mapping to a JSON string.</td>
+</tr>
+</tbody>
+</table>
+<section id="medmask.LabelMapping.from_json" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.LabelMapping.from_json">from_json</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>LabelMapping.from_json(json_str)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Initialize a label mapping from a JSON string.</p>
+<p>Args: json_str: JSON string representation of the mapping.</p>
+<p>Returns: LabelMapping: A new instance initialized with data from JSON.</p>
+</section>
+<section id="medmask.LabelMapping.has_label" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.LabelMapping.has_label">has_label</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>LabelMapping.has_label(label)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check if a label exists in the mapping.</p>
+<p>Args: label: Label value to check.</p>
+<p>Returns: bool: True if the label exists, False otherwise.</p>
+</section>
+<section id="medmask.LabelMapping.inverse" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.LabelMapping.inverse">inverse</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>LabelMapping.inverse(label)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Get semantic name by label value (reverse mapping).</p>
+<p>Args: label: Label value.</p>
+<p>Returns: str: Corresponding semantic name.</p>
+<p>Raises: KeyError: If label is not found in the mapping.</p>
+</section>
+<section id="medmask.LabelMapping.items" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.LabelMapping.items">items</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>LabelMapping.items()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Get an iterator of name-label pairs.</p>
+<p>Returns: Iterator[Tuple[str, int]]: Iterator of (name, label) pairs.</p>
+</section>
+<section id="medmask.LabelMapping.to_json" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.LabelMapping.to_json">to_json</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>LabelMapping.to_json()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert the mapping to a JSON string.</p>
+<p>Returns: str: JSON string representation of the mapping.</p>
+</section>
+</section>
+</section>
+<section id="medmask.MaskArchive" class="level3">
+<h3 class="anchored" data-anchor-id="medmask.MaskArchive">MaskArchive</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>MaskArchive(path, mode<span class="op">=</span><span class="st">'r'</span>, <span class="op">*</span>, space<span class="op">=</span><span class="va">None</span>, codec<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Container storing multiple segmentation masks in one file.</p>
+<p>On-disk layout::</p>
+<pre><code>Header (100 B)
+    magic       "MSKA" (4)
+    version     0x0100 (2 bytes)  • major/minor
+    codec_id    (B)
+    space_offset, space_length   (Q, Q)
+    index_offset, index_length   (Q, Q)
+    data_offset,  data_length    (Q, Q)
+    mask_count                   (Q)
+    reserved (27 B)</code></pre>
+<p>Fixed-size 100-byte header simplifies random access and future extension.</p>
+</section>
+<section id="medmask.MaskFile" class="level3">
+<h3 class="anchored" data-anchor-id="medmask.MaskFile">MaskFile</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>MaskFile(path, mode<span class="op">=</span><span class="st">'r'</span>, <span class="op">*</span>, codec<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Light-weight file format for a single segmentation mask (.msk).</p>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#medmask.MaskFile.read">read</a></td>
+<td>Read segmentation mask from file.</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.MaskFile.write">write</a></td>
+<td>Write segmentation mask to file.</td>
+</tr>
+</tbody>
+</table>
+<section id="medmask.MaskFile.read" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.MaskFile.read">read</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>MaskFile.read()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Read segmentation mask from file.</p>
+<p>Reads mask data as-is, but converts space description from (x,y,z) back to internal (z,y,x) format.</p>
+</section>
+<section id="medmask.MaskFile.write" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.MaskFile.write">write</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>MaskFile.write(segmask)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Write segmentation mask to file.</p>
+<p>Stores mask data as-is, but converts space description to (x,y,z) order for C++ compatibility.</p>
+</section>
+</section>
+</section>
+<section id="medmask.SegmentationMask" class="level3">
+<h3 class="anchored" data-anchor-id="medmask.SegmentationMask">SegmentationMask</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>SegmentationMask(mask_array, mapping, space<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Represents a 3-D segmentation mask with semantic labels.</p>
+<p>A <em>segmentation mask</em> is a 3-D ndarray whose voxel values represent integer <em>labels</em> (e.g.&nbsp;0=background, 1=liver, 2=spleen …). This class stores the mask array itself together with its :class:<code>~spacetransformer.core.space.Space</code> (geometry) and a bi-directional mapping between <em>names</em> (“liver”) and <em>labels</em> (1).</p>
+<p>The mask array is always stored in (z,y,x) format internally, ensuring consistent behavior for Python users.</p>
+<p>There are two ways to build a mask instance:</p>
+<ol type="1">
+<li><strong>Complete initialisation</strong> – provide a full ndarray and a mapping.</li>
+<li><strong>Lazy initialisation</strong> – create an empty mask of the desired <em>bit-depth</em> first via :meth:<code>lazy_init</code>, then add label regions incrementally with :meth:<code>add_label</code>.</li>
+</ol>
+<section id="attributes" class="level4">
+<h4 class="anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#medmask.SegmentationMask.bit_depth">bit_depth</a></td>
+<td>Bit-depth of the underlying array (1 / 8 / 16 / 32).</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.SegmentationMask.data">data</a></td>
+<td>Return mask data array as read-only view in (z,y,x) format.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-2" class="level4">
+<h4 class="anchored" data-anchor-id="methods-2">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#medmask.SegmentationMask.add_label">add_label</a></td>
+<td>Paint a <em>mask</em> region with <em>label</em> and register <em>name</em>.</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.SegmentationMask.lazy_init">lazy_init</a></td>
+<td>Create an empty mask with given <em>bit-depth</em>.</td>
+</tr>
+<tr class="odd">
+<td><a href="#medmask.SegmentationMask.load">load</a></td>
+<td>Load a mask from <em>path</em> (.msk) and return a new <code>SegmentationMask</code>.</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.SegmentationMask.save">save</a></td>
+<td>Save this mask to <em>path</em> using the storage layer (<code>MaskFile</code>).</td>
+</tr>
+<tr class="odd">
+<td><a href="#medmask.SegmentationMask.to_binary">to_binary</a></td>
+<td>Return a boolean array where non-zero voxels are <em>True</em>.</td>
+</tr>
+</tbody>
+</table>
+<section id="medmask.SegmentationMask.add_label" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.SegmentationMask.add_label">add_label</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>SegmentationMask.add_label(mask, label, name)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Paint a <em>mask</em> region with <em>label</em> and register <em>name</em>.</p>
+<p><code>mask</code> must be a boolean ndarray of the same shape as this mask.</p>
+</section>
+<section id="medmask.SegmentationMask.lazy_init" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.SegmentationMask.lazy_init">lazy_init</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>SegmentationMask.lazy_init(bit_depth, <span class="op">*</span>, space<span class="op">=</span><span class="va">None</span>, shape<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create an empty mask with given <em>bit-depth</em>.</p>
+<p>Either <em>space</em> or <em>shape</em> must be supplied to infer the array dimensions. The resulting mask array will be in (z,y,x) format.</p>
+</section>
+<section id="medmask.SegmentationMask.load" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.SegmentationMask.load">load</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>SegmentationMask.load(path)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Load a mask from <em>path</em> (.msk) and return a new <code>SegmentationMask</code>.</p>
+</section>
+<section id="medmask.SegmentationMask.save" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.SegmentationMask.save">save</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>SegmentationMask.save(path, <span class="op">*</span>, codec<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Save this mask to <em>path</em> using the storage layer (<code>MaskFile</code>).</p>
+</section>
+<section id="medmask.SegmentationMask.to_binary" class="level5">
+<h5 class="anchored" data-anchor-id="medmask.SegmentationMask.to_binary">to_binary</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>SegmentationMask.to_binary()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return a boolean array where non-zero voxels are <em>True</em>.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#medmask.load_mask">load_mask</a></td>
+<td>Load and return a :class:<code>SegmentationMask</code> from <em>path</em>.</td>
+</tr>
+<tr class="even">
+<td><a href="#medmask.match_allowed_values">match_allowed_values</a></td>
+<td>Optimize multiple (image_data == id) checks by using interval-based comparisons.</td>
+</tr>
+<tr class="odd">
+<td><a href="#medmask.save_mask">save_mask</a></td>
+<td>Save <em>segmask</em> to <em>path</em> (.msk).</td>
+</tr>
+</tbody>
+</table>
+<section id="medmask.load_mask" class="level3">
+<h3 class="anchored" data-anchor-id="medmask.load_mask">load_mask</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>load_mask(path, <span class="op">*</span>, codec<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Load and return a :class:<code>SegmentationMask</code> from <em>path</em>.</p>
+</section>
+<section id="medmask.match_allowed_values" class="level3">
+<h3 class="anchored" data-anchor-id="medmask.match_allowed_values">match_allowed_values</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>match_allowed_values(image_data, allowed_set)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Optimize multiple (image_data == id) checks by using interval-based comparisons.</p>
+<p>For a given image_data array and a set of allowed values, this function replaces multiple equality checks with interval-based comparisons: - For a continuous interval [a, b], use (image_data &gt; a-1) &amp; (image_data &lt; b+1) - If two intervals are separated by a single value c, they can be merged into one interval while excluding c: (image_data &gt; a-1) &amp; (image_data &lt; d+1) &amp; (image_data != c)</p>
+<p>Args: image_data: Numpy array containing values to check (e.g., uint8 image data) allowed_set: Iterable of allowed integer values</p>
+<p>Returns: np.ndarray: Boolean array indicating whether elements in image_data are in the allowed_set (after interval optimization)</p>
+</section>
+<section id="medmask.save_mask" class="level3">
+<h3 class="anchored" data-anchor-id="medmask.save_mask">save_mask</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>save_mask(segmask, path, <span class="op">*</span>, codec<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Save <em>segmask</em> to <em>path</em> (.msk).</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2024 FastDiag Toolkit. 基于 <a href="https://quarto.org/">Quarto</a> 构建</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs">GitHub</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

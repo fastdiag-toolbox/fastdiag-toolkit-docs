@@ -1,0 +1,152 @@
+# dicube.storage.pixel_utils { #dicube.storage.pixel_utils }
+
+`storage.pixel_utils`
+
+
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [convert_to_minimal_int](#dicube.storage.pixel_utils.convert_to_minimal_int) | Convert array to the minimal sufficient integer type. |
+| [derive_pixel_header_from_array](#dicube.storage.pixel_utils.derive_pixel_header_from_array) | Derive pixel data header information from input numpy array. |
+| [determine_optimal_nifti_dtype](#dicube.storage.pixel_utils.determine_optimal_nifti_dtype) | Determine the optimal data type for saving to NIfTI and return the converted data. |
+| [get_float_data](#dicube.storage.pixel_utils.get_float_data) | Get image data as floating point array with slope/intercept applied. |
+| [is_lossless_int_convertible](#dicube.storage.pixel_utils.is_lossless_int_convertible) | Check if a floating point array can be losslessly converted to integers. |
+
+### convert_to_minimal_int { #dicube.storage.pixel_utils.convert_to_minimal_int }
+
+```python
+storage.pixel_utils.convert_to_minimal_int(arr)
+```
+
+Convert array to the minimal sufficient integer type.
+
+Selects the smallest integer type that can represent all values in the array.
+Considers both signed and unsigned types.
+
+Args:
+    arr (np.ndarray): Input array to convert.
+
+Returns:
+    Tuple[np.ndarray, str]:
+        - The array converted to the optimal integer type
+        - The name of the chosen data type as a string
+
+Raises:
+    ValueError: If the value range is too large for any integer type.
+
+Example:
+    >>> arr = np.array([-10, 0, 100], dtype=np.float32)
+    >>> result, dtype_name = convert_to_minimal_int(arr)
+    >>> print(result.dtype, dtype_name)
+    int8 int8
+
+### derive_pixel_header_from_array { #dicube.storage.pixel_utils.derive_pixel_header_from_array }
+
+```python
+storage.pixel_utils.derive_pixel_header_from_array(
+    image,
+    preferred_dtype='uint16',
+    support_negative=True,
+)
+```
+
+Derive pixel data header information from input numpy array.
+
+Process different data types in different ways:
+- For unsigned integers (uint8/16/32): use raw data directly
+- For signed integers (int8/16/32): if support_negative is True, keep as-is; 
+  otherwise convert to unsigned and record offset
+- For floating point (float16/32/64): try lossless int conversion first,
+  otherwise normalize to specified unsigned integer range
+
+        Args:
+    image (np.ndarray): Input image array.
+    preferred_dtype (str): Preferred output data type. Defaults to "uint16".
+    support_negative (bool): Whether to support negative values directly. Defaults to True.
+
+Returns:
+    Tuple[np.ndarray, PixelDataHeader]: A tuple containing:
+        - The converted image array
+        - A PixelDataHeader object with appropriate metadata
+
+Raises:
+    ValueError: When preferred_dtype is not supported.
+    NotImplementedError: When input array dtype is not supported.
+
+### determine_optimal_nifti_dtype { #dicube.storage.pixel_utils.determine_optimal_nifti_dtype }
+
+```python
+storage.pixel_utils.determine_optimal_nifti_dtype(image, pixel_header)
+```
+
+Determine the optimal data type for saving to NIfTI and return the converted data.
+
+This function selects the most appropriate data type for NIfTI export based on the value range
+of the raw image and the rescale slope/intercept. It minimizes unnecessary data conversion and
+only applies scaling or offset if needed.
+
+Args:
+    image (np.ndarray): The raw image data (integer type guaranteed).
+    pixel_header (PixelDataHeader): Pixel header containing rescale information.
+
+Returns:
+    Tuple[np.ndarray, str]:
+        - The image data converted to the optimal type for NIfTI export.
+        - The name of the chosen data type as a string.
+
+Raises:
+    ValueError: If the data cannot be represented in any supported NIfTI type.
+
+Example:
+    >>> arr = np.array([0, 100, 200], dtype=np.uint16)
+    >>> header = PixelDataHeader(RescaleSlope=1.0, RescaleIntercept=0.0, OriginalPixelDtype="uint16", PixelDtype="uint16")
+    >>> data, dtype_name = determine_optimal_nifti_dtype(arr, header)
+    >>> print(data.dtype, dtype_name)
+    uint8 uint8
+
+### get_float_data { #dicube.storage.pixel_utils.get_float_data }
+
+```python
+storage.pixel_utils.get_float_data(raw_image, pixel_header, dtype='float32')
+```
+
+Get image data as floating point array with slope/intercept applied.
+
+Inspired by NIfTI's get_fdata method, this converts the raw image data
+to floating point format and applies the rescale slope and intercept.
+
+Args:
+    raw_image (np.ndarray): Raw image data array.
+    pixel_header (PixelDataHeader): Pixel data header containing rescale information.
+    dtype (str): Output data type, must be one of: float16, float32, float64. 
+        Defaults to "float32".
+
+Returns:
+    np.ndarray: Floating point image data with rescale factors applied.
+
+Raises:
+    AssertionError: If dtype is not one of the allowed float types.
+
+### is_lossless_int_convertible { #dicube.storage.pixel_utils.is_lossless_int_convertible }
+
+```python
+storage.pixel_utils.is_lossless_int_convertible(arr)
+```
+
+Check if a floating point array can be losslessly converted to integers.
+
+Args:
+    arr (np.ndarray): Input array to check.
+
+Returns:
+    bool: True if array contains only integer values, False otherwise.
+
+Example:
+    >>> arr = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    >>> is_lossless_int_convertible(arr)
+    True
+    >>> arr = np.array([1.0, 2.5, 3.0], dtype=np.float32)
+    >>> is_lossless_int_convertible(arr)
+    False

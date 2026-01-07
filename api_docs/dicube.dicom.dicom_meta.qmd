@@ -1,0 +1,275 @@
+# dicube.dicom.dicom_meta { #dicube.dicom.dicom_meta }
+
+`dicom.dicom_meta`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DicomMeta](#dicube.dicom.dicom_meta.DicomMeta) | A class for managing metadata from multiple DICOM datasets. |
+| [SortMethod](#dicube.dicom.dicom_meta.SortMethod) | Enumeration of available sorting methods for DICOM datasets. |
+
+### DicomMeta { #dicube.dicom.dicom_meta.DicomMeta }
+
+```python
+dicom.dicom_meta.DicomMeta(merged_data, filenames=None)
+```
+
+A class for managing metadata from multiple DICOM datasets.
+
+Uses pydicom's to_json_dict() to extract information from all levels (including sequences)
+of multiple DICOM datasets. Recursively determines which fields are:
+- Shared (identical across all datasets)
+- Non-shared (different across datasets)
+
+Provides methods to access, modify, and serialize this metadata.
+
+Attributes:
+    _merged_data (Dict[str, Dict[str, Any]]): The merged metadata from all datasets.
+    filenames (List[str], optional): List of filenames for the datasets.
+    slice_count (int): Number of datasets represented.
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [display](#dicube.dicom.dicom_meta.DicomMeta.display) | Display the DicomMeta in a tabular format. |
+| [from_datasets](#dicube.dicom.dicom_meta.DicomMeta.from_datasets) | Create a DicomMeta instance from a list of pydicom datasets. |
+| [from_json](#dicube.dicom.dicom_meta.DicomMeta.from_json) | Create a DicomMeta instance from a JSON string. |
+| [get_shared_value](#dicube.dicom.dicom_meta.DicomMeta.get_shared_value) | Get the shared value for a tag if it's shared across all datasets. |
+| [get_values](#dicube.dicom.dicom_meta.DicomMeta.get_values) | Get values for a tag across all datasets. |
+| [get_vr](#dicube.dicom.dicom_meta.DicomMeta.get_vr) | Get the Value Representation (VR) for a tag. |
+| [index](#dicube.dicom.dicom_meta.DicomMeta.index) | Create a new DicomMeta with only the specified dataset. |
+| [is_missing](#dicube.dicom.dicom_meta.DicomMeta.is_missing) | Check if a tag is missing from the metadata. |
+| [is_shared](#dicube.dicom.dicom_meta.DicomMeta.is_shared) | Check if a tag has consistent values across all datasets. |
+| [items](#dicube.dicom.dicom_meta.DicomMeta.items) | Get all (key, value) pairs in the DicomMeta. |
+| [keys](#dicube.dicom.dicom_meta.DicomMeta.keys) | Get all tag keys in the DicomMeta. |
+| [set_nonshared_item](#dicube.dicom.dicom_meta.DicomMeta.set_nonshared_item) | Set a non-shared metadata item with different values for each dataset. |
+| [set_shared_item](#dicube.dicom.dicom_meta.DicomMeta.set_shared_item) | Set a shared metadata item for all datasets. |
+| [sort_files](#dicube.dicom.dicom_meta.DicomMeta.sort_files) | Sort the files in the DicomMeta. |
+| [to_json](#dicube.dicom.dicom_meta.DicomMeta.to_json) | Serialize the DicomMeta to a JSON string. |
+
+##### display { #dicube.dicom.dicom_meta.DicomMeta.display }
+
+```python
+dicom.dicom_meta.DicomMeta.display(show_shared=True, show_non_shared=True)
+```
+
+Display the DicomMeta in a tabular format.
+
+Args:
+    show_shared (bool): If True, display shared metadata. Defaults to True.
+    show_non_shared (bool): If True, display non-shared metadata. Defaults to True.
+
+##### from_datasets { #dicube.dicom.dicom_meta.DicomMeta.from_datasets }
+
+```python
+dicom.dicom_meta.DicomMeta.from_datasets(datasets, filenames=None)
+```
+
+Create a DicomMeta instance from a list of pydicom datasets.
+
+Args:
+    datasets (List[pydicom.Dataset]): List of pydicom datasets.
+    filenames (List[str], optional): List of filenames corresponding to the datasets.
+        Defaults to None.
+
+Returns:
+    DicomMeta: A new DicomMeta instance created from the datasets.
+
+##### from_json { #dicube.dicom.dicom_meta.DicomMeta.from_json }
+
+```python
+dicom.dicom_meta.DicomMeta.from_json(json_str, filenames=None)
+```
+
+Create a DicomMeta instance from a JSON string.
+
+Args:
+    json_str (str): JSON string containing DicomMeta data.
+    filenames (List[str], optional): List of filenames corresponding to the datasets.
+        Defaults to None.
+
+Returns:
+    DicomMeta: A new DicomMeta instance created from the JSON data.
+
+##### get_shared_value { #dicube.dicom.dicom_meta.DicomMeta.get_shared_value }
+
+```python
+dicom.dicom_meta.DicomMeta.get_shared_value(tag_input)
+```
+
+Get the shared value for a tag if it's shared across all datasets.
+
+Args:
+    tag_input: The tag to retrieve, can be a Tag object, string, or (group, element) tuple
+
+Returns:
+    Any: The shared value if tag is shared, None if missing
+
+Raises:
+    ValueError: If the tag is not shared
+
+##### get_values { #dicube.dicom.dicom_meta.DicomMeta.get_values }
+
+```python
+dicom.dicom_meta.DicomMeta.get_values(tag_input)
+```
+
+Get values for a tag across all datasets.
+
+Args:
+    tag_input: The tag to retrieve, can be a Tag object, string, or (group, element) tuple
+
+Returns:
+    List[Any]: List of values, one for each dataset. May contain None for datasets
+              where the tag is not present.
+
+##### get_vr { #dicube.dicom.dicom_meta.DicomMeta.get_vr }
+
+```python
+dicom.dicom_meta.DicomMeta.get_vr(tag_input)
+```
+
+Get the Value Representation (VR) for a tag.
+
+Args:
+    tag_input: The tag to check, can be a Tag object, string, or (group, element) tuple
+
+Returns:
+    str: The VR code (e.g., "CS", "LO", "SQ") or empty string if not found
+
+##### index { #dicube.dicom.dicom_meta.DicomMeta.index }
+
+```python
+dicom.dicom_meta.DicomMeta.index(index)
+```
+
+Create a new DicomMeta with only the specified dataset.
+
+Args:
+    index (int): Index of the dataset to extract.
+
+Returns:
+    DicomMeta: A new DicomMeta containing only the specified dataset.
+
+##### is_missing { #dicube.dicom.dicom_meta.DicomMeta.is_missing }
+
+```python
+dicom.dicom_meta.DicomMeta.is_missing(tag_input)
+```
+
+Check if a tag is missing from the metadata.
+
+Args:
+    tag_input: The tag to check, can be a Tag object, string, or (group, element) tuple
+
+Returns:
+    bool: True if tag is missing or has no value, False if present with a value
+
+##### is_shared { #dicube.dicom.dicom_meta.DicomMeta.is_shared }
+
+```python
+dicom.dicom_meta.DicomMeta.is_shared(tag_input)
+```
+
+Check if a tag has consistent values across all datasets.
+
+Args:
+    tag_input: The tag to check, can be a Tag object, string, or (group, element) tuple
+
+Returns:
+    bool: True if tag is shared (same value across all datasets), False otherwise
+
+##### items { #dicube.dicom.dicom_meta.DicomMeta.items }
+
+```python
+dicom.dicom_meta.DicomMeta.items()
+```
+
+Get all (key, value) pairs in the DicomMeta.
+
+Returns:
+    Iterator: Iterator over (key, value) pairs.
+
+##### keys { #dicube.dicom.dicom_meta.DicomMeta.keys }
+
+```python
+dicom.dicom_meta.DicomMeta.keys()
+```
+
+Get all tag keys in the DicomMeta.
+
+Returns:
+    List[str]: List of tag keys.
+
+##### set_nonshared_item { #dicube.dicom.dicom_meta.DicomMeta.set_nonshared_item }
+
+```python
+dicom.dicom_meta.DicomMeta.set_nonshared_item(tag_input, values)
+```
+
+Set a non-shared metadata item with different values for each dataset.
+
+Args:
+    tag_input: The tag to set, can be a Tag object, string, or (group, element) tuple
+    values: List of values, one for each dataset
+
+Raises:
+    ValueError: If the number of values doesn't match the number of datasets
+
+##### set_shared_item { #dicube.dicom.dicom_meta.DicomMeta.set_shared_item }
+
+```python
+dicom.dicom_meta.DicomMeta.set_shared_item(tag_input, value)
+```
+
+Set a shared metadata item for all datasets.
+
+Args:
+    tag_input: The tag to set, can be a Tag object, string, or (group, element) tuple
+    value: The value to set for the tag across all datasets
+
+##### sort_files { #dicube.dicom.dicom_meta.DicomMeta.sort_files }
+
+```python
+dicom.dicom_meta.DicomMeta.sort_files(
+    sort_method=SortMethod.INSTANCE_NUMBER_ASC,
+)
+```
+
+Sort the files in the DicomMeta.
+
+Args:
+    sort_method (SortMethod): Method to use for sorting. Defaults to 
+        SortMethod.INSTANCE_NUMBER_ASC.
+
+Raises:
+    ValueError: If the sort method is not supported.
+
+##### to_json { #dicube.dicom.dicom_meta.DicomMeta.to_json }
+
+```python
+dicom.dicom_meta.DicomMeta.to_json()
+```
+
+Serialize the DicomMeta to a JSON string.
+
+Returns:
+    str: JSON string representation of the DicomMeta.
+
+### SortMethod { #dicube.dicom.dicom_meta.SortMethod }
+
+```python
+dicom.dicom_meta.SortMethod()
+```
+
+Enumeration of available sorting methods for DICOM datasets.
+
+Attributes:
+    INSTANCE_NUMBER_ASC (int): Sort by instance number in ascending order.
+    INSTANCE_NUMBER_DESC (int): Sort by instance number in descending order.
+    POSITION_RIGHT_HAND (int): Sort by position using right-hand coordinate system.
+    POSITION_LEFT_HAND (int): Sort by position using left-hand coordinate system.

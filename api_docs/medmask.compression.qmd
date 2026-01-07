@@ -1,0 +1,56 @@
+# medmask.compression { #medmask.compression }
+
+`compression`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [MaskCodec](#medmask.compression.MaskCodec) | Minimal interface all codecs must implement. |
+
+### MaskCodec { #medmask.compression.MaskCodec }
+
+```python
+compression.MaskCodec()
+```
+
+Minimal interface all codecs must implement.
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [decode](#medmask.compression.MaskCodec.decode) | Return ndarray reconstructed from *blob*. |
+| [encode](#medmask.compression.MaskCodec.encode) | Return *bytes* representing *arr* compressed with this codec. |
+
+##### decode { #medmask.compression.MaskCodec.decode }
+
+```python
+compression.MaskCodec.decode(blob)
+```
+
+Return ndarray reconstructed from *blob*.
+
+##### encode { #medmask.compression.MaskCodec.encode }
+
+```python
+compression.MaskCodec.encode(arr, /)
+```
+
+Return *bytes* representing *arr* compressed with this codec.
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [get_codec](#medmask.compression.get_codec) | Return codec by *name* (case-insensitive).  Defaults to *zstd*. |
+
+### get_codec { #medmask.compression.get_codec }
+
+```python
+compression.get_codec(name=None)
+```
+
+Return codec by *name* (case-insensitive).  Defaults to *zstd*.

@@ -1,0 +1,234 @@
+# dicube.storage.dcb_file { #dicube.storage.dcb_file }
+
+`storage.dcb_file`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DcbAFile](#dicube.storage.dcb_file.DcbAFile) | DICOM cube file implementation optimized for archiving. |
+| [DcbFile](#dicube.storage.dcb_file.DcbFile) | Base class implementing common file I/O logic for DiCube files. |
+| [DcbLFile](#dicube.storage.dcb_file.DcbLFile) | DICOM cube file implementation with lossy compression. |
+| [DcbSFile](#dicube.storage.dcb_file.DcbSFile) | DICOM cube file implementation optimized for speed. |
+
+### DcbAFile { #dicube.storage.dcb_file.DcbAFile }
+
+```python
+storage.dcb_file.DcbAFile(filename, mode='r')
+```
+
+DICOM cube file implementation optimized for archiving.
+
+This format prioritizes high compression ratio for long-term storage
+while maintaining lossless compression, at the expense of speed.
+
+Attributes:
+    MAGIC (bytes): Magic bytes for file identification ("DCMCUBEA").
+    VERSION (int): File format version.
+    TRANSFER_SYNTAX_UID (str, optional): DICOM transfer syntax UID, set when codec is selected.
+    CODEC_NAME (str, optional): Codec name, set when codec is selected.
+    FILE_EXTENSION (str): File extension for archive-optimized format.
+
+### DcbFile { #dicube.storage.dcb_file.DcbFile }
+
+```python
+storage.dcb_file.DcbFile(filename, mode='r')
+```
+
+Base class implementing common file I/O logic for DiCube files.
+
+This class provides core functionality for:
+- Header structure management
+- write() workflow (header, metadata, space, header, offsets/lengths, images)
+- Common file operations (read/write)
+
+Subclasses should implement frame encoding via _encode_one_frame() and
+_decode_one_frame() methods, and set appropriate MAGIC and VERSION values.
+
+Attributes:
+    HEADER_STRUCT (str): Struct format string for the header.
+    MAGIC (bytes): Magic bytes for file identification.
+    VERSION (int): File format version.
+    TRANSFER_SYNTAX_UID (str, optional): DICOM transfer syntax UID.
+    FILE_EXTENSION (str): File extension for this format.
+
+#### Attributes
+
+| Name | Description |
+| --- | --- |
+| [header](#dicube.storage.dcb_file.DcbFile.header) | Get the file header, reading it from disk if not already loaded. |
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [get_transfer_syntax_uid](#dicube.storage.dcb_file.DcbFile.get_transfer_syntax_uid) | Get the DICOM transfer syntax UID for this file. |
+| [read_dicom_status](#dicube.storage.dcb_file.DcbFile.read_dicom_status) | Read DICOM status information from the file. |
+| [read_header](#dicube.storage.dcb_file.DcbFile.read_header) | Read and parse the file header. |
+| [read_images](#dicube.storage.dcb_file.DcbFile.read_images) | Read all image frames from the file. |
+| [read_meta](#dicube.storage.dcb_file.DcbFile.read_meta) | Read DICOM metadata from the file. |
+| [read_pixel_header](#dicube.storage.dcb_file.DcbFile.read_pixel_header) | Read pixel header information from the file. |
+| [read_space](#dicube.storage.dcb_file.DcbFile.read_space) | Read spatial information from the file. |
+| [write](#dicube.storage.dcb_file.DcbFile.write) | Write image data and metadata to a DCB file. |
+
+##### get_transfer_syntax_uid { #dicube.storage.dcb_file.DcbFile.get_transfer_syntax_uid }
+
+```python
+storage.dcb_file.DcbFile.get_transfer_syntax_uid()
+```
+
+Get the DICOM transfer syntax UID for this file.
+
+Returns:
+    str or None: The transfer syntax UID, or None if not defined.
+
+##### read_dicom_status { #dicube.storage.dcb_file.DcbFile.read_dicom_status }
+
+```python
+storage.dcb_file.DcbFile.read_dicom_status()
+```
+
+Read DICOM status information from the file.
+
+Returns:
+    DicomStatus: The DICOM status enum value, or DicomStatus.CONSISTENT if not present.
+
+##### read_header { #dicube.storage.dcb_file.DcbFile.read_header }
+
+```python
+storage.dcb_file.DcbFile.read_header(verify_magic=True)
+```
+
+Read and parse the file header.
+
+Args:
+    verify_magic (bool): If True, verify the magic number. Defaults to True.
+
+Returns:
+    dict: Dictionary containing header fields.
+
+Raises:
+    InvalidCubeFileError: If the file is not a valid DicomCube file.
+
+##### read_images { #dicube.storage.dcb_file.DcbFile.read_images }
+
+```python
+storage.dcb_file.DcbFile.read_images()
+```
+
+Read all image frames from the file.
+
+Returns:
+    List[np.ndarray] or np.ndarray: The decoded image frames. If the number of frames is 1,
+        returns a single numpy array, otherwise returns a list of arrays.
+
+##### read_meta { #dicube.storage.dcb_file.DcbFile.read_meta }
+
+```python
+storage.dcb_file.DcbFile.read_meta(DicomMetaClass=DicomMeta)
+```
+
+Read DICOM metadata from the file.
+
+Args:
+    DicomMetaClass (class): The class to use for creating the DicomMeta object.
+        Defaults to DicomMeta.
+
+Returns:
+    DicomMeta: The DICOM metadata, or None if not present in the file.
+
+##### read_pixel_header { #dicube.storage.dcb_file.DcbFile.read_pixel_header }
+
+```python
+storage.dcb_file.DcbFile.read_pixel_header(HeaderClass=PixelDataHeader)
+```
+
+Read pixel header information from the file.
+
+Args:
+    HeaderClass (class): The class to use for creating the PixelDataHeader object.
+        Defaults to PixelDataHeader.
+
+Returns:
+    PixelDataHeader: The pixel header information.
+
+Raises:
+    ValueError: If the pixel header is not found in the file.
+
+##### read_space { #dicube.storage.dcb_file.DcbFile.read_space }
+
+```python
+storage.dcb_file.DcbFile.read_space(SpaceClass=Space)
+```
+
+Read spatial information from the file.
+
+Args:
+    SpaceClass (class): The class to use for creating the Space object.
+        Defaults to Space.
+
+Returns:
+    Space: The spatial information, or None if not present in the file.
+
+##### write { #dicube.storage.dcb_file.DcbFile.write }
+
+```python
+storage.dcb_file.DcbFile.write(
+    images,
+    pixel_header,
+    dicom_meta=None,
+    dicom_status=DicomStatus.CONSISTENT,
+    space=None,
+)
+```
+
+Write image data and metadata to a DCB file.
+
+This is a generic write method that subclasses can reuse, customizing 
+single-frame encoding via _encode_one_frame().
+
+Args:
+    images (List): List of frames to write. Can be List[np.ndarray] for standard files,
+        or List[Tuple[np.ndarray, np.ndarray, np.ndarray]] for ROI files.
+    pixel_header (PixelDataHeader): PixelDataHeader instance containing pixel metadata.
+    dicom_meta (DicomMeta, optional): DICOM metadata. Defaults to None.
+    dicom_status (DicomStatus): DICOM status enumeration. Defaults to DicomStatus.CONSISTENT.
+    space (Space, optional): Spatial information. Defaults to None.
+
+### DcbLFile { #dicube.storage.dcb_file.DcbLFile }
+
+```python
+storage.dcb_file.DcbLFile(filename, mode='r')
+```
+
+DICOM cube file implementation with lossy compression.
+
+This format prioritizes very high compression ratio by using lossy compression,
+sacrificing some image quality and perfect reconstruction.
+
+Attributes:
+    MAGIC (bytes): Magic bytes for file identification ("DCMCUBEL").
+    VERSION (int): File format version.
+    TRANSFER_SYNTAX_UID (str, optional): DICOM transfer syntax UID, set when codec is selected.
+    CODEC_NAME (str, optional): Codec name, set when codec is selected.
+    FILE_EXTENSION (str): File extension for lossy compression format.
+
+### DcbSFile { #dicube.storage.dcb_file.DcbSFile }
+
+```python
+storage.dcb_file.DcbSFile(filename, mode='r')
+```
+
+DICOM cube file implementation optimized for speed.
+
+This format prioritizes quick read/write operations while maintaining
+lossless compression with average compression ratio.
+
+Attributes:
+    MAGIC (bytes): Magic bytes for file identification ("DCMCUBES").
+    VERSION (int): File format version.
+    TRANSFER_SYNTAX_UID (str): DICOM transfer syntax UID for HTJ2K Lossless.
+    CODEC_NAME (str): Codec name used for compression.
+    FILE_EXTENSION (str): File extension for speed-optimized format.

@@ -1,0 +1,85 @@
+# dicube.core.image { #dicube.core.image }
+
+`core.image`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DicomCubeImage](#dicube.core.image.DicomCubeImage) | A class representing a DICOM image with associated metadata and space information. |
+
+### DicomCubeImage { #dicube.core.image.DicomCubeImage }
+
+```python
+core.image.DicomCubeImage(
+    raw_image,
+    pixel_header,
+    dicom_meta=None,
+    space=None,
+    dicom_status=DicomStatus.CONSISTENT,
+)
+```
+
+A class representing a DICOM image with associated metadata and space information.
+
+This class handles DICOM image data along with its pixel header, metadata, and space information.
+It provides methods for file I/O and data manipulation.
+
+Attributes:
+    raw_image (np.ndarray): The raw image data array.
+    pixel_header (PixelDataHeader): Pixel data header containing metadata about the image pixels.
+    dicom_meta (DicomMeta, optional): DICOM metadata associated with the image.
+    space (Space, optional): Spatial information describing the image dimensions and orientation.
+    dicom_status (DicomStatus): DICOM status enumeration. Defaults to DicomStatus.CONSISTENT.
+
+#### Attributes
+
+| Name | Description |
+| --- | --- |
+| [dtype](#dicube.core.image.DicomCubeImage.dtype) | Get the data type of the raw image. |
+| [shape](#dicube.core.image.DicomCubeImage.shape) | Get the shape of the raw image. |
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [get_fdata](#dicube.core.image.DicomCubeImage.get_fdata) | Get image data as floating point array with slope/intercept applied. |
+| [init_meta](#dicube.core.image.DicomCubeImage.init_meta) | Initialize a basic DicomMeta when none is provided. |
+
+##### get_fdata { #dicube.core.image.DicomCubeImage.get_fdata }
+
+```python
+core.image.DicomCubeImage.get_fdata(dtype='float32')
+```
+
+Get image data as floating point array with slope/intercept applied.
+
+Args:
+    dtype (str): Output data type, must be one of: float16, float32, float64. Defaults to "float32".
+
+Returns:
+    np.ndarray: Floating point image data with rescale factors applied.
+
+##### init_meta { #dicube.core.image.DicomCubeImage.init_meta }
+
+```python
+core.image.DicomCubeImage.init_meta(
+    modality='OT',
+    patient_name='ANONYMOUS^',
+    patient_id='0000000',
+)
+```
+
+Initialize a basic DicomMeta when none is provided.
+
+Sets required DICOM fields with default values.
+
+Args:
+    modality (str): Image modality, such as CT/MR/PT. Defaults to "OT".
+    patient_name (str): Patient name. Defaults to "ANONYMOUS^".
+    patient_id (str): Patient ID. Defaults to "0000000".
+
+Returns:
+    DicomMeta: A new DicomMeta instance with basic required fields.

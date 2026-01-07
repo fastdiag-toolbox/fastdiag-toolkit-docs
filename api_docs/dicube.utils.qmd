@@ -1,0 +1,7 @@
+# dicube.utils { #dicube.utils }
+
+`utils`
+
+Utility module for DiCube.
+
+This module provides various utility functions and helpers for the DiCube library.

@@ -1,0 +1,79 @@
+# dicube.dicom.dicom_status { #dicube.dicom.dicom_status }
+
+`dicom.dicom_status`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DicomStatus](#dicube.dicom.dicom_status.DicomStatus) | Enumeration of possible DICOM series status conditions. |
+
+### DicomStatus { #dicube.dicom.dicom_status.DicomStatus }
+
+```python
+dicom.dicom_status.DicomStatus()
+```
+
+Enumeration of possible DICOM series status conditions.
+
+Each status represents a specific condition or issue that may be present
+in a DICOM series. The conditions are grouped into categories:
+- Series UID Issues
+- Instance Number Issues
+- Spacing Issues
+- Shape Issues
+- Orientation Issues
+- Data Type Issues
+- Location Issues
+- Consistency Status
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [calculate_average_z_gap](#dicube.dicom.dicom_status.calculate_average_z_gap) | Calculate the average gap between Z-axis locations. |
+| [get_dicom_status](#dicube.dicom.dicom_status.get_dicom_status) | Check DICOM metadata and return the corresponding status. |
+
+### calculate_average_z_gap { #dicube.dicom.dicom_status.calculate_average_z_gap }
+
+```python
+dicom.dicom_status.calculate_average_z_gap(z_locations)
+```
+
+Calculate the average gap between Z-axis locations.
+
+Uses a robust method to estimate the typical Z-axis interval:
+1. If a single interval appears in >80% of cases, use that value
+2. Otherwise, use the larger absolute value between median and mean
+
+Args:
+    z_locations: Sorted array of Z-axis locations
+
+Returns:
+    float: Estimated typical Z-axis interval; 0 if cannot be calculated
+
+### get_dicom_status { #dicube.dicom.dicom_status.get_dicom_status }
+
+```python
+dicom.dicom_status.get_dicom_status(meta)
+```
+
+Check DICOM metadata and return the corresponding status.
+
+Performs a series of checks on the DICOM metadata to determine its status.
+Checks include:
+- Series UID consistency
+- Instance number sequence
+- Pixel spacing uniformity
+- Image dimensions
+- Patient orientation
+- Data type consistency
+- Z-axis location sequence
+
+Args:
+    meta: DicomMeta instance providing access to DICOM metadata
+
+Returns:
+    DicomStatus: The status enum value representing the check results

@@ -1,0 +1,43 @@
+# dicube.dicom.dicom_tags { #dicube.dicom.dicom_tags }
+
+`dicom.dicom_tags`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [CommonTags](#dicube.dicom.dicom_tags.CommonTags) | Common DICOM tags used throughout the library. |
+
+### CommonTags { #dicube.dicom.dicom_tags.CommonTags }
+
+```python
+dicom.dicom_tags.CommonTags()
+```
+
+Common DICOM tags used throughout the library.
+
+This class provides convenient access to frequently used DICOM tags
+organized by category (patient, study, series, instance, etc.).
+All tags are pydicom Tag objects.
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [get_tag_key](#dicube.dicom.dicom_tags.get_tag_key) | Get the hexadecimal string representation of a DICOM Tag (format: 'ggggeeee'). |
+
+### get_tag_key { #dicube.dicom.dicom_tags.get_tag_key }
+
+```python
+dicom.dicom_tags.get_tag_key(tag)
+```
+
+Get the hexadecimal string representation of a DICOM Tag (format: 'ggggeeee').
+
+Args:
+    tag: pydicom Tag object
+
+Returns:
+    str: Hexadecimal string, e.g., '00100020' for PatientID

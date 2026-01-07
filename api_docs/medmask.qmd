@@ -1,0 +1,299 @@
+# medmask { #medmask }
+
+``
+
+MedMask - Medical Image Mask Compression and Processing Library
+
+A specialized library for efficient compression, storage, and processing of 
+medical image segmentation masks.
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [LabelMapping](#medmask.LabelMapping) | A simplified label mapping class that provides bidirectional mapping functionality. |
+| [MaskArchive](#medmask.MaskArchive) | Container storing multiple segmentation masks in one file. |
+| [MaskFile](#medmask.MaskFile) | Light-weight file format for a single segmentation mask (.msk). |
+| [SegmentationMask](#medmask.SegmentationMask) | Represents a 3-D segmentation mask with semantic labels. |
+
+### LabelMapping { #medmask.LabelMapping }
+
+```python
+LabelMapping(name_to_label=None)
+```
+
+A simplified label mapping class that provides bidirectional mapping functionality.
+
+This class maintains two mappings:
+1. Forward mapping (name -> label): Maps semantic names to label values.
+2. Reverse mapping (label -> name): Maps label values back to semantic names.
+
+The mapping ensures uniqueness of both names and labels.
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [from_json](#medmask.LabelMapping.from_json) | Initialize a label mapping from a JSON string. |
+| [has_label](#medmask.LabelMapping.has_label) | Check if a label exists in the mapping. |
+| [inverse](#medmask.LabelMapping.inverse) | Get semantic name by label value (reverse mapping). |
+| [items](#medmask.LabelMapping.items) | Get an iterator of name-label pairs. |
+| [to_json](#medmask.LabelMapping.to_json) | Convert the mapping to a JSON string. |
+
+##### from_json { #medmask.LabelMapping.from_json }
+
+```python
+LabelMapping.from_json(json_str)
+```
+
+Initialize a label mapping from a JSON string.
+
+Args:
+    json_str: JSON string representation of the mapping.
+
+Returns:
+    LabelMapping: A new instance initialized with data from JSON.
+
+##### has_label { #medmask.LabelMapping.has_label }
+
+```python
+LabelMapping.has_label(label)
+```
+
+Check if a label exists in the mapping.
+
+Args:
+    label: Label value to check.
+
+Returns:
+    bool: True if the label exists, False otherwise.
+
+##### inverse { #medmask.LabelMapping.inverse }
+
+```python
+LabelMapping.inverse(label)
+```
+
+Get semantic name by label value (reverse mapping).
+
+Args:
+    label: Label value.
+
+Returns:
+    str: Corresponding semantic name.
+
+Raises:
+    KeyError: If label is not found in the mapping.
+
+##### items { #medmask.LabelMapping.items }
+
+```python
+LabelMapping.items()
+```
+
+Get an iterator of name-label pairs.
+
+Returns:
+    Iterator[Tuple[str, int]]: Iterator of (name, label) pairs.
+
+##### to_json { #medmask.LabelMapping.to_json }
+
+```python
+LabelMapping.to_json()
+```
+
+Convert the mapping to a JSON string.
+
+Returns:
+    str: JSON string representation of the mapping.
+
+### MaskArchive { #medmask.MaskArchive }
+
+```python
+MaskArchive(path, mode='r', *, space=None, codec=None)
+```
+
+Container storing multiple segmentation masks in one file.
+
+On-disk layout::
+
+    Header (100 B)
+        magic       "MSKA" (4)
+        version     0x0100 (2 bytes)  • major/minor
+        codec_id    (B)
+        space_offset, space_length   (Q, Q)
+        index_offset, index_length   (Q, Q)
+        data_offset,  data_length    (Q, Q)
+        mask_count                   (Q)
+        reserved (27 B)
+
+Fixed-size 100-byte header simplifies random access and future extension.
+
+### MaskFile { #medmask.MaskFile }
+
+```python
+MaskFile(path, mode='r', *, codec=None)
+```
+
+Light-weight file format for a single segmentation mask (.msk).
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [read](#medmask.MaskFile.read) | Read segmentation mask from file. |
+| [write](#medmask.MaskFile.write) | Write segmentation mask to file. |
+
+##### read { #medmask.MaskFile.read }
+
+```python
+MaskFile.read()
+```
+
+Read segmentation mask from file.
+
+Reads mask data as-is, but converts space description from (x,y,z) back 
+to internal (z,y,x) format.
+
+##### write { #medmask.MaskFile.write }
+
+```python
+MaskFile.write(segmask)
+```
+
+Write segmentation mask to file.
+
+Stores mask data as-is, but converts space description to (x,y,z) order
+for C++ compatibility.
+
+### SegmentationMask { #medmask.SegmentationMask }
+
+```python
+SegmentationMask(mask_array, mapping, space=None)
+```
+
+Represents a 3-D segmentation mask with semantic labels.
+
+A *segmentation mask* is a 3-D ndarray whose voxel values represent integer
+*labels* (e.g. 0=background, 1=liver, 2=spleen …).  This class stores the
+mask array itself together with its :class:`~spacetransformer.core.space.Space`
+(geometry) and a bi-directional mapping between *names* ("liver") and
+*labels* (1).
+
+The mask array is always stored in (z,y,x) format internally, ensuring
+consistent behavior for Python users.
+
+There are two ways to build a mask instance:
+
+1. **Complete initialisation** – provide a full ndarray and a mapping.
+2. **Lazy initialisation** – create an empty mask of the desired *bit-depth*
+   first via :meth:`lazy_init`, then add label regions incrementally with
+   :meth:`add_label`.
+
+#### Attributes
+
+| Name | Description |
+| --- | --- |
+| [bit_depth](#medmask.SegmentationMask.bit_depth) | Bit-depth of the underlying array (1 / 8 / 16 / 32). |
+| [data](#medmask.SegmentationMask.data) | Return mask data array as read-only view in (z,y,x) format. |
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [add_label](#medmask.SegmentationMask.add_label) | Paint a *mask* region with *label* and register *name*. |
+| [lazy_init](#medmask.SegmentationMask.lazy_init) | Create an empty mask with given *bit-depth*. |
+| [load](#medmask.SegmentationMask.load) | Load a mask from *path* (.msk) and return a new `SegmentationMask`. |
+| [save](#medmask.SegmentationMask.save) | Save this mask to *path* using the storage layer (`MaskFile`). |
+| [to_binary](#medmask.SegmentationMask.to_binary) | Return a boolean array where non-zero voxels are *True*. |
+
+##### add_label { #medmask.SegmentationMask.add_label }
+
+```python
+SegmentationMask.add_label(mask, label, name)
+```
+
+Paint a *mask* region with *label* and register *name*.
+
+`mask` must be a boolean ndarray of the same shape as this mask.
+
+##### lazy_init { #medmask.SegmentationMask.lazy_init }
+
+```python
+SegmentationMask.lazy_init(bit_depth, *, space=None, shape=None)
+```
+
+Create an empty mask with given *bit-depth*.
+
+Either *space* or *shape* must be supplied to infer the array
+dimensions. The resulting mask array will be in (z,y,x) format.
+
+##### load { #medmask.SegmentationMask.load }
+
+```python
+SegmentationMask.load(path)
+```
+
+Load a mask from *path* (.msk) and return a new `SegmentationMask`.
+
+##### save { #medmask.SegmentationMask.save }
+
+```python
+SegmentationMask.save(path, *, codec=None)
+```
+
+Save this mask to *path* using the storage layer (`MaskFile`).
+
+##### to_binary { #medmask.SegmentationMask.to_binary }
+
+```python
+SegmentationMask.to_binary()
+```
+
+Return a boolean array where non-zero voxels are *True*.
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [load_mask](#medmask.load_mask) | Load and return a :class:`SegmentationMask` from *path*. |
+| [match_allowed_values](#medmask.match_allowed_values) | Optimize multiple (image_data == id) checks by using interval-based comparisons. |
+| [save_mask](#medmask.save_mask) | Save *segmask* to *path* (.msk). |
+
+### load_mask { #medmask.load_mask }
+
+```python
+load_mask(path, *, codec=None)
+```
+
+Load and return a :class:`SegmentationMask` from *path*.
+
+### match_allowed_values { #medmask.match_allowed_values }
+
+```python
+match_allowed_values(image_data, allowed_set)
+```
+
+Optimize multiple (image_data == id) checks by using interval-based comparisons.
+
+For a given image_data array and a set of allowed values, this function replaces
+multiple equality checks with interval-based comparisons:
+- For a continuous interval [a, b], use (image_data > a-1) & (image_data < b+1)
+- If two intervals are separated by a single value c, they can be merged into one
+  interval while excluding c: (image_data > a-1) & (image_data < d+1) & (image_data != c)
+
+Args:
+    image_data: Numpy array containing values to check (e.g., uint8 image data)
+    allowed_set: Iterable of allowed integer values
+
+Returns:
+    np.ndarray: Boolean array indicating whether elements in image_data are in
+               the allowed_set (after interval optimization)
+
+### save_mask { #medmask.save_mask }
+
+```python
+save_mask(segmask, path, *, codec=None)
+```
+
+Save *segmask* to *path* (.msk).

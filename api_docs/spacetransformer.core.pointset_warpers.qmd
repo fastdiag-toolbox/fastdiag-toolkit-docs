@@ -1,0 +1,135 @@
+# spacetransformer.core.pointset_warpers { #spacetransformer.core.pointset_warpers }
+
+`core.pointset_warpers`
+
+Point and vector transformation utilities for 3D medical images.
+
+This module provides functions for transforming point sets and vectors between
+different medical image coordinate spaces. It supports both NumPy arrays and
+PyTorch tensors for GPU acceleration.
+
+Example:
+    Transform points between two spaces:
+
+    >>> import numpy as np
+    >>> from spacetransformer.core import Space
+    >>> from spacetransformer.core.pointset_warpers import warp_point
+    >>> source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0))
+    >>> target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0))
+    >>> points = np.array([[10, 20, 10], [50, 50, 25]])
+    >>> transformed, mask = warp_point(points, source, target)
+    >>> print(transformed)
+    [[ 5. 10.  5.]
+     [25. 25. 12.5]]
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [calc_transform](#spacetransformer.core.pointset_warpers.calc_transform) | Calculate transformation matrix from source to target space. |
+| [warp_point](#spacetransformer.core.pointset_warpers.warp_point) | Transform point set from source to target space coordinates. |
+| [warp_vector](#spacetransformer.core.pointset_warpers.warp_vector) | Transform vector set between coordinate spaces (translation-invariant). |
+
+### calc_transform { #spacetransformer.core.pointset_warpers.calc_transform }
+
+```python
+core.pointset_warpers.calc_transform(source, target)
+```
+
+Calculate transformation matrix from source to target space.
+
+This function computes the transformation that maps voxel coordinates
+from the source space to the target space by chaining the source-to-world
+and world-to-target transformations.
+
+Args:
+    source: Source geometric space
+    target: Target geometric space
+
+Returns:
+    Transform: Transform object representing source.index -> target.index mapping
+
+Example:
+    >>> from spacetransformer.core import Space
+    >>> source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0))
+    >>> target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0))
+    >>> transform = calc_transform(source, target)
+    >>> points = np.array([[0, 0, 0], [10, 10, 10]])
+    >>> transformed = transform.apply_point(points)
+
+### warp_point { #spacetransformer.core.pointset_warpers.warp_point }
+
+```python
+core.pointset_warpers.warp_point(point_set, source, target)
+```
+
+Transform point set from source to target space coordinates.
+
+This function transforms a set of points from source voxel coordinates
+to target voxel coordinates and returns a boolean mask indicating which
+points fall within the target space bounds.
+
+Design Philosophy:
+    Supports both NumPy and PyTorch tensors with automatic device handling
+    to enable seamless integration with both CPU and GPU workflows. The
+    output type matches the input type for consistency.
+
+Args:
+    point_set: Input points with shape (N, 3) or (3,) for single point
+    source: Source geometric space
+    target: Target geometric space
+
+Returns:
+    Tuple containing:
+    - Transformed points in target space coordinates
+    - Boolean mask indicating which points are within target bounds
+
+Raises:
+    ValidationError: If inputs are invalid
+
+Example:
+    >>> import numpy as np
+    >>> from spacetransformer.core import Space
+    >>> source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0))
+    >>> target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0))
+    >>> points = np.array([[10, 20, 10], [90, 90, 40]])
+    >>> transformed, mask = warp_point(points, source, target)
+    >>> print(transformed)
+    [[ 5. 10.  5.]
+     [45. 45. 20.]]
+    >>> print(mask)
+    [True True]
+
+### warp_vector { #spacetransformer.core.pointset_warpers.warp_vector }
+
+```python
+core.pointset_warpers.warp_vector(vector_set, source, target)
+```
+
+Transform vector set between coordinate spaces (translation-invariant).
+
+This function transforms vectors (directions) from source to target space
+without applying translation. Only rotational components of the transformation
+are applied since vectors represent directions, not positions.
+
+Args:
+    vector_set: Input vectors with shape (N, 3) or (3,) for single vector
+    source: Source geometric space
+    target: Target geometric space
+
+Returns:
+    Transformed vectors in target space coordinates (same type as input)
+
+Raises:
+    ValidationError: If inputs are invalid
+
+Example:
+    >>> import numpy as np
+    >>> from spacetransformer.core import Space
+    >>> source = Space(shape=(100, 100, 50))
+    >>> target = Space(shape=(50, 50, 25))
+    >>> vectors = np.array([[1, 0, 0], [0, 1, 0]])
+    >>> transformed = warp_vector(vectors, source, target)
+    >>> print(transformed)  # Should be unchanged for identity transformation
+    [[1. 0. 0.]
+     [0. 1. 0.]]

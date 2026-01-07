@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.21">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>spacetransformer – FastDiag Toolkit 文档</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ea1d7ac60288e0f1efdbc993fd8432ae.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-af53e07c3e3c7930d59d423e0ac82114.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">FastDiag Toolkit 文档</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="搜索"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">首页</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api_docs/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text">GitHub</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">该页面内容</h2>
+   
+  <ul>
+  <li><a href="#spacetransformer" id="toc-spacetransformer" class="nav-link active" data-scroll-target="#spacetransformer">spacetransformer</a>
+  <ul class="collapse">
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul class="collapse">
+  <li><a href="#spacetransformer.Space" id="toc-spacetransformer.Space" class="nav-link" data-scroll-target="#spacetransformer.Space">Space</a></li>
+  <li><a href="#spacetransformer.Transform" id="toc-spacetransformer.Transform" class="nav-link" data-scroll-target="#spacetransformer.Transform">Transform</a></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul class="collapse">
+  <li><a href="#spacetransformer.calc_transform" id="toc-spacetransformer.calc_transform" class="nav-link" data-scroll-target="#spacetransformer.calc_transform">calc_transform</a></li>
+  <li><a href="#spacetransformer.find_tight_bbox" id="toc-spacetransformer.find_tight_bbox" class="nav-link" data-scroll-target="#spacetransformer.find_tight_bbox">find_tight_bbox</a></li>
+  <li><a href="#spacetransformer.get_space_from_nifti" id="toc-spacetransformer.get_space_from_nifti" class="nav-link" data-scroll-target="#spacetransformer.get_space_from_nifti">get_space_from_nifti</a></li>
+  <li><a href="#spacetransformer.get_space_from_sitk" id="toc-spacetransformer.get_space_from_sitk" class="nav-link" data-scroll-target="#spacetransformer.get_space_from_sitk">get_space_from_sitk</a></li>
+  <li><a href="#spacetransformer.warp_point" id="toc-spacetransformer.warp_point" class="nav-link" data-scroll-target="#spacetransformer.warp_point">warp_point</a></li>
+  <li><a href="#spacetransformer.warp_vector" id="toc-spacetransformer.warp_vector" class="nav-link" data-scroll-target="#spacetransformer.warp_vector">warp_vector</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="spacetransformer" class="level1">
+<h1>spacetransformer</h1>
+<p>``</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spacetransformer.Space">Space</a></td>
+<td>Represents the geometric space of reference for 3D medical images.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Transform">Transform</a></td>
+<td>4x4 homogeneous coordinate transformation matrix wrapper.</td>
+</tr>
+</tbody>
+</table>
+<section id="spacetransformer.Space" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.Space">Space</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Space(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    shape,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    origin<span class="op">=</span>(<span class="kw">lambda</span>: (<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))(),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    spacing<span class="op">=</span>(<span class="kw">lambda</span>: (<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>))(),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    x_orientation<span class="op">=</span>(<span class="kw">lambda</span>: (<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>))(),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    y_orientation<span class="op">=</span>(<span class="kw">lambda</span>: (<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>))(),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    z_orientation<span class="op">=</span>(<span class="kw">lambda</span>: (<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>))(),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Represents the geometric space of reference for 3D medical images.</p>
+<p>This class stores information about the image’s position, orientation, spacing, and dimensions in physical space. It provides methods for coordinate transformations and geometric operations commonly needed in medical image processing.</p>
+<p>Design Philosophy: Uses explicit orientation vectors instead of implicit axis assumptions to ensure compatibility with arbitrary medical image orientations. The design prioritizes correctness and traceability over computational efficiency.</p>
+<pre><code>The class maintains immutability for safety - all transformation methods return
+new Space instances rather than modifying existing ones. This prevents
+accidental corruption of geometric metadata in medical applications.</code></pre>
+<p>Attributes: shape: Image dimensions (height, width, depth) in voxels origin: Physical coordinates (x,y,z) of the first voxel in mm spacing: Physical size (x,y,z) of each voxel in mm x_orientation: Direction cosines of axis 0 (x-axis) y_orientation: Direction cosines of axis 1 (y-axis) z_orientation: Direction cosines of axis 2 (z-axis)</p>
+<p>Example: Creating a space for a typical CT scan:</p>
+<pre><code>&gt;&gt;&gt; space = Space(
+...     shape=(512, 512, 100),
+...     spacing=(0.5, 0.5, 2.0),
+...     origin=(0, 0, 0)
+... )
+&gt;&gt;&gt; print(space.physical_span)
+[255.5 255.5 198. ]
+
+Transform between index and world coordinates:
+
+&gt;&gt;&gt; index_points = [[0, 0, 0], [10, 10, 10]]
+&gt;&gt;&gt; world_points = space.to_world_transform.apply_point(index_points)
+&gt;&gt;&gt; back_to_index = space.from_world_transform.apply_point(world_points)</code></pre>
+<section id="attributes" class="level4">
+<h4 class="anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.end">end</a></td>
+<td>Get the world coordinates of the image’s corner voxel.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.from_world_transform">from_world_transform</a></td>
+<td>Get the world → index coordinate transformation (lazy-loaded).</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.orientation_matrix">orientation_matrix</a></td>
+<td>Return the 3x3 orientation matrix with direction cosines as columns.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.physical_span">physical_span</a></td>
+<td>Get the total physical span of the image in world coordinates (mm).</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.scaled_orientation_matrix">scaled_orientation_matrix</a></td>
+<td>Return the 3x3 orientation matrix scaled by voxel spacing.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.shape_zyx">shape_zyx</a></td>
+<td>Get the shape in ZYX order for Python indexing.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.to_world_transform">to_world_transform</a></td>
+<td>Get the index → world coordinate transformation (lazy-loaded).</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.apply_bbox">apply_bbox</a></td>
+<td>Crop the space to a bounding box.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.apply_flip">apply_flip</a></td>
+<td>Flip the space along a specified axis.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.apply_float_bbox">apply_float_bbox</a></td>
+<td>Crop with floating-point bounding box and resample to specified shape.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.apply_permute">apply_permute</a></td>
+<td>Rearrange axes according to the given order.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.apply_rotate">apply_rotate</a></td>
+<td>Rotate the space around a specified axis.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.apply_shape">apply_shape</a></td>
+<td>Create a new space with modified shape, adjusting spacing and possibly origin.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.apply_spacing">apply_spacing</a></td>
+<td>Create a new space with modified spacing only.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.apply_swap">apply_swap</a></td>
+<td>Swap two axes in the space.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.apply_zoom">apply_zoom</a></td>
+<td>Scale the shape by the given factor.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.contain_pointset_ind">contain_pointset_ind</a></td>
+<td>Check if index coordinates are within the space bounds.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.contain_pointset_world">contain_pointset_world</a></td>
+<td>Check if world coordinates are within the space bounds.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.copy">copy</a></td>
+<td>Return a new Space instance with identical values.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.from_dict">from_dict</a></td>
+<td>Create a Space object from a dictionary.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.from_json">from_json</a></td>
+<td>Create a Space object from a JSON string.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.from_nifti">from_nifti</a></td>
+<td>Create a Space object from a NIfTI image.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.from_sitk">from_sitk</a></td>
+<td>Create a Space object from a SimpleITK Image.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.reverse_axis_order">reverse_axis_order</a></td>
+<td>Convert space information to ZYX order for Python indexing.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.to_dicom_orientation">to_dicom_orientation</a></td>
+<td>Convert orientation vectors to DICOM Image Orientation (Patient) format.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.to_json">to_json</a></td>
+<td>Serialize the Space object to a JSON string.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Space.to_nifti_affine">to_nifti_affine</a></td>
+<td>Convert space information to NIfTI affine transformation matrix.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Space.to_sitk_direction">to_sitk_direction</a></td>
+<td>Convert orientation vectors to SimpleITK direction matrix format.</td>
+</tr>
+</tbody>
+</table>
+<section id="spacetransformer.Space.apply_bbox" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_bbox">apply_bbox</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Space.apply_bbox(bbox, include_end<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Crop the space to a bounding box.</p>
+<p>This method creates a new space that represents a cropped region of the original space, updating the origin and shape accordingly.</p>
+<p>Args: bbox: Bounding box array of shape (3, 2) where bbox[:,0] is start indices and bbox[:,1] is end indices (exclusive) include_end: If True, include the end indices in the crop</p>
+<p>Returns: Space: New Space instance representing the cropped region</p>
+<p>Raises: ValidationError: If bbox shape is not (3, 2) or bounds are invalid</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; bbox = np.array([[10, 90], [20, 80], [5, 45]]) &gt;&gt;&gt; cropped = space.apply_bbox(bbox) &gt;&gt;&gt; print(cropped.shape) (80, 60, 40) &gt;&gt;&gt; print(cropped.origin) (10.0, 20.0, 10.0)</p>
+</section>
+<section id="spacetransformer.Space.apply_flip" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_flip">apply_flip</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Space.apply_flip(axis)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Flip the space along a specified axis.</p>
+<p>This method flips the image space along one of the three axes, updating both the origin and orientation vectors accordingly.</p>
+<p>Args: axis: Axis to flip along (0=x, 1=y, 2=z)</p>
+<p>Returns: Space: New Space instance with flipped axis</p>
+<p>Raises: AssertionError: If axis is not in {0, 1, 2}</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; flipped = space.apply_flip(0) # Flip along x-axis &gt;&gt;&gt; print(flipped.origin) (99.0, 0, 0) &gt;&gt;&gt; print(flipped.x_orientation) (-1.0, 0.0, 0.0)</p>
+</section>
+<section id="spacetransformer.Space.apply_float_bbox" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_float_bbox">apply_float_bbox</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Space.apply_float_bbox(bbox, shape)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Crop with floating-point bounding box and resample to specified shape.</p>
+<p>This method performs a floating-point crop followed by resampling to the target shape. The bbox coordinates can be non-integer values, allowing for sub-voxel precision cropping.</p>
+<p>Design Philosophy: Combines cropping and resampling in a single operation to avoid accumulation of interpolation errors. The floating-point bbox allows for precise sub-voxel alignment in medical image registration.</p>
+<p>Args: bbox: Bounding box array of shape (3, 2) where bbox[:,0] is start coordinates (can be float) and bbox[:,1] is end coordinates shape: Target voxel dimensions (int, int, int) after resampling</p>
+<p>Returns: Space: New Space instance with specified shape and physical region defined by the bounding box</p>
+<p>Raises: ValidationError: If bbox or shape parameters are invalid</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; bbox = np.array([[10.5, 90.5], [20.2, 80.8], [5.1, 45.9]]) &gt;&gt;&gt; resampled = space.apply_float_bbox(bbox, (80, 60, 40)) &gt;&gt;&gt; print(resampled.shape) (80, 60, 40) &gt;&gt;&gt; print(resampled.spacing) (1.0, 1.0, 1.0)</p>
+</section>
+<section id="spacetransformer.Space.apply_permute" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_permute">apply_permute</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Space.apply_permute(axis_order)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Rearrange axes according to the given order.</p>
+<p>This method reorders the axes of the space according to the specified permutation, updating shape, spacing, and orientation vectors.</p>
+<p>Args: axis_order: Permutation of [0, 1, 2] specifying the new axis order</p>
+<p>Returns: Space: New Space instance with reordered axes</p>
+<p>Raises: AssertionError: If axis_order is not a valid permutation of [0, 1, 2]</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 200, 50), spacing=(1.0, 2.0, 3.0)) &gt;&gt;&gt; # Reorder to ZYX &gt;&gt;&gt; permuted = space.apply_permute([2, 1, 0]) &gt;&gt;&gt; print(permuted.shape) (50, 200, 100) &gt;&gt;&gt; print(permuted.spacing) (3.0, 2.0, 1.0)</p>
+</section>
+<section id="spacetransformer.Space.apply_rotate" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_rotate">apply_rotate</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Space.apply_rotate(axis, angle, unit<span class="op">=</span><span class="st">'degree'</span>, center<span class="op">=</span><span class="st">'center'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Rotate the space around a specified axis.</p>
+<p>This method rotates the image space around one of the coordinate axes, updating the orientation vectors and optionally the origin.</p>
+<p>Args: axis: Axis of rotation (0=x, 1=y, 2=z) angle: Rotation angle unit: Angle unit (“radian” or “degree”) center: Rotation center (“center” for image center, “origin” for world origin)</p>
+<p>Returns: Space: New Space instance with rotated orientation</p>
+<p>Raises: ValidationError: If rotation parameters are invalid</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; rotated = space.apply_rotate(2, 90, unit=“degree”, center=“center”) &gt;&gt;&gt; print(rotated.x_orientation) # Rotated 90 degrees around z (0.0, 1.0, 0.0) &gt;&gt;&gt; print(rotated.y_orientation) (-1.0, 0.0, 0.0)</p>
+</section>
+<section id="spacetransformer.Space.apply_shape" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_shape">apply_shape</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Space.apply_shape(shape, align_corners<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a new space with modified shape, adjusting spacing and possibly origin.</p>
+<p>This method creates a new space with the specified shape, and recalculates spacing to maintain the same physical span. Origin may also be adjusted depending on align_corners setting.</p>
+<p>Args: shape: New image dimensions (height, width, depth) in voxels align_corners: If True, maintain alignment at corner pixels, similar to PyTorch’s grid_sample align_corners parameter</p>
+<p>Returns: Space: New Space instance with updated shape and spacing</p>
+<p>Raises: ValidationError: If shape dimensions are invalid</p>
+<p>Notes: When align_corners=True: - For dimensions where either old or new shape is 1, alignment is handled as if align_corners=False - For other dimensions, the corners of the image are aligned</p>
+<pre><code>When align_corners=False:
+    - The centers of the corner pixels are aligned
+    - This changes both spacing and origin</code></pre>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; resized = space.apply_shape((200, 200, 100), align_corners=True) &gt;&gt;&gt; print(resized.shape) (200, 200, 100) &gt;&gt;&gt; print(resized.spacing) # Adjusted to maintain physical span (0.5, 0.5, 1.0)</p>
+</section>
+<section id="spacetransformer.Space.apply_spacing" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_spacing">apply_spacing</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>Space.apply_spacing(spacing, recompute_spacing<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a new space with modified spacing only.</p>
+<p>This method creates a new space with the specified voxel spacing while preserving all other attributes (origin, shape, orientation).</p>
+<p>Args: spacing: New voxel spacing (x, y, z) in mm recompute_spacing: Whether to recompute the spacing or not.</p>
+<p>Returns: Space: New Space instance with the specified spacing</p>
+<p>Raises: ValidationError: If spacing values are invalid</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; resampled = space.apply_spacing((0.5, 0.5, 1.0)) &gt;&gt;&gt; print(resampled.spacing) (0.5, 0.5, 1.0) &gt;&gt;&gt; print(resampled.shape) # Unchanged (100, 100, 50)</p>
+</section>
+<section id="spacetransformer.Space.apply_swap" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_swap">apply_swap</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Space.apply_swap(axis1, axis2)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Swap two axes in the space.</p>
+<p>This method exchanges two axes by reordering the shape, spacing, and orientation vectors. Equivalent to apply_permute with a swap permutation.</p>
+<p>Args: axis1: First axis to swap (0=x, 1=y, 2=z) axis2: Second axis to swap (0=x, 1=y, 2=z)</p>
+<p>Returns: Space: New Space instance with swapped axes</p>
+<p>Raises: AssertionError: If axes are not in {0, 1, 2} or are equal</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 200, 50), spacing=(1.0, 2.0, 3.0)) &gt;&gt;&gt; swapped = space.apply_swap(0, 2) # Swap x and z axes &gt;&gt;&gt; print(swapped.shape) (50, 200, 100) &gt;&gt;&gt; print(swapped.spacing) (3.0, 2.0, 1.0)</p>
+</section>
+<section id="spacetransformer.Space.apply_zoom" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.apply_zoom">apply_zoom</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Space.apply_zoom(factor, mode<span class="op">=</span><span class="st">'floor'</span>, align_corners<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Scale the shape by the given factor.</p>
+<p>This method scales the image dimensions by the specified factor(s) while keeping spacing and orientation unchanged. The mode parameter controls how non-integer results are handled.</p>
+<p>Args: factor: Scaling factor(s). Can be a single float or tuple of 3 floats mode: Rounding mode for non-integer results (“floor”, “round”, “ceil”) align_corners: If True, maintain alignment at corner pixels, similar to PyTorch’s grid_sample align_corners parameter</p>
+<p>Returns: Space: New Space instance with scaled shape</p>
+<p>Raises: ValidationError: If factor or mode parameters are invalid</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; zoomed = space.apply_zoom(0.5, mode=“round”) &gt;&gt;&gt; print(zoomed.shape) (50, 50, 25) &gt;&gt;&gt; print(zoomed.spacing) # Unchanged (1.0, 1.0, 2.0)</p>
+</section>
+<section id="spacetransformer.Space.contain_pointset_ind" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.contain_pointset_ind">contain_pointset_ind</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Space.contain_pointset_ind(pointset_ind)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check if index coordinates are within the space bounds.</p>
+<p>This method tests whether the given index coordinates fall within the valid range [0, shape-1] for each dimension.</p>
+<p>Args: pointset_ind: Array of index coordinates with shape (N, 3)</p>
+<p>Returns: np.ndarray: Boolean array of shape (N,) indicating which points are inside</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50)) &gt;&gt;&gt; points = np.array([[10, 20, 30], [150, 50, 25], [50, 50, 25]]) &gt;&gt;&gt; inside = space.contain_pointset_ind(points) &gt;&gt;&gt; print(inside) [True False True]</p>
+</section>
+<section id="spacetransformer.Space.contain_pointset_world" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.contain_pointset_world">contain_pointset_world</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Space.contain_pointset_world(pointset_world)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check if world coordinates are within the space bounds.</p>
+<p>This method converts world coordinates to index coordinates and then checks if they fall within the valid index range.</p>
+<p>Args: pointset_world: Array of world coordinates with shape (N, 3)</p>
+<p>Returns: np.ndarray: Boolean array of shape (N,) indicating which points are inside</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; world_points = np.array([[10.0, 20.0, 30.0], [150.0, 50.0, 25.0]]) &gt;&gt;&gt; inside = space.contain_pointset_world(world_points) &gt;&gt;&gt; print(inside) [True False]</p>
+</section>
+<section id="spacetransformer.Space.copy" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.copy">copy</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>Space.copy()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return a new Space instance with identical values.</p>
+<p>Creates a deep copy of the Space object with all the same attribute values.</p>
+<p>Returns: Space: New Space instance with identical values</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; space_copy = space.copy() &gt;&gt;&gt; print(space_copy == space) # Same values True &gt;&gt;&gt; print(space_copy is space) # Different objects False</p>
+</section>
+<section id="spacetransformer.Space.from_dict" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.from_dict">from_dict</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>Space.from_dict(data)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a Space object from a dictionary.</p>
+<p>Lists in the dictionary will be automatically converted to tuples to match the expected Space attribute types.</p>
+<p>Args: data: Dictionary containing Space attributes Lists will be converted to tuples</p>
+<p>Returns: Space: A new Space instance</p>
+<p>Example: &gt;&gt;&gt; data = { … ‘shape’: [100, 100, 50], … ‘spacing’: [1.0, 1.0, 2.0], … ‘origin’: [0, 0, 0] … } &gt;&gt;&gt; space = Space.from_dict(data) &gt;&gt;&gt; print(space.shape) (100, 100, 50)</p>
+</section>
+<section id="spacetransformer.Space.from_json" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.from_json">from_json</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Space.from_json(json_str)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a Space object from a JSON string.</p>
+<p>Args: json_str: JSON string containing Space data</p>
+<p>Returns: Space: A new Space instance</p>
+<p>Raises: json.JSONDecodeError: If the JSON string is invalid</p>
+<p>Example: &gt;&gt;&gt; json_str = ‘{“shape”: [100, 100, 50], “spacing”: [1.0, 1.0, 2.0]}’ &gt;&gt;&gt; space = Space.from_json(json_str) &gt;&gt;&gt; print(space.shape) (100, 100, 50)</p>
+</section>
+<section id="spacetransformer.Space.from_nifti" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.from_nifti">from_nifti</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Space.from_nifti(niftiimage)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a Space object from a NIfTI image.</p>
+<p>Args: niftiimage: NIfTI image object</p>
+<p>Returns: Space: A new Space instance with geometry matching the NIfTI image</p>
+<p>Example: &gt;&gt;&gt; import nibabel as nib &gt;&gt;&gt; image = nib.load(‘image.nii.gz’) &gt;&gt;&gt; space = Space.from_nifti(image) &gt;&gt;&gt; print(space.shape) (100, 100, 50)</p>
+</section>
+<section id="spacetransformer.Space.from_sitk" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.from_sitk">from_sitk</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Space.from_sitk(simpleitkimage)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a Space object from a SimpleITK Image.</p>
+<p>Args: simpleitkimage: SimpleITK Image object</p>
+<p>Returns: Space: A new Space instance with geometry matching the SimpleITK image</p>
+<p>Example: &gt;&gt;&gt; import SimpleITK as sitk &gt;&gt;&gt; image = sitk.Image(100, 100, 50, sitk.sitkFloat32) &gt;&gt;&gt; space = Space.from_sitk(image) &gt;&gt;&gt; print(space.shape) (100, 100, 50)</p>
+</section>
+<section id="spacetransformer.Space.reverse_axis_order" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.reverse_axis_order">reverse_axis_order</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>Space.reverse_axis_order()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert space information to ZYX order for Python indexing.</p>
+<p>This method reverses the axis order from XYZ (medical standard) to ZYX (Python/NumPy indexing standard). Useful when interfacing with libraries that expect ZYX ordering.</p>
+<p>Returns: Space: New Space instance with axes in ZYX order</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 200, 50), spacing=(1.0, 2.0, 3.0)) &gt;&gt;&gt; zyx_space = space.reverse_axis_order() &gt;&gt;&gt; print(zyx_space.shape) (50, 200, 100) &gt;&gt;&gt; print(zyx_space.spacing) (3.0, 2.0, 1.0)</p>
+</section>
+<section id="spacetransformer.Space.to_dicom_orientation" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.to_dicom_orientation">to_dicom_orientation</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Space.to_dicom_orientation()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert orientation vectors to DICOM Image Orientation (Patient) format.</p>
+<p>DICOM stores orientation as a 6-element array containing the direction cosines of the first row and first column of the image matrix.</p>
+<p>Returns: tuple: Row and column direction cosines concatenated (Xx,Xy,Xz,Yx,Yy,Yz)</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50)) &gt;&gt;&gt; orientation = space.to_dicom_orientation() &gt;&gt;&gt; print(len(orientation)) 6 &gt;&gt;&gt; print(orientation[:3]) # x-orientation (1.0, 0.0, 0.0) &gt;&gt;&gt; print(orientation[3:]) # y-orientation (0.0, 1.0, 0.0)</p>
+</section>
+<section id="spacetransformer.Space.to_json" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.to_json">to_json</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Space.to_json()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Serialize the Space object to a JSON string.</p>
+<p>All attributes are already in JSON-serializable types (tuple/list/float/int).</p>
+<p>Returns: str: JSON string representation of the Space</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; json_str = space.to_json() &gt;&gt;&gt; print(‘“shape”: [100, 100, 50]’ in json_str) True</p>
+</section>
+<section id="spacetransformer.Space.to_nifti_affine" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.to_nifti_affine">to_nifti_affine</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Space.to_nifti_affine()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert space information to NIfTI affine transformation matrix.</p>
+<p>The affine matrix combines rotation, scaling, and translation into a single 4x4 homogeneous transformation matrix following NIfTI conventions.</p>
+<p>Since this Space uses LPS coordinates but NIfTI expects RAS coordinates, the matrix is converted from LPS to RAS before output.</p>
+<p>Returns: np.ndarray: 4x4 affine transformation matrix in RAS coordinates</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; affine = space.to_nifti_affine() &gt;&gt;&gt; print(affine.shape) (4, 4) &gt;&gt;&gt; print(affine[0, 0]) # x-spacing (will be negative due to LPS-&gt;RAS conversion) -1.0 &gt;&gt;&gt; print(affine[2, 2]) # z-spacing 2.0</p>
+</section>
+<section id="spacetransformer.Space.to_sitk_direction" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Space.to_sitk_direction">to_sitk_direction</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Space.to_sitk_direction()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert orientation vectors to SimpleITK direction matrix format.</p>
+<p>SimpleITK uses a flattened column-major direction matrix representation where the direction cosines are stored as a 9-element tuple.</p>
+<p>Returns: tuple: Direction cosines in column-major order (xx,yx,zx,xy,yy,zy,xz,yz,zz)</p>
+<p>Example: &gt;&gt;&gt; space = Space(shape=(100, 100, 50)) &gt;&gt;&gt; direction = space.to_sitk_direction() &gt;&gt;&gt; print(len(direction)) 9 &gt;&gt;&gt; print(direction[:3]) # First column (x-orientation) (1.0, 0.0, 0.0)</p>
+</section>
+</section>
+</section>
+<section id="spacetransformer.Transform" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.Transform">Transform</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Transform(matrix, source<span class="op">=</span><span class="va">None</span>, target<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>4x4 homogeneous coordinate transformation matrix wrapper.</p>
+<p>This class encapsulates a 4x4 transformation matrix and provides methods for applying transformations to points and vectors, computing inverses, and composing transformations.</p>
+<p>Design Philosophy: The class is designed purely for geometric coordinate calculations without any resampling-related parameters. It maintains references to source and target spaces for traceability and validation.</p>
+<pre><code>Uses lazy evaluation for expensive operations like matrix inversion
+and caches results for performance. The class is immutable except
+for internal caching to ensure thread safety.</code></pre>
+<p>Attributes: matrix: 4x4 transformation matrix (source.index → target.index or other) source: Source Space object (can be None for world coordinates) target: Target Space object (can be None for world coordinates)</p>
+<p>Example: Creating and using a transformation:</p>
+<pre><code>&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from spacetransformer.core import Transform
+&gt;&gt;&gt; matrix = np.array([[1, 0, 0, 10],
+...                    [0, 1, 0, 20],
+...                    [0, 0, 1, 30],
+...                    [0, 0, 0, 1]])
+&gt;&gt;&gt; transform = Transform(matrix)
+&gt;&gt;&gt; point = [0, 0, 0]
+&gt;&gt;&gt; transformed = transform.apply_point(point)
+&gt;&gt;&gt; print(transformed)
+[[10. 20. 30.]]</code></pre>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spacetransformer.Transform.apply_point">apply_point</a></td>
+<td>Apply transformation to a set of points.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Transform.apply_vector">apply_vector</a></td>
+<td>Apply transformation to a set of vectors (ignoring translation).</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.Transform.compose">compose</a></td>
+<td>Compose transformations with self applied first.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.Transform.inverse">inverse</a></td>
+<td>Return the inverse transformation (lazy computed and cached).</td>
+</tr>
+</tbody>
+</table>
+<section id="spacetransformer.Transform.apply_point" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Transform.apply_point">apply_point</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>Transform.apply_point(pts)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Apply transformation to a set of points.</p>
+<p>This method transforms 3D points using the 4x4 transformation matrix. Points are treated as having homogeneous coordinate w=1.0, so they are affected by both rotation and translation.</p>
+<p>Args: pts: Input points with shape (N, 3) or (3,) for single point</p>
+<p>Returns: np.ndarray: Transformed points with shape (N, 3)</p>
+<p>Example: &gt;&gt;&gt; import numpy as np &gt;&gt;&gt; matrix = np.array([[1, 0, 0, 10], … [0, 1, 0, 20], … [0, 0, 1, 30], … [0, 0, 0, 1]]) &gt;&gt;&gt; transform = Transform(matrix) &gt;&gt;&gt; points = [[0, 0, 0], [1, 1, 1]] &gt;&gt;&gt; transformed = transform.apply_point(points) &gt;&gt;&gt; print(transformed) [[10. 20. 30.] [11. 21. 31.]]</p>
+</section>
+<section id="spacetransformer.Transform.apply_vector" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Transform.apply_vector">apply_vector</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>Transform.apply_vector(vecs)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Apply transformation to a set of vectors (ignoring translation).</p>
+<p>This method transforms 3D vectors using only the rotational part of the transformation matrix. Vectors are treated as having homogeneous coordinate w=0.0, so they are unaffected by translation.</p>
+<p>Args: vecs: Input vectors with shape (N, 3) or (3,) for single vector</p>
+<p>Returns: np.ndarray: Transformed vectors with shape (N, 3)</p>
+<p>Example: &gt;&gt;&gt; import numpy as np &gt;&gt;&gt; matrix = np.array([[1, 0, 0, 10], # Translation has no effect … [0, 1, 0, 20], … [0, 0, 1, 30], … [0, 0, 0, 1]]) &gt;&gt;&gt; transform = Transform(matrix) &gt;&gt;&gt; vectors = [[1, 0, 0], [0, 1, 0]] &gt;&gt;&gt; transformed = transform.apply_vector(vectors) &gt;&gt;&gt; print(transformed) [[1. 0. 0.] [0. 1. 0.]]</p>
+</section>
+<section id="spacetransformer.Transform.compose" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Transform.compose">compose</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>Transform.compose(other)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compose transformations with self applied first.</p>
+<p>This method provides an alternative composition interface where self.compose(other) means apply self first, then other.</p>
+<p>Args: other: Transform to apply after self</p>
+<p>Returns: Transform: Composed transformation representing self followed by other</p>
+<p>Example: &gt;&gt;&gt; import numpy as np &gt;&gt;&gt; T1 = Transform(np.eye(4)) &gt;&gt;&gt; T2 = Transform(np.eye(4)) &gt;&gt;&gt; composed = T1.compose(T2) # Apply T1 first, then T2 &gt;&gt;&gt; print(np.allclose(composed.matrix, np.eye(4))) True</p>
+</section>
+<section id="spacetransformer.Transform.inverse" class="level5">
+<h5 class="anchored" data-anchor-id="spacetransformer.Transform.inverse">inverse</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>Transform.inverse()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return the inverse transformation (lazy computed and cached).</p>
+<p>This method computes the inverse transformation matrix and caches the result for efficient repeated use. The inverse is computed using numpy’s linear algebra inverse function.</p>
+<p>Returns: Transform: Inverse transformation with swapped source/target spaces</p>
+<p>Example: &gt;&gt;&gt; import numpy as np &gt;&gt;&gt; matrix = np.array([[1, 0, 0, 10], … [0, 1, 0, 20], … [0, 0, 1, 30], … [0, 0, 0, 1]]) &gt;&gt;&gt; transform = Transform(matrix) &gt;&gt;&gt; inverse = transform.inverse() &gt;&gt;&gt; print(inverse.matrix[0:3, 3]) # Should be [-10, -20, -30] [-10. -20. -30.]</p>
+</section>
+</section>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spacetransformer.calc_transform">calc_transform</a></td>
+<td>Calculate transformation matrix from source to target space.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.find_tight_bbox">find_tight_bbox</a></td>
+<td>Calculate the tight bounding box of source space in target index coordinates.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.get_space_from_nifti">get_space_from_nifti</a></td>
+<td>Create a Space object from a NIfTI image.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.get_space_from_sitk">get_space_from_sitk</a></td>
+<td>Create a Space object from a SimpleITK Image.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spacetransformer.warp_point">warp_point</a></td>
+<td>Transform point set from source to target space coordinates.</td>
+</tr>
+<tr class="even">
+<td><a href="#spacetransformer.warp_vector">warp_vector</a></td>
+<td>Transform vector set between coordinate spaces (translation-invariant).</td>
+</tr>
+</tbody>
+</table>
+<section id="spacetransformer.calc_transform" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.calc_transform">calc_transform</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>calc_transform(source, target)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Calculate transformation matrix from source to target space.</p>
+<p>This function computes the transformation that maps voxel coordinates from the source space to the target space by chaining the source-to-world and world-to-target transformations.</p>
+<p>Args: source: Source geometric space target: Target geometric space</p>
+<p>Returns: Transform: Transform object representing source.index -&gt; target.index mapping</p>
+<p>Example: &gt;&gt;&gt; from spacetransformer.core import Space &gt;&gt;&gt; source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0)) &gt;&gt;&gt; transform = calc_transform(source, target) &gt;&gt;&gt; points = np.array([[0, 0, 0], [10, 10, 10]]) &gt;&gt;&gt; transformed = transform.apply_point(points)</p>
+</section>
+<section id="spacetransformer.find_tight_bbox" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.find_tight_bbox">find_tight_bbox</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>find_tight_bbox(source, target)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Calculate the tight bounding box of source space in target index coordinates.</p>
+<p>This function computes the minimal bounding box that contains all corners of the source space when transformed to the target space’s index coordinates. The bounding box uses half-open intervals [left, right).</p>
+<p>Args: source: Source space to compute bounding box for target: Target space coordinate system</p>
+<p>Returns: np.ndarray: Bounding box array of shape (3, 2) where bbox[:,0] contains left bounds and bbox[:,1] contains right bounds (exclusive)</p>
+<p>Example: &gt;&gt;&gt; from spacetransformer.core import Space &gt;&gt;&gt; source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0)) &gt;&gt;&gt; bbox = find_tight_bbox(source, target) &gt;&gt;&gt; print(bbox) [[ 0 50] [ 0 50] [ 0 25]]</p>
+</section>
+<section id="spacetransformer.get_space_from_nifti" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.get_space_from_nifti">get_space_from_nifti</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>get_space_from_nifti(niftiimage)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a Space object from a NIfTI image.</p>
+<p>This function extracts geometric information from a NIfTI image including orientation, spacing, and origin information from the affine matrix.</p>
+<p>Priority is given to qform affine matrix, with fallback to sform affine. Coordinate system is converted from RAS (NIfTI default) to LPS (medical imaging standard) by inverting x and y axes.</p>
+<p>Args: niftiimage: NIfTI image object with affine matrix and shape</p>
+<p>Returns: Space: A new Space instance with geometry matching the NIfTI image in LPS coordinates</p>
+<p>Raises: ValueError: If affine matrix is not 4x4</p>
+<p>Example: &gt;&gt;&gt; import nibabel as nib &gt;&gt;&gt; image = nib.load(‘brain.nii.gz’) &gt;&gt;&gt; space = get_space_from_nifti(image) &gt;&gt;&gt; print(space.shape) (256, 256, 256) &gt;&gt;&gt; print(space.spacing) (1.0, 1.0, 1.0)</p>
+</section>
+<section id="spacetransformer.get_space_from_sitk" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.get_space_from_sitk">get_space_from_sitk</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>get_space_from_sitk(simpleitkimage)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Create a Space object from a SimpleITK Image.</p>
+<p>This function extracts geometric information from a SimpleITK Image including origin coordinates, voxel spacing, direction cosines, and image dimensions.</p>
+<p>Args: simpleitkimage: SimpleITK Image object</p>
+<p>Returns: Space: A new Space instance with geometry matching the SimpleITK image</p>
+<p>Example: &gt;&gt;&gt; import SimpleITK as sitk &gt;&gt;&gt; image = sitk.ReadImage(‘brain.nii.gz’) &gt;&gt;&gt; space = get_space_from_sitk(image) &gt;&gt;&gt; print(space.shape) (256, 256, 256) &gt;&gt;&gt; print(space.spacing) (1.0, 1.0, 1.0)</p>
+</section>
+<section id="spacetransformer.warp_point" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.warp_point">warp_point</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>warp_point(point_set, source, target)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Transform point set from source to target space coordinates.</p>
+<p>This function transforms a set of points from source voxel coordinates to target voxel coordinates and returns a boolean mask indicating which points fall within the target space bounds.</p>
+<p>Design Philosophy: Supports both NumPy and PyTorch tensors with automatic device handling to enable seamless integration with both CPU and GPU workflows. The output type matches the input type for consistency.</p>
+<p>Args: point_set: Input points with shape (N, 3) or (3,) for single point source: Source geometric space target: Target geometric space</p>
+<p>Returns: Tuple containing: - Transformed points in target space coordinates - Boolean mask indicating which points are within target bounds</p>
+<p>Raises: ValidationError: If inputs are invalid</p>
+<p>Example: &gt;&gt;&gt; import numpy as np &gt;&gt;&gt; from spacetransformer.core import Space &gt;&gt;&gt; source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0)) &gt;&gt;&gt; target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0)) &gt;&gt;&gt; points = np.array([[10, 20, 10], [90, 90, 40]]) &gt;&gt;&gt; transformed, mask = warp_point(points, source, target) &gt;&gt;&gt; print(transformed) [[ 5. 10. 5.] [45. 45. 20.]] &gt;&gt;&gt; print(mask) [True True]</p>
+</section>
+<section id="spacetransformer.warp_vector" class="level3">
+<h3 class="anchored" data-anchor-id="spacetransformer.warp_vector">warp_vector</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>warp_vector(vector_set, source, target)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Transform vector set between coordinate spaces (translation-invariant).</p>
+<p>This function transforms vectors (directions) from source to target space without applying translation. Only rotational components of the transformation are applied since vectors represent directions, not positions.</p>
+<p>Args: vector_set: Input vectors with shape (N, 3) or (3,) for single vector source: Source geometric space target: Target geometric space</p>
+<p>Returns: Transformed vectors in target space coordinates (same type as input)</p>
+<p>Raises: ValidationError: If inputs are invalid</p>
+<p>Example: &gt;&gt;&gt; import numpy as np &gt;&gt;&gt; from spacetransformer.core import Space &gt;&gt;&gt; source = Space(shape=(100, 100, 50)) &gt;&gt;&gt; target = Space(shape=(50, 50, 25)) &gt;&gt;&gt; vectors = np.array([[1, 0, 0], [0, 1, 0]]) &gt;&gt;&gt; transformed = warp_vector(vectors, source, target) &gt;&gt;&gt; print(transformed) # Should be unchanged for identity transformation [[1. 0. 0.] [0. 1. 0.]]</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2024 FastDiag Toolkit. 基于 <a href="https://quarto.org/">Quarto</a> 构建</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs">GitHub</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

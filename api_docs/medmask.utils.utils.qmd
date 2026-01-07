@@ -1,0 +1,33 @@
+# medmask.utils.utils { #medmask.utils.utils }
+
+`utils.utils`
+
+
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [match_allowed_values](#medmask.utils.utils.match_allowed_values) | Optimize multiple (image_data == id) checks by using interval-based comparisons. |
+
+### match_allowed_values { #medmask.utils.utils.match_allowed_values }
+
+```python
+utils.utils.match_allowed_values(image_data, allowed_set)
+```
+
+Optimize multiple (image_data == id) checks by using interval-based comparisons.
+
+For a given image_data array and a set of allowed values, this function replaces
+multiple equality checks with interval-based comparisons:
+- For a continuous interval [a, b], use (image_data > a-1) & (image_data < b+1)
+- If two intervals are separated by a single value c, they can be merged into one
+  interval while excluding c: (image_data > a-1) & (image_data < d+1) & (image_data != c)
+
+Args:
+    image_data: Numpy array containing values to check (e.g., uint8 image data)
+    allowed_set: Iterable of allowed integer values
+
+Returns:
+    np.ndarray: Boolean array indicating whether elements in image_data are in
+               the allowed_set (after interval optimization)

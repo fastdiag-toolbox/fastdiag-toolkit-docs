@@ -16,6 +16,8 @@ website:
         file: index.qmd
       - text: "English"
         file: index-en.qmd
+      - text: "API"
+        file: api_docs/index.qmd
       - icon: github
         href: https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs
         text: "GitHub"

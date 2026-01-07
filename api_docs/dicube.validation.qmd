@@ -1,0 +1,235 @@
+# dicube.validation { #dicube.validation }
+
+`validation`
+
+Validation utilities for DiCube library.
+
+This module provides reusable validation functions that automatically raise
+appropriate DicomCubeError exceptions with consistent error messages and context.
+These utilities help minimize code duplication and provide clean error handling
+throughout the DiCube library.
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [validate_array_shape](#dicube.validation.validate_array_shape) | Validate numpy array shape and dimensions. |
+| [validate_file_exists](#dicube.validation.validate_file_exists) | Validate that a file exists. |
+| [validate_folder_exists](#dicube.validation.validate_folder_exists) | Validate that a folder exists. |
+| [validate_not_none](#dicube.validation.validate_not_none) | Validate that a value is not None. |
+| [validate_numeric_range](#dicube.validation.validate_numeric_range) | Validate that a numeric value is within a specified range. |
+| [validate_parameter_type](#dicube.validation.validate_parameter_type) | Validate parameter type. |
+| [validate_shape_consistency](#dicube.validation.validate_shape_consistency) | Validate that two arrays have consistent shapes. |
+| [validate_string_not_empty](#dicube.validation.validate_string_not_empty) | Validate that a string is not None or empty. |
+
+### validate_array_shape { #dicube.validation.validate_array_shape }
+
+```python
+validation.validate_array_shape(
+    array,
+    expected_dims=None,
+    min_dims=None,
+    max_dims=None,
+    name='array',
+    context='',
+    exception_class=DataConsistencyError,
+)
+```
+
+Validate numpy array shape and dimensions.
+
+Args:
+    array (np.ndarray): The array to validate.
+    expected_dims (int, optional): Expected number of dimensions.
+    min_dims (int, optional): Minimum number of dimensions.
+    max_dims (int, optional): Maximum number of dimensions.
+    name (str): Name of the array parameter.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    np.ndarray: The validated array.
+
+Raises:
+    DataConsistencyError: If array shape validation fails.
+
+### validate_file_exists { #dicube.validation.validate_file_exists }
+
+```python
+validation.validate_file_exists(
+    file_path,
+    context='',
+    exception_class=InvalidCubeFileError,
+)
+```
+
+Validate that a file exists.
+
+Args:
+    file_path (str): Path to the file to validate.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    str: The validated file path.
+
+Raises:
+    InvalidCubeFileError: If the file does not exist.
+
+### validate_folder_exists { #dicube.validation.validate_folder_exists }
+
+```python
+validation.validate_folder_exists(
+    folder_path,
+    context='',
+    exception_class=InvalidCubeFileError,
+)
+```
+
+Validate that a folder exists.
+
+Args:
+    folder_path (str): Path to the folder to validate.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    str: The validated folder path.
+
+Raises:
+    InvalidCubeFileError: If the folder does not exist or is not a directory.
+
+### validate_not_none { #dicube.validation.validate_not_none }
+
+```python
+validation.validate_not_none(
+    value,
+    name,
+    context='',
+    exception_class=DicomCubeError,
+)
+```
+
+Validate that a value is not None.
+
+Args:
+    value: The value to validate.
+    name (str): Name of the parameter being validated.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    Any: The validated value if not None.
+
+Raises:
+    DicomCubeError: If the value is None.
+
+### validate_numeric_range { #dicube.validation.validate_numeric_range }
+
+```python
+validation.validate_numeric_range(
+    value,
+    name,
+    min_value=None,
+    max_value=None,
+    context='',
+    exception_class=DataConsistencyError,
+)
+```
+
+Validate that a numeric value is within a specified range.
+
+Args:
+    value (int or float): The numeric value to validate.
+    name (str): Name of the parameter being validated.
+    min_value (int or float, optional): Minimum allowed value.
+    max_value (int or float, optional): Maximum allowed value.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    int or float: The validated value.
+
+Raises:
+    DataConsistencyError: If the value is outside the specified range.
+
+### validate_parameter_type { #dicube.validation.validate_parameter_type }
+
+```python
+validation.validate_parameter_type(
+    value,
+    expected_type,
+    name,
+    context='',
+    exception_class=DataConsistencyError,
+)
+```
+
+Validate parameter type.
+
+Args:
+    value: The value to validate.
+    expected_type (Type or tuple): Expected type or tuple of types.
+    name (str): Name of the parameter being validated.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    Any: The validated value.
+
+Raises:
+    DataConsistencyError: If the value is not of the expected type.
+
+### validate_shape_consistency { #dicube.validation.validate_shape_consistency }
+
+```python
+validation.validate_shape_consistency(
+    array1,
+    array2,
+    name1='array1',
+    name2='array2',
+    context='',
+    exception_class=DataConsistencyError,
+)
+```
+
+Validate that two arrays have consistent shapes.
+
+Args:
+    array1 (np.ndarray): First array to compare.
+    array2 (np.ndarray): Second array to compare.
+    name1 (str): Name of the first array parameter.
+    name2 (str): Name of the second array parameter.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    tuple: Both validated arrays.
+
+Raises:
+    DataConsistencyError: If array shapes are inconsistent.
+
+### validate_string_not_empty { #dicube.validation.validate_string_not_empty }
+
+```python
+validation.validate_string_not_empty(
+    value,
+    name,
+    context='',
+    exception_class=DicomCubeError,
+)
+```
+
+Validate that a string is not None or empty.
+
+Args:
+    value (str): The string value to validate.
+    name (str): Name of the parameter being validated.
+    context (str): Context about the operation being performed.
+    exception_class (Type[DicomCubeError]): Exception class to raise on failure.
+
+Returns:
+    str: The validated string.
+
+Raises:
+    DicomCubeError: If the string is None or empty.

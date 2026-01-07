@@ -1,0 +1,33 @@
+# medmask.storage.archivefile { #medmask.storage.archivefile }
+
+`storage.archivefile`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [MaskArchive](#medmask.storage.archivefile.MaskArchive) | Container storing multiple segmentation masks in one file. |
+
+### MaskArchive { #medmask.storage.archivefile.MaskArchive }
+
+```python
+storage.archivefile.MaskArchive(path, mode='r', *, space=None, codec=None)
+```
+
+Container storing multiple segmentation masks in one file.
+
+On-disk layout::
+
+    Header (100 B)
+        magic       "MSKA" (4)
+        version     0x0100 (2 bytes)  • major/minor
+        codec_id    (B)
+        space_offset, space_length   (Q, Q)
+        index_offset, index_length   (Q, Q)
+        data_offset,  data_length    (Q, Q)
+        mask_count                   (Q)
+        reserved (27 B)
+
+Fixed-size 100-byte header simplifies random access and future extension.

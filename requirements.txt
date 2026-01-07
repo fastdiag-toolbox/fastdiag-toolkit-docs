@@ -29,4 +29,6 @@ scikit-image>=0.19.0
 black>=22.0.0
 flake8>=4.0.0
 
+# API 文档生成（Quarto 风格的 API Reference）
+quartodoc>=0.11.0
 

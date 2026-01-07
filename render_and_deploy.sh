@@ -74,6 +74,16 @@ build() {
         log_info "清理 _freeze 缓存目录（CLEAN_FREEZE=1）..."
         rm -rf _freeze
     fi
+
+    # 生成 API 文档（如果安装了 quartodoc）
+    if [ -f "_quarto_api.yml" ]; then
+        if python3 -c "import quartodoc" >/dev/null 2>&1; then
+            log_info "生成 API 文档（quartodoc）..."
+            python3 -m quartodoc build --config _quarto_api.yml || log_warning "API 文档生成失败（将继续渲染已有页面）"
+        else
+            log_warning "未安装 quartodoc，跳过 API 文档生成（可运行: pip install quartodoc）"
+        fi
+    fi
     
     # 渲染项目
     log_info "渲染中..."
@@ -121,11 +131,13 @@ deploy() {
     # 添加源文件和配置文件
     git add *.qmd
     git add _quarto.yml
+    git add _quarto_api.yml
     git add .gitignore
     git add requirements.txt
     git add styles.css
     git add index.qmd
     git add index-en.qmd
+    git add api_docs/
     
     # 添加渲染后的_site目录（这是最终的网站文件）
     if [ -d "_site" ]; then

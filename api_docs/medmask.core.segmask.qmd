@@ -1,0 +1,97 @@
+# medmask.core.segmask { #medmask.core.segmask }
+
+`core.segmask`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [SegmentationMask](#medmask.core.segmask.SegmentationMask) | Represents a 3-D segmentation mask with semantic labels. |
+
+### SegmentationMask { #medmask.core.segmask.SegmentationMask }
+
+```python
+core.segmask.SegmentationMask(mask_array, mapping, space=None)
+```
+
+Represents a 3-D segmentation mask with semantic labels.
+
+A *segmentation mask* is a 3-D ndarray whose voxel values represent integer
+*labels* (e.g. 0=background, 1=liver, 2=spleen …).  This class stores the
+mask array itself together with its :class:`~spacetransformer.core.space.Space`
+(geometry) and a bi-directional mapping between *names* ("liver") and
+*labels* (1).
+
+The mask array is always stored in (z,y,x) format internally, ensuring
+consistent behavior for Python users.
+
+There are two ways to build a mask instance:
+
+1. **Complete initialisation** – provide a full ndarray and a mapping.
+2. **Lazy initialisation** – create an empty mask of the desired *bit-depth*
+   first via :meth:`lazy_init`, then add label regions incrementally with
+   :meth:`add_label`.
+
+#### Attributes
+
+| Name | Description |
+| --- | --- |
+| [bit_depth](#medmask.core.segmask.SegmentationMask.bit_depth) | Bit-depth of the underlying array (1 / 8 / 16 / 32). |
+| [data](#medmask.core.segmask.SegmentationMask.data) | Return mask data array as read-only view in (z,y,x) format. |
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [add_label](#medmask.core.segmask.SegmentationMask.add_label) | Paint a *mask* region with *label* and register *name*. |
+| [lazy_init](#medmask.core.segmask.SegmentationMask.lazy_init) | Create an empty mask with given *bit-depth*. |
+| [load](#medmask.core.segmask.SegmentationMask.load) | Load a mask from *path* (.msk) and return a new `SegmentationMask`. |
+| [save](#medmask.core.segmask.SegmentationMask.save) | Save this mask to *path* using the storage layer (`MaskFile`). |
+| [to_binary](#medmask.core.segmask.SegmentationMask.to_binary) | Return a boolean array where non-zero voxels are *True*. |
+
+##### add_label { #medmask.core.segmask.SegmentationMask.add_label }
+
+```python
+core.segmask.SegmentationMask.add_label(mask, label, name)
+```
+
+Paint a *mask* region with *label* and register *name*.
+
+`mask` must be a boolean ndarray of the same shape as this mask.
+
+##### lazy_init { #medmask.core.segmask.SegmentationMask.lazy_init }
+
+```python
+core.segmask.SegmentationMask.lazy_init(bit_depth, *, space=None, shape=None)
+```
+
+Create an empty mask with given *bit-depth*.
+
+Either *space* or *shape* must be supplied to infer the array
+dimensions. The resulting mask array will be in (z,y,x) format.
+
+##### load { #medmask.core.segmask.SegmentationMask.load }
+
+```python
+core.segmask.SegmentationMask.load(path)
+```
+
+Load a mask from *path* (.msk) and return a new `SegmentationMask`.
+
+##### save { #medmask.core.segmask.SegmentationMask.save }
+
+```python
+core.segmask.SegmentationMask.save(path, *, codec=None)
+```
+
+Save this mask to *path* using the storage layer (`MaskFile`).
+
+##### to_binary { #medmask.core.segmask.SegmentationMask.to_binary }
+
+```python
+core.segmask.SegmentationMask.to_binary()
+```
+
+Return a boolean array where non-zero voxels are *True*.

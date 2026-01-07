@@ -1,0 +1,107 @@
+# dicube.dicom.dcb_streaming { #dicube.dicom.dcb_streaming }
+
+`dicom.dcb_streaming`
+
+DCB Streaming Reader for PACS Viewer
+
+Provides efficient streaming access to DCB files for on-demand DICOM frame delivery.
+Keeps files open and metadata cached for low-latency responses.
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DcbStreamingReader](#dicube.dicom.dcb_streaming.DcbStreamingReader) | DCB file streaming reader for PACS Viewer with intelligent caching. |
+
+### DcbStreamingReader { #dicube.dicom.dcb_streaming.DcbStreamingReader }
+
+```python
+dicom.dcb_streaming.DcbStreamingReader(
+    dcb_file_path,
+    chunk_size=10,
+    cache_size=50,
+    force_uncompressed=False,
+)
+```
+
+DCB file streaming reader for PACS Viewer with intelligent caching.
+
+Features:
+- Chunk-based caching to balance memory usage and performance
+- Sliding window preloading for sequential browsing
+- LRU eviction policy for memory management
+- Thread-safe operations for concurrent access
+
+Example:
+    reader = DcbStreamingReader('study.dcbs', chunk_size=10, cache_size=50)
+    dicom_bytes = reader.get_dicom_for_frame(50)
+    reader.close()
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [clear_cache](#dicube.dicom.dcb_streaming.DcbStreamingReader.clear_cache) | Clear all cached data to free memory. |
+| [close](#dicube.dicom.dcb_streaming.DcbStreamingReader.close) | Close file handle. |
+| [get_cache_stats](#dicube.dicom.dcb_streaming.DcbStreamingReader.get_cache_stats) | Get cache statistics for monitoring. |
+| [get_dicom_for_frame](#dicube.dicom.dcb_streaming.DcbStreamingReader.get_dicom_for_frame) | Get DICOM data for the specified frame with intelligent caching. |
+| [get_frame_count](#dicube.dicom.dcb_streaming.DcbStreamingReader.get_frame_count) | Get total number of frames. |
+| [get_metadata](#dicube.dicom.dcb_streaming.DcbStreamingReader.get_metadata) | Get cached metadata information. |
+
+##### clear_cache { #dicube.dicom.dcb_streaming.DcbStreamingReader.clear_cache }
+
+```python
+dicom.dcb_streaming.DcbStreamingReader.clear_cache()
+```
+
+Clear all cached data to free memory.
+
+##### close { #dicube.dicom.dcb_streaming.DcbStreamingReader.close }
+
+```python
+dicom.dcb_streaming.DcbStreamingReader.close()
+```
+
+Close file handle.
+
+##### get_cache_stats { #dicube.dicom.dcb_streaming.DcbStreamingReader.get_cache_stats }
+
+```python
+dicom.dcb_streaming.DcbStreamingReader.get_cache_stats()
+```
+
+Get cache statistics for monitoring.
+
+##### get_dicom_for_frame { #dicube.dicom.dcb_streaming.DcbStreamingReader.get_dicom_for_frame }
+
+```python
+dicom.dcb_streaming.DcbStreamingReader.get_dicom_for_frame(frame_index)
+```
+
+Get DICOM data for the specified frame with intelligent caching.
+
+Args:
+    frame_index: Frame index (0-based)
+
+Returns:
+    bytes: Complete DICOM file data
+
+Raises:
+    IndexError: If frame_index is out of range
+    RuntimeError: If reading fails
+
+##### get_frame_count { #dicube.dicom.dcb_streaming.DcbStreamingReader.get_frame_count }
+
+```python
+dicom.dcb_streaming.DcbStreamingReader.get_frame_count()
+```
+
+Get total number of frames.
+
+##### get_metadata { #dicube.dicom.dcb_streaming.DcbStreamingReader.get_metadata }
+
+```python
+dicom.dcb_streaming.DcbStreamingReader.get_metadata()
+```
+
+Get cached metadata information.

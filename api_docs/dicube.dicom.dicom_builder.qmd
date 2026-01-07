@@ -1,0 +1,140 @@
+# dicube.dicom.dicom_builder { #dicube.dicom.dicom_builder }
+
+`dicom.dicom_builder`
+
+Unified DICOM Dataset Builder
+
+Provides a simple, efficient interface for creating DICOM datasets from various sources.
+Uses pydicom's built-in JSON conversion for maximum simplicity and reliability.
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DicomBuilder](#dicube.dicom.dicom_builder.DicomBuilder) | Unified DICOM dataset builder for all scenarios. |
+
+### DicomBuilder { #dicube.dicom.dicom_builder.DicomBuilder }
+
+```python
+dicom.dicom_builder.DicomBuilder()
+```
+
+Unified DICOM dataset builder for all scenarios.
+
+This class provides a simple interface for creating DICOM datasets from:
+- Raw pixel arrays (uncompressed)
+- Compressed pixel data (JPEG2000, HTJ2K, etc.)
+- With or without decompression
+
+Uses pydicom's built-in Dataset.from_json() for reliable metadata handling.
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [build](#dicube.dicom.dicom_builder.DicomBuilder.build) | Build a DICOM dataset from various input types. |
+| [to_bytes](#dicube.dicom.dicom_builder.DicomBuilder.to_bytes) | Serialize DICOM dataset to bytes. |
+
+##### build { #dicube.dicom.dicom_builder.DicomBuilder.build }
+
+```python
+dicom.dicom_builder.DicomBuilder.build(
+    meta_dict,
+    pixel_header,
+    pixel_data=None,
+    transfer_syntax_uid=None,
+    force_uncompressed=False,
+    is_compressed_data=False,
+)
+```
+
+Build a DICOM dataset from various input types.
+
+Args:
+    meta_dict: DICOM metadata dictionary (JSON format or dict)
+    pixel_header: Pixel header with data type information
+    pixel_data: Either raw numpy array or compressed bytes
+    transfer_syntax_uid: Transfer syntax UID (defaults to ExplicitVRLittleEndian)
+    force_uncompressed: If True and data is compressed, decompress it
+    is_compressed_data: If True, pixel_data is compressed bytes
+
+Returns:
+    Complete DICOM dataset ready for saving
+
+Examples:
+    # From raw pixel array
+    ds = DicomBuilder.build(meta, header, pixel_array)
+
+    # From compressed data, keep compressed
+    ds = DicomBuilder.build(meta, header, compressed_bytes, 
+                           transfer_syntax_uid=htj2k_uid,
+                           is_compressed_data=True)
+
+    # From compressed data, force decompression
+    ds = DicomBuilder.build(meta, header, compressed_bytes,
+                           transfer_syntax_uid=htj2k_uid, 
+                           is_compressed_data=True,
+                           force_uncompressed=True)
+
+##### to_bytes { #dicube.dicom.dicom_builder.DicomBuilder.to_bytes }
+
+```python
+dicom.dicom_builder.DicomBuilder.to_bytes(ds)
+```
+
+Serialize DICOM dataset to bytes.
+
+Args:
+    ds: DICOM dataset to serialize
+
+Returns:
+    DICOM file as bytes
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [create_file_meta](#dicube.dicom.dicom_builder.create_file_meta) | Create file meta information |
+| [ensure_required_tags](#dicube.dicom.dicom_builder.ensure_required_tags) | Ensure required DICOM tags exist |
+| [save_dicom](#dicube.dicom.dicom_builder.save_dicom) | Save DICOM file. |
+| [set_pixel_data_attributes](#dicube.dicom.dicom_builder.set_pixel_data_attributes) | Set pixel data attributes based on pixel header information. |
+
+### create_file_meta { #dicube.dicom.dicom_builder.create_file_meta }
+
+```python
+dicom.dicom_builder.create_file_meta(ds)
+```
+
+Create file meta information
+
+### ensure_required_tags { #dicube.dicom.dicom_builder.ensure_required_tags }
+
+```python
+dicom.dicom_builder.ensure_required_tags(ds)
+```
+
+Ensure required DICOM tags exist
+
+### save_dicom { #dicube.dicom.dicom_builder.save_dicom }
+
+```python
+dicom.dicom_builder.save_dicom(ds, output_path)
+```
+
+Save DICOM file.
+
+Args:
+    ds: DICOM dataset
+    output_path: Output file path
+
+### set_pixel_data_attributes { #dicube.dicom.dicom_builder.set_pixel_data_attributes }
+
+```python
+dicom.dicom_builder.set_pixel_data_attributes(ds, pixel_header)
+```
+
+Set pixel data attributes based on pixel header information.
+
+Args:
+    ds (Dataset): DICOM dataset to update
+    pixel_header: Pixel header containing data type information

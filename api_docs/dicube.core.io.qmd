@@ -1,0 +1,162 @@
+# dicube.core.io { #dicube.core.io }
+
+`core.io`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [DicomCubeImageIO](#dicube.core.io.DicomCubeImageIO) | Static I/O utility class responsible for DicomCubeImage file operations. |
+
+### DicomCubeImageIO { #dicube.core.io.DicomCubeImageIO }
+
+```python
+core.io.DicomCubeImageIO()
+```
+
+Static I/O utility class responsible for DicomCubeImage file operations.
+
+Responsibilities:
+- Provides unified file I/O interface
+- Automatically detects file formats
+- Handles conversion between various file formats
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [load](#dicube.core.io.DicomCubeImageIO.load) | Load DicomCubeImage from a file. |
+| [load_from_dicom_folder](#dicube.core.io.DicomCubeImageIO.load_from_dicom_folder) | Load DicomCubeImage from a DICOM folder. |
+| [load_from_nifti](#dicube.core.io.DicomCubeImageIO.load_from_nifti) | Load DicomCubeImage from a NIfTI file. |
+| [load_meta](#dicube.core.io.DicomCubeImageIO.load_meta) | Load the metadata from a file. |
+| [save](#dicube.core.io.DicomCubeImageIO.save) | Save DicomCubeImage to a file. |
+| [save_to_dicom_folder](#dicube.core.io.DicomCubeImageIO.save_to_dicom_folder) | Save DicomCubeImage as a DICOM folder. |
+| [save_to_nifti](#dicube.core.io.DicomCubeImageIO.save_to_nifti) | Save DicomCubeImage as a NIfTI file. |
+
+##### load { #dicube.core.io.DicomCubeImageIO.load }
+
+```python
+core.io.DicomCubeImageIO.load(file_path, skip_meta=False)
+```
+
+Load DicomCubeImage from a file.
+
+Args:
+    file_path (str): Input file path.
+
+Returns:
+    DicomCubeImage: The loaded object from the file.
+
+Raises:
+    ValueError: When the file format is not supported.
+
+##### load_from_dicom_folder { #dicube.core.io.DicomCubeImageIO.load_from_dicom_folder }
+
+```python
+core.io.DicomCubeImageIO.load_from_dicom_folder(
+    folder_path,
+    sort_method=SortMethod.INSTANCE_NUMBER_ASC,
+)
+```
+
+Load DicomCubeImage from a DICOM folder.
+
+Args:
+    folder_path (str): Path to the DICOM folder.
+    sort_method (SortMethod): Method to sort DICOM files. 
+                              Defaults to SortMethod.INSTANCE_NUMBER_ASC.
+
+Returns:
+    DicomCubeImage: The object created from the DICOM folder.
+
+Raises:
+    ValueError: When the DICOM status is not supported.
+
+##### load_from_nifti { #dicube.core.io.DicomCubeImageIO.load_from_nifti }
+
+```python
+core.io.DicomCubeImageIO.load_from_nifti(file_path)
+```
+
+Load DicomCubeImage from a NIfTI file.
+
+Args:
+    file_path (str): Path to the NIfTI file.
+
+Returns:
+    DicomCubeImage: The object created from the NIfTI file.
+
+Raises:
+    ImportError: When nibabel is not installed.
+
+##### load_meta { #dicube.core.io.DicomCubeImageIO.load_meta }
+
+```python
+core.io.DicomCubeImageIO.load_meta(file_path)
+```
+
+Load the metadata from a file.
+
+Args:
+    file_path (str): Path to the input file.
+
+##### save { #dicube.core.io.DicomCubeImageIO.save }
+
+```python
+core.io.DicomCubeImageIO.save(image, file_path, file_type='s')
+```
+
+Save DicomCubeImage to a file.
+
+Args:
+    image (DicomCubeImage): The DicomCubeImage object to save.
+    file_path (str): Output file path.
+    file_type (str): File type, "s" (speed priority), "a" (compression priority), 
+                     or "l" (lossy compression). Defaults to "s".
+
+Raises:
+    InvalidCubeFileError: If the file_type is not supported.
+
+##### save_to_dicom_folder { #dicube.core.io.DicomCubeImageIO.save_to_dicom_folder }
+
+```python
+core.io.DicomCubeImageIO.save_to_dicom_folder(image, folder_path)
+```
+
+Save DicomCubeImage as a DICOM folder.
+
+Args:
+    image (DicomCubeImage): The DicomCubeImage object to save.
+    folder_path (str): Output directory path.
+
+##### save_to_nifti { #dicube.core.io.DicomCubeImageIO.save_to_nifti }
+
+```python
+core.io.DicomCubeImageIO.save_to_nifti(image, file_path)
+```
+
+Save DicomCubeImage as a NIfTI file.
+
+Args:
+    image (DicomCubeImage): The DicomCubeImage object to save.
+    file_path (str): Output file path.
+
+Raises:
+    ImportError: When nibabel is not installed.
+    InvalidCubeFileError: When saving fails.
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [prepare_output_dir](#dicube.core.io.prepare_output_dir) | Prepare output directory |
+
+### prepare_output_dir { #dicube.core.io.prepare_output_dir }
+
+```python
+core.io.prepare_output_dir(output_dir)
+```
+
+Prepare output directory

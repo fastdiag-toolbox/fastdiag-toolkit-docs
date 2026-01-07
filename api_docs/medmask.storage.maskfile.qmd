@@ -1,0 +1,71 @@
+# medmask.storage.maskfile { #medmask.storage.maskfile }
+
+`storage.maskfile`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [MaskFile](#medmask.storage.maskfile.MaskFile) | Light-weight file format for a single segmentation mask (.msk). |
+
+### MaskFile { #medmask.storage.maskfile.MaskFile }
+
+```python
+storage.maskfile.MaskFile(path, mode='r', *, codec=None)
+```
+
+Light-weight file format for a single segmentation mask (.msk).
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [read](#medmask.storage.maskfile.MaskFile.read) | Read segmentation mask from file. |
+| [write](#medmask.storage.maskfile.MaskFile.write) | Write segmentation mask to file. |
+
+##### read { #medmask.storage.maskfile.MaskFile.read }
+
+```python
+storage.maskfile.MaskFile.read()
+```
+
+Read segmentation mask from file.
+
+Reads mask data as-is, but converts space description from (x,y,z) back 
+to internal (z,y,x) format.
+
+##### write { #medmask.storage.maskfile.MaskFile.write }
+
+```python
+storage.maskfile.MaskFile.write(segmask)
+```
+
+Write segmentation mask to file.
+
+Stores mask data as-is, but converts space description to (x,y,z) order
+for C++ compatibility.
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [load_mask](#medmask.storage.maskfile.load_mask) | Load and return a :class:`SegmentationMask` from *path*. |
+| [save_mask](#medmask.storage.maskfile.save_mask) | Save *segmask* to *path* (.msk). |
+
+### load_mask { #medmask.storage.maskfile.load_mask }
+
+```python
+storage.maskfile.load_mask(path, *, codec=None)
+```
+
+Load and return a :class:`SegmentationMask` from *path*.
+
+### save_mask { #medmask.storage.maskfile.save_mask }
+
+```python
+storage.maskfile.save_mask(segmask, path, *, codec=None)
+```
+
+Save *segmask* to *path* (.msk).

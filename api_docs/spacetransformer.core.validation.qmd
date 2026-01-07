@@ -1,0 +1,285 @@
+# spacetransformer.core.validation { #spacetransformer.core.validation }
+
+`core.validation`
+
+Validation utilities for SpaceTransformer parameters.
+
+This module provides validation functions for common SpaceTransformer parameters
+including points, point sets, transformation matrices, spaces, and image data.
+These functions ensure data integrity and provide clear error messages.
+
+Design Philosophy:
+    Provides a set of core validation functions that can be reused across
+    the library to ensure consistent error handling. Each function focuses
+    on validating a specific data type, with helpful error messages to
+    guide users in correcting their inputs.
+
+Example:
+    Validating inputs in a function:
+
+    >>> from spacetransformer.core.validation import validate_pointset, validate_space
+    >>> def warp_points(points, source, target):
+    ...     points_np = validate_pointset(points)
+    ...     source = validate_space(source)
+    ...     target = validate_space(target)
+    ...     # Proceed with validated inputs
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [validate_bbox](#spacetransformer.core.validation.validate_bbox) | Validate a bounding box for space operations. |
+| [validate_image_data](#spacetransformer.core.validation.validate_image_data) | Validate image data array. |
+| [validate_orientation](#spacetransformer.core.validation.validate_orientation) | Validate a single 3D point. |
+| [validate_orthonormal_basis](#spacetransformer.core.validation.validate_orthonormal_basis) | Validate that three orientation vectors form an orthonormal basis. |
+| [validate_point](#spacetransformer.core.validation.validate_point) | Validate a single 3D point. |
+| [validate_pointset](#spacetransformer.core.validation.validate_pointset) | Validate a set of 3D points. |
+| [validate_shape](#spacetransformer.core.validation.validate_shape) | Validate image shape parameters. |
+| [validate_space](#spacetransformer.core.validation.validate_space) | Validate a Space object. |
+| [validate_spacing](#spacetransformer.core.validation.validate_spacing) | Validate voxel spacing parameters. |
+| [validate_transform_matrix](#spacetransformer.core.validation.validate_transform_matrix) | Validate a 4x4 transformation matrix. |
+
+### validate_bbox { #spacetransformer.core.validation.validate_bbox }
+
+```python
+core.validation.validate_bbox(bbox, check_int=False)
+```
+
+Validate a bounding box for space operations.
+
+Args:
+    bbox: Input bounding box to validate, should have shape (3, 2)
+    check_int: Whether to require integer values in the bbox
+    name: Parameter name for error messages
+
+Returns:
+    np.ndarray: Validated bbox as a numpy array with shape (3, 2)
+
+Raises:
+    ValidationError: If bbox is invalid
+
+Example:
+    >>> validate_bbox([[10, 90], [20, 80], [5, 45]])
+    array([[10, 90],
+           [20, 80],
+           [5, 45]])
+    >>> validate_bbox([[10.5, 90.2], [20.3, 80.1], [5.0, 45.9]], check_int=False)
+    array([[10.5, 90.2],
+           [20.3, 80.1],
+           [5. , 45.9]])
+
+### validate_image_data { #spacetransformer.core.validation.validate_image_data }
+
+```python
+core.validation.validate_image_data(image, expected_ndim=None, name='image')
+```
+
+Validate image data array.
+
+Args:
+    image: Input image data to validate
+    expected_ndim: Expected number of dimensions (None to skip check)
+    name: Parameter name for error messages
+
+Returns:
+    np.ndarray: The validated image data
+
+Raises:
+    ValidationError: If the image data is invalid
+
+Example:
+    >>> import numpy as np
+    >>> image = np.zeros((100, 100, 50))
+    >>> validate_image_data(image, expected_ndim=3).shape
+    (100, 100, 50)
+    >>> validate_image_data(image, expected_ndim=2)  # Will raise ValidationError
+
+### validate_orientation { #spacetransformer.core.validation.validate_orientation }
+
+```python
+core.validation.validate_orientation(orientation, name='orientation')
+```
+
+Validate a single 3D point.
+
+Args:
+    orientation: Input orientation to validate
+    name: Parameter name for error messages
+
+Returns:
+    np.ndarray: Validated point as a numpy array
+
+Raises:
+    ValidationError: If point is invalid
+
+Example:
+    >>> validate_orientation([1, 2, 3])
+    array([1., 2., 3.])
+    >>> validate_orientation([1, 2])  # Will raise ValidationError
+
+### validate_orthonormal_basis { #spacetransformer.core.validation.validate_orthonormal_basis }
+
+```python
+core.validation.validate_orthonormal_basis(
+    x_orientation,
+    y_orientation,
+    z_orientation,
+)
+```
+
+Validate that three orientation vectors form an orthonormal basis.
+
+This function checks if the given vectors form a proper orthonormal right-handed basis
+by examining properties of the rotation matrix they form.
+
+Args:
+    x_orientation: X-axis orientation vector (unit vector)
+    y_orientation: Y-axis orientation vector (unit vector)
+    z_orientation: Z-axis orientation vector (unit vector)
+
+Raises:
+    ValidationError: If vectors don't form an orthonormal right-handed basis
+
+### validate_point { #spacetransformer.core.validation.validate_point }
+
+```python
+core.validation.validate_point(point, name='point')
+```
+
+Validate a single 3D point.
+
+Args:
+    point: Input point to validate
+    name: Parameter name for error messages
+
+Returns:
+    np.ndarray: Validated point as a numpy array
+
+Raises:
+    ValidationError: If point is invalid
+
+Example:
+    >>> validate_point([1, 2, 3])
+    array([1., 2., 3.])
+    >>> validate_point([1, 2])  # Will raise ValidationError
+
+### validate_pointset { #spacetransformer.core.validation.validate_pointset }
+
+```python
+core.validation.validate_pointset(points, name='points', allow_empty=False)
+```
+
+Validate a set of 3D points.
+
+Args:
+    points: Input points to validate, should have shape (N, 3)
+    name: Parameter name for error messages
+    allow_empty: Whether to allow empty point sets
+
+Returns:
+    np.ndarray: Validated points as a numpy array with shape (N, 3)
+
+Raises:
+    ValidationError: If points are invalid
+
+Example:
+    >>> validate_pointset([[1, 2, 3], [4, 5, 6]])
+    array([[1., 2., 3.],
+           [4., 5., 6.]])
+    >>> validate_pointset([1, 2, 3])  # Single point, will be reshaped
+    array([[1., 2., 3.]])
+
+### validate_shape { #spacetransformer.core.validation.validate_shape }
+
+```python
+core.validation.validate_shape(shape)
+```
+
+Validate image shape parameters.
+
+Args:
+    shape: Image dimensions as (width, height, depth) or similar sequence
+
+Raises:
+    ValidationError: If shape is invalid
+
+Example:
+    >>> validate_shape((100, 100, 50))  # No exception raised
+    >>> validate_shape([512, 512, 200])  # Lists are also accepted
+    >>> validate_shape((100, 100))  # Will raise ValidationError
+
+### validate_space { #spacetransformer.core.validation.validate_space }
+
+```python
+core.validation.validate_space(space, name='space')
+```
+
+Validate a Space object.
+
+Args:
+    space: Input Space object to validate
+    name: Parameter name for error messages
+
+Returns:
+    Space: The validated Space object
+
+Raises:
+    ValidationError: If the input is not a valid Space object
+
+Example:
+    >>> from spacetransformer.core import Space
+    >>> space = Space(shape=(100, 100, 50))
+    >>> validate_space(space) is space
+    True
+    >>> validate_space("not a space")  # Will raise ValidationError
+
+### validate_spacing { #spacetransformer.core.validation.validate_spacing }
+
+```python
+core.validation.validate_spacing(spacing)
+```
+
+Validate voxel spacing parameters.
+
+Args:
+    spacing: Voxel spacing as (x_spacing, y_spacing, z_spacing) in mm
+
+Raises:
+    ValidationError: If spacing is invalid
+
+Example:
+    >>> validate_spacing((1.0, 1.0, 2.0))  # No exception raised
+    >>> validate_spacing([0.5, 0.5, 1.0])  # Lists are also accepted
+    >>> validate_spacing((1.0, 1.0))  # Will raise ValidationError
+
+### validate_transform_matrix { #spacetransformer.core.validation.validate_transform_matrix }
+
+```python
+core.validation.validate_transform_matrix(
+    matrix,
+    name='transform_matrix',
+    check_invertible=True,
+)
+```
+
+Validate a 4x4 transformation matrix.
+
+Args:
+    matrix: Input matrix to validate
+    name: Parameter name for error messages
+    check_invertible: Whether to check if the matrix is invertible
+
+Returns:
+    np.ndarray: Validated transformation matrix
+
+Raises:
+    ValidationError: If matrix shape is invalid
+    NumericalError: If matrix is not invertible (when check_invertible=True)
+
+Example:
+    >>> validate_transform_matrix(np.eye(4))
+    array([[1., 0., 0., 0.],
+           [0., 1., 0., 0.],
+           [0., 0., 1., 0.],
+           [0., 0., 0., 1.]])
+    >>> validate_transform_matrix(np.eye(3))  # Will raise ValidationError

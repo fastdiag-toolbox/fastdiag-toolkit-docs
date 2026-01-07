@@ -1,0 +1,56 @@
+# spacetransformer.core.relation_check { #spacetransformer.core.relation_check }
+
+`core.relation_check`
+
+Spatial relationship checking utilities for 3D medical image spaces.
+
+This module provides functions for checking spatial relationships between
+different medical image spaces, including overlap detection, alignment checking,
+and geometric compatibility validation.
+
+Example:
+    Check if two spaces have overlapping regions:
+
+    >>> from spacetransformer.core import Space
+    >>> from spacetransformer.core.relation_check import find_tight_bbox
+    >>> source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0))
+    >>> target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0))
+    >>> bbox = find_tight_bbox(source, target)
+    >>> print(bbox.shape)
+    (3, 2)
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [find_tight_bbox](#spacetransformer.core.relation_check.find_tight_bbox) | Calculate the tight bounding box of source space in target index coordinates. |
+
+### find_tight_bbox { #spacetransformer.core.relation_check.find_tight_bbox }
+
+```python
+core.relation_check.find_tight_bbox(source, target)
+```
+
+Calculate the tight bounding box of source space in target index coordinates.
+
+This function computes the minimal bounding box that contains all corners
+of the source space when transformed to the target space's index coordinates.
+The bounding box uses half-open intervals [left, right).
+
+Args:
+    source: Source space to compute bounding box for
+    target: Target space coordinate system
+
+Returns:
+    np.ndarray: Bounding box array of shape (3, 2) where bbox[:,0] contains
+               left bounds and bbox[:,1] contains right bounds (exclusive)
+
+Example:
+    >>> from spacetransformer.core import Space
+    >>> source = Space(shape=(100, 100, 50), spacing=(1.0, 1.0, 2.0))
+    >>> target = Space(shape=(50, 50, 25), spacing=(2.0, 2.0, 4.0))
+    >>> bbox = find_tight_bbox(source, target)
+    >>> print(bbox)
+    [[ 0 50]
+     [ 0 50]
+     [ 0 25]]

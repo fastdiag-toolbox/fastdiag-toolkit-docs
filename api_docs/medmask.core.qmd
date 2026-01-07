@@ -1,0 +1,5 @@
+# medmask.core { #medmask.core }
+
+`core`
+
+Core functionality for medical mask processing.

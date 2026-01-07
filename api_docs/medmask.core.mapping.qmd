@@ -1,0 +1,102 @@
+# medmask.core.mapping { #medmask.core.mapping }
+
+`core.mapping`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [LabelMapping](#medmask.core.mapping.LabelMapping) | A simplified label mapping class that provides bidirectional mapping functionality. |
+
+### LabelMapping { #medmask.core.mapping.LabelMapping }
+
+```python
+core.mapping.LabelMapping(name_to_label=None)
+```
+
+A simplified label mapping class that provides bidirectional mapping functionality.
+
+This class maintains two mappings:
+1. Forward mapping (name -> label): Maps semantic names to label values.
+2. Reverse mapping (label -> name): Maps label values back to semantic names.
+
+The mapping ensures uniqueness of both names and labels.
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [from_json](#medmask.core.mapping.LabelMapping.from_json) | Initialize a label mapping from a JSON string. |
+| [has_label](#medmask.core.mapping.LabelMapping.has_label) | Check if a label exists in the mapping. |
+| [inverse](#medmask.core.mapping.LabelMapping.inverse) | Get semantic name by label value (reverse mapping). |
+| [items](#medmask.core.mapping.LabelMapping.items) | Get an iterator of name-label pairs. |
+| [to_json](#medmask.core.mapping.LabelMapping.to_json) | Convert the mapping to a JSON string. |
+
+##### from_json { #medmask.core.mapping.LabelMapping.from_json }
+
+```python
+core.mapping.LabelMapping.from_json(json_str)
+```
+
+Initialize a label mapping from a JSON string.
+
+Args:
+    json_str: JSON string representation of the mapping.
+
+Returns:
+    LabelMapping: A new instance initialized with data from JSON.
+
+##### has_label { #medmask.core.mapping.LabelMapping.has_label }
+
+```python
+core.mapping.LabelMapping.has_label(label)
+```
+
+Check if a label exists in the mapping.
+
+Args:
+    label: Label value to check.
+
+Returns:
+    bool: True if the label exists, False otherwise.
+
+##### inverse { #medmask.core.mapping.LabelMapping.inverse }
+
+```python
+core.mapping.LabelMapping.inverse(label)
+```
+
+Get semantic name by label value (reverse mapping).
+
+Args:
+    label: Label value.
+
+Returns:
+    str: Corresponding semantic name.
+
+Raises:
+    KeyError: If label is not found in the mapping.
+
+##### items { #medmask.core.mapping.LabelMapping.items }
+
+```python
+core.mapping.LabelMapping.items()
+```
+
+Get an iterator of name-label pairs.
+
+Returns:
+    Iterator[Tuple[str, int]]: Iterator of (name, label) pairs.
+
+##### to_json { #medmask.core.mapping.LabelMapping.to_json }
+
+```python
+core.mapping.LabelMapping.to_json()
+```
+
+Convert the mapping to a JSON string.
+
+Returns:
+    str: JSON string representation of the mapping.

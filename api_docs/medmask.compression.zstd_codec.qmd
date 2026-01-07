@@ -1,0 +1,72 @@
+# medmask.compression.zstd_codec { #medmask.compression.zstd_codec }
+
+`compression.zstd_codec`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [ZstdMaskCodec](#medmask.compression.zstd_codec.ZstdMaskCodec) | Zstandard codec wrapper implementing :pyclass:`MaskCodec`. |
+
+### ZstdMaskCodec { #medmask.compression.zstd_codec.ZstdMaskCodec }
+
+```python
+compression.zstd_codec.ZstdMaskCodec()
+```
+
+Zstandard codec wrapper implementing :pyclass:`MaskCodec`.
+
+#### Methods
+
+| Name | Description |
+| --- | --- |
+| [decode](#medmask.compression.zstd_codec.ZstdMaskCodec.decode) | Decode bytes -> ndarray. |
+| [encode](#medmask.compression.zstd_codec.ZstdMaskCodec.encode) | Encode *arr* -> bytes. Optional *level* overrides default compression level. |
+
+##### decode { #medmask.compression.zstd_codec.ZstdMaskCodec.decode }
+
+```python
+compression.zstd_codec.ZstdMaskCodec.decode(blob)
+```
+
+Decode bytes -> ndarray.
+
+##### encode { #medmask.compression.zstd_codec.ZstdMaskCodec.encode }
+
+```python
+compression.zstd_codec.ZstdMaskCodec.encode(arr, /, *, level=None)
+```
+
+Encode *arr* -> bytes. Optional *level* overrides default compression level.
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [decode_mask_bytes](#medmask.compression.zstd_codec.decode_mask_bytes) | Inverse of :func:`encode_mask_bytes`. |
+| [encode_mask_bytes](#medmask.compression.zstd_codec.encode_mask_bytes) | Return compressed *bytes* representation of *arr* using zstd. |
+
+### decode_mask_bytes { #medmask.compression.zstd_codec.decode_mask_bytes }
+
+```python
+compression.zstd_codec.decode_mask_bytes(blob)
+```
+
+Inverse of :func:`encode_mask_bytes`.
+
+### encode_mask_bytes { #medmask.compression.zstd_codec.encode_mask_bytes }
+
+```python
+compression.zstd_codec.encode_mask_bytes(arr, *, level=None)
+```
+
+Return compressed *bytes* representation of *arr* using zstd.
+
+The on-wire layout is compatible with the original implementation:
+
+``flag (1 byte) + dtype_len (1 byte) + dtype_str + shape_len (1 byte) + shape + compressed``
+
+*flag* = ``1`` → boolean array (``np.packbits`` trick)  
+*flag* = ``0`` → other dtypes
