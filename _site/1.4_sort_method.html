@@ -361,7 +361,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="排序方法的可视化验证" class="level2">
 <h2 class="anchored" data-anchor-id="排序方法的可视化验证">排序方法的可视化验证</h2>
 <p>让我们通过三视图的方式来直观地观察和验证右手坐标系排序的效果。通过查看横断面、冠状面和矢状面的图像，我们可以清楚地了解图像的空间排列是否正确：</p>
-<div id="c46148db" class="cell" data-execution_count="1">
+<div id="eed73636" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube <span class="im">import</span> SortMethod</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -420,6 +420,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>ax3.set_ylabel(<span class="st">'Axis 0 (Z): Inferior → Superior'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== 右手坐标系排序的图像数据信息 ===
+图像数据形状: (200, 512, 512)
+排序方法: POSITION_RIGHT_HAND</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.4_sort_method_files/figure-html/cell-2-output-2.png" width="557" height="565" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.4_sort_method_files/figure-html/cell-2-output-3.png" width="759" height="352" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.4_sort_method_files/figure-html/cell-2-output-4.png" width="759" height="352" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="排序方法的最佳实践建议" class="level2">

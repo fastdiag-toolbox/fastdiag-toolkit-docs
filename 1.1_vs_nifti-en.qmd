@@ -74,7 +74,22 @@ Converting from DICOM to NIfTI typically drops most clinical metadata (patient, 
 DiCube adopts DICOM’s LPS+ consistently. Reading the same DICOM series, DiCube matches SimpleITK’s interpretation.
 
 ```{python}
+import os
+import pydicom
 import dicube, numpy as np
+import SimpleITK as sitk
+
+dicom_dir = "dicube-testdata/dicom/sample_200"
+
+# SimpleITK read DICOM series (LPS+)
+series_reader = sitk.ImageSeriesReader()
+series_ids = series_reader.GetGDCMSeriesIDs(dicom_dir)
+series_files = series_reader.GetGDCMSeriesFileNames(dicom_dir, series_ids[0])
+series_reader.SetFileNames(series_files)
+sitk_image_from_dicom = series_reader.Execute()
+
+# Keep one original DICOM for later round-trip comparisons
+original_dcm = pydicom.dcmread(series_files[0], stop_before_pixels=True)
 
 dcb_image = dicube.load_from_dicom_folder(dicom_dir, sort_method=dicube.SortMethod.POSITION_RIGHT_HAND)
 print("SimpleITK (from DICOM):", np.round(sitk_image_from_dicom.GetOrigin(), 3))
@@ -86,6 +101,9 @@ print("DiCube      (from DICOM):", np.round(dcb_image.space.origin, 3))
 DiCube embeds all DICOM metadata (including private tags) and supports lossless DICOM round‑trip.
 
 ```{python}
+import os
+import pydicom
+
 dicube.save(dcb_image, 'dicube-testdata/test.dcbs')
 dicube.save_to_dicom_folder(dcb_image, 'dicube-testdata/roundtrip_test')
 
@@ -108,7 +126,7 @@ Single‑file structure + efficient codec lead to faster loads than `.nii.gz` in
 ```{python}
 import time
 
-start = time.time(); _ = sitk.ReadImage(nifti_file2); nifti_ms = (time.time()-start)*1000
+start = time.time(); _ = sitk.ReadImage(nifti_file); nifti_ms = (time.time()-start)*1000
 start = time.time(); _ = dicube.load('dicube-testdata/test.dcbs'); dcb_ms = (time.time()-start)*1000
 print(f"NIfTI load: {nifti_ms:.0f} ms, DiCube load: {dcb_ms:.0f} ms")
 ```
@@ -124,4 +142,3 @@ print(f"NIfTI load: {nifti_ms:.0f} ms, DiCube load: {dcb_ms:.0f} ms")
 | I/O + API       | Gzip‑bound I/O, library variance         | Single‑file + clear, consistent APIs            |
 
 Conclusion: NIfTI works well for pure research exchange. For applications that require integrity, traceability, and clinical interoperability, DiCube offers a safer, faster, and more reliable modern alternative.
-

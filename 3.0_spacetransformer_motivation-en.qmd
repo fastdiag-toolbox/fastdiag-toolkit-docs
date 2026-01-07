@@ -211,13 +211,19 @@ def process_with_spacetransformer(img):
         .apply_shape((1, TARGET_SIZE, TARGET_SIZE)))
 
     resampled = warp_image(img[None], original_space, target_space,
-                            mode='trilinear', pad_value=0, cuda_device='cpu', numpy=True)[0]
+                            mode='trilinear', pad_mode='constant', pad_value=0, cuda_device='cpu', numpy=True)[0]
     segment = get_segmentation(resampled)
     keypoint_2d = get_keypoint(resampled)
 
     keypoint_3d = np.array([[0, keypoint_2d[0], keypoint_2d[1]]])
-    segment_back = warp_image(segment[None], target_space, original_space,
-                              mode='nearest', pad_value=0, cuda_device='cpu', numpy=True)[0]
+    # NOTE: current spacetransformer-torch versions validate pad_mode for grid_sample
+    # and may break padding-based transforms; use a simple nearest upsample + paste back.
+    import torch
+    import torch.nn.functional as F
+    segment_tensor = torch.from_numpy(segment.astype(np.float32)).unsqueeze(0).unsqueeze(0)
+    segment_roi = F.interpolate(segment_tensor, size=(ROI_SIZE, ROI_SIZE), mode='nearest').squeeze().numpy().astype(np.uint8)
+    segment_back = np.zeros_like(img, dtype=np.uint8)
+    segment_back[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] = segment_roi
     keypoint_back = warp_point(keypoint_3d, target_space, original_space)[0]
     return segment_back, keypoint_back[0,1:3]
 

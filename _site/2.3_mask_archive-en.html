@@ -347,7 +347,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="synthetic-data-setup" class="level2">
 <h2 class="anchored" data-anchor-id="synthetic-data-setup">2. Synthetic Data Setup</h2>
-<div id="7dc38435" class="cell" data-execution_count="1">
+<div id="51bc20c3" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask <span class="im">import</span> SegmentationMask, MaskArchive</span>
@@ -402,78 +402,105 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>whole_lung_mapping <span class="op">=</span> {<span class="st">"whole_lung"</span>:<span class="dv">1</span>}</span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Setup complete"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Setup complete</code></pre>
+</div>
 </div>
 </section>
 <section id="visualize-masks" class="level2">
 <h2 class="anchored" data-anchor-id="visualize-masks">3. Visualize Masks</h2>
-<div id="250a3cbb" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">10</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plots <span class="op">=</span> [</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    (lobe_mask[<span class="dv">0</span>], <span class="st">"Lobes"</span>, <span class="st">"Set3"</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    (segment_mask[<span class="dv">0</span>], <span class="st">"Segments"</span>, <span class="st">"Set3"</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    (lesion_mask[<span class="dv">0</span>], <span class="st">"Lesions"</span>, <span class="st">"Set3"</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    (whole_lung_mask[<span class="dv">0</span>], <span class="st">"Whole lung"</span>, <span class="st">"Set3"</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (mask, title, cmap) <span class="kw">in</span> <span class="bu">zip</span>(axes.flatten(), plots):</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    ax.imshow(mask, cmap<span class="op">=</span>cmap, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">'off'</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="4f9f599c" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">10</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plots <span class="op">=</span> [</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    (lobe_mask[<span class="dv">0</span>], <span class="st">"Lobes"</span>, <span class="st">"Set3"</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    (segment_mask[<span class="dv">0</span>], <span class="st">"Segments"</span>, <span class="st">"Set3"</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    (lesion_mask[<span class="dv">0</span>], <span class="st">"Lesions"</span>, <span class="st">"Set3"</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    (whole_lung_mask[<span class="dv">0</span>], <span class="st">"Whole lung"</span>, <span class="st">"Set3"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (mask, title, cmap) <span class="kw">in</span> <span class="bu">zip</span>(axes.flatten(), plots):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    ax.imshow(mask, cmap<span class="op">=</span>cmap, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">'off'</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2.3_mask_archive-en_files/figure-html/cell-3-output-1.png" width="991" height="950" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="traditional-separate-files" class="level2">
 <h2 class="anchored" data-anchor-id="traditional-separate-files">4. Traditional: Separate Files</h2>
-<div id="968ea29f" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== Separate files ==="</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>lobe_segmask <span class="op">=</span> SegmentationMask(lobe_mask, lobe_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>segment_segmask <span class="op">=</span> SegmentationMask(segment_mask, segment_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>lesion_segmask <span class="op">=</span> SegmentationMask(lesion_mask, lesion_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>whole_segmask <span class="op">=</span> SegmentationMask(whole_lung_mask, whole_lung_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>lobe_segmask.save(<span class="st">"lung_lobes.msk"</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>segment_segmask.save(<span class="st">"lung_segments.msk"</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>lesion_segmask.save(<span class="st">"lung_lesions.msk"</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>whole_segmask.save(<span class="st">"whole_lung.msk"</span>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>separate_time <span class="op">=</span> time.time() <span class="op">-</span> start</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>files <span class="op">=</span> [<span class="st">"lung_lobes.msk"</span>,<span class="st">"lung_segments.msk"</span>,<span class="st">"lung_lesions.msk"</span>,<span class="st">"whole_lung.msk"</span>]</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>size_total <span class="op">=</span> <span class="bu">sum</span>(Path(f).stat().st_size <span class="cf">for</span> f <span class="kw">in</span> files)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Time: </span><span class="sc">{</span>separate_time<span class="sc">:.3f}</span><span class="ss">s, files: </span><span class="sc">{</span><span class="bu">len</span>(files)<span class="sc">}</span><span class="ss">, size: </span><span class="sc">{</span>size_total<span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="22f69a0e" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== Separate files ==="</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>lobe_segmask <span class="op">=</span> SegmentationMask(lobe_mask, lobe_mapping, space<span class="op">=</span>space)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>segment_segmask <span class="op">=</span> SegmentationMask(segment_mask, segment_mapping, space<span class="op">=</span>space)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>lesion_segmask <span class="op">=</span> SegmentationMask(lesion_mask, lesion_mapping, space<span class="op">=</span>space)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>whole_segmask <span class="op">=</span> SegmentationMask(whole_lung_mask, whole_lung_mapping, space<span class="op">=</span>space)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>lobe_segmask.save(<span class="st">"lung_lobes.msk"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>segment_segmask.save(<span class="st">"lung_segments.msk"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>lesion_segmask.save(<span class="st">"lung_lesions.msk"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>whole_segmask.save(<span class="st">"whole_lung.msk"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>separate_time <span class="op">=</span> time.time() <span class="op">-</span> start</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>files <span class="op">=</span> [<span class="st">"lung_lobes.msk"</span>,<span class="st">"lung_segments.msk"</span>,<span class="st">"lung_lesions.msk"</span>,<span class="st">"whole_lung.msk"</span>]</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>size_total <span class="op">=</span> <span class="bu">sum</span>(Path(f).stat().st_size <span class="cf">for</span> f <span class="kw">in</span> files)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Time: </span><span class="sc">{</span>separate_time<span class="sc">:.3f}</span><span class="ss">s, files: </span><span class="sc">{</span><span class="bu">len</span>(files)<span class="sc">}</span><span class="ss">, size: </span><span class="sc">{</span>size_total<span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== Separate files ===
+Time: 0.003s, files: 4, size: 1.7 KB</code></pre>
+</div>
 </div>
 </section>
 <section id="maskarchive" class="level2">
 <h2 class="anchored" data-anchor-id="maskarchive">5. MaskArchive</h2>
-<div id="2d90e742" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== MaskArchive ==="</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>archive <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"w"</span>, space<span class="op">=</span>space)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lobe_segmask, <span class="st">"lobes"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(segment_segmask, <span class="st">"segments"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lesion_segmask, <span class="st">"lesions"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(whole_segmask, <span class="st">"whole_lung"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>archive_time <span class="op">=</span> time.time() <span class="op">-</span> start</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>archive_size <span class="op">=</span> Path(<span class="st">"lung_analysis.mska"</span>).stat().st_size</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Time: </span><span class="sc">{</span>archive_time<span class="sc">:.3f}</span><span class="ss">s, files: 1, size: </span><span class="sc">{</span>archive_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Masks in archive:"</span>, archive.all_names())</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Compression ratio:"</span>, size_total<span class="op">/</span>archive_size <span class="cf">if</span> archive_size <span class="cf">else</span> <span class="st">'N/A'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="a4711dee" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== MaskArchive ==="</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>archive <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"w"</span>, space<span class="op">=</span>space)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lobe_segmask, <span class="st">"lobes"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(segment_segmask, <span class="st">"segments"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lesion_segmask, <span class="st">"lesions"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(whole_segmask, <span class="st">"whole_lung"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>archive_time <span class="op">=</span> time.time() <span class="op">-</span> start</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>archive_size <span class="op">=</span> Path(<span class="st">"lung_analysis.mska"</span>).stat().st_size</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Time: </span><span class="sc">{</span>archive_time<span class="sc">:.3f}</span><span class="ss">s, files: 1, size: </span><span class="sc">{</span>archive_size<span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Masks in archive:"</span>, archive.all_names())</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Compression ratio:"</span>, size_total<span class="op">/</span>archive_size <span class="cf">if</span> archive_size <span class="cf">else</span> <span class="st">'N/A'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=== MaskArchive ===
+Time: 0.001s, files: 1, size: 4.7 KB
+Masks in archive: ['lobes', 'segments', 'lesions', 'whole_lung']
+Compression ratio: 0.36573208722741435</code></pre>
+</div>
 </div>
 </section>
 <section id="access-integrity" class="level2">
 <h2 class="anchored" data-anchor-id="access-integrity">6. Access + Integrity</h2>
-<div id="2063567d" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>reader <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"r"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Names:"</span>, reader.all_names())</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>loaded_lobes <span class="op">=</span> reader.load_segmask(<span class="st">"lobes"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>loaded_lesions <span class="op">=</span> reader.load_segmask(<span class="st">"lesions"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shapes match:"</span>, np.array_equal(lobe_mask, loaded_lobes.data))</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>left_upper <span class="op">=</span> loaded_lobes.get_binary_mask_by_names(<span class="st">"left_upper_lobe"</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>nodule <span class="op">=</span> loaded_lesions.get_binary_mask_by_names(<span class="st">"nodule_1"</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Left upper lobe voxels:"</span>, left_upper.<span class="bu">sum</span>())</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Nodule 1 voxels:"</span>, nodule.<span class="bu">sum</span>())</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="f1b39bb9" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>reader <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"r"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Names:"</span>, reader.all_names())</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>loaded_lobes <span class="op">=</span> reader.load_segmask(<span class="st">"lobes"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>loaded_lesions <span class="op">=</span> reader.load_segmask(<span class="st">"lesions"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shapes match:"</span>, np.array_equal(lobe_mask, loaded_lobes.data))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>left_upper <span class="op">=</span> loaded_lobes.get_binary_mask_by_names(<span class="st">"left_upper_lobe"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>nodule <span class="op">=</span> loaded_lesions.get_binary_mask_by_names(<span class="st">"nodule_1"</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Left upper lobe voxels:"</span>, left_upper.<span class="bu">sum</span>())</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Nodule 1 voxels:"</span>, nodule.<span class="bu">sum</span>())</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Names: ['lobes', 'segments', 'lesions', 'whole_lung']
+Shapes match: True
+Left upper lobe voxels: 300
+Nodule 1 voxels: 25</code></pre>
+</div>
 </div>
 </section>
 <section id="recommendations" class="level2">

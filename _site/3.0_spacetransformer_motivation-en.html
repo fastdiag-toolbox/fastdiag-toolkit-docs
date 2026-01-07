@@ -342,7 +342,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="test-setup" class="level2">
 <h2 class="anchored" data-anchor-id="test-setup">Test Setup</h2>
 <p>Synthetic 35×35 image with a 9×9 square and a central keypoint. Crop a 15×15 ROI (slightly offset), resample to 32×32, run segmentation + keypoint detection, map results back to the original grid.</p>
-<div id="32388f41" class="cell" data-execution_count="1">
+<div id="eab329ab" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -373,27 +373,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>original_img <span class="op">=</span> create_test_image()</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>true_keypoint <span class="op">=</span> np.array([<span class="dv">17</span>, <span class="dv">17</span>])</span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original shape:"</span>, original_img.shape)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Original shape: (35, 35)</code></pre>
+</div>
 </div>
 <p>Helper for plotting results.</p>
-<div id="75f76856" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_result(original_img, segment_result, keypoint_result, method_name, true_keypoint):</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">6</span>))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    plt.imshow(original_img, cmap<span class="op">=</span><span class="st">'gray'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> segment_result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        plt.contour(segment_result, levels<span class="op">=</span>[<span class="fl">0.5</span>], colors<span class="op">=</span><span class="st">'red'</span>, linewidths<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> keypoint_result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> <span class="bu">len</span>(keypoint_result)<span class="op">&gt;</span><span class="dv">0</span>:</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> keypoint_result.ndim <span class="op">==</span> <span class="dv">1</span>:</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            plt.plot(keypoint_result[<span class="dv">1</span>], keypoint_result[<span class="dv">0</span>], <span class="st">'ro'</span>, markersize<span class="op">=</span><span class="dv">8</span>, label<span class="op">=</span><span class="st">'Detected'</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            plt.plot(keypoint_result[<span class="dv">0</span>,<span class="dv">1</span>], keypoint_result[<span class="dv">0</span>,<span class="dv">0</span>], <span class="st">'ro'</span>, markersize<span class="op">=</span><span class="dv">8</span>, label<span class="op">=</span><span class="st">'Detected'</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    plt.plot(true_keypoint[<span class="dv">1</span>], true_keypoint[<span class="dv">0</span>], <span class="st">'g+'</span>, markersize<span class="op">=</span><span class="dv">12</span>, markeredgewidth<span class="op">=</span><span class="dv">3</span>, label<span class="op">=</span><span class="st">'Ground Truth'</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> keypoint_result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> <span class="bu">len</span>(keypoint_result)<span class="op">&gt;</span><span class="dv">0</span>:</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        err <span class="op">=</span> np.linalg.norm((keypoint_result <span class="cf">if</span> keypoint_result.ndim<span class="op">==</span><span class="dv">1</span> <span class="cf">else</span> keypoint_result[<span class="dv">0</span>]) <span class="op">-</span> true_keypoint)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        plt.text(<span class="fl">0.02</span>, <span class="fl">0.98</span>, <span class="ss">f'Error: </span><span class="sc">{</span>err<span class="sc">:.3f}</span><span class="ss">px'</span>, transform<span class="op">=</span>plt.gca().transAxes,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                 bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'round'</span>, facecolor<span class="op">=</span><span class="st">'white'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>), va<span class="op">=</span><span class="st">'top'</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f'</span><span class="sc">{</span>method_name<span class="sc">}</span><span class="ss"> Result'</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    plt.legend()<span class="op">;</span> plt.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="87a5b802" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_result(original_img, segment_result, keypoint_result, method_name, true_keypoint):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">6</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    plt.imshow(original_img, cmap<span class="op">=</span><span class="st">'gray'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> segment_result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        plt.contour(segment_result, levels<span class="op">=</span>[<span class="fl">0.5</span>], colors<span class="op">=</span><span class="st">'red'</span>, linewidths<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> keypoint_result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> <span class="bu">len</span>(keypoint_result)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> keypoint_result.ndim <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            plt.plot(keypoint_result[<span class="dv">1</span>], keypoint_result[<span class="dv">0</span>], <span class="st">'ro'</span>, markersize<span class="op">=</span><span class="dv">8</span>, label<span class="op">=</span><span class="st">'Detected'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            plt.plot(keypoint_result[<span class="dv">0</span>,<span class="dv">1</span>], keypoint_result[<span class="dv">0</span>,<span class="dv">0</span>], <span class="st">'ro'</span>, markersize<span class="op">=</span><span class="dv">8</span>, label<span class="op">=</span><span class="st">'Detected'</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    plt.plot(true_keypoint[<span class="dv">1</span>], true_keypoint[<span class="dv">0</span>], <span class="st">'g+'</span>, markersize<span class="op">=</span><span class="dv">12</span>, markeredgewidth<span class="op">=</span><span class="dv">3</span>, label<span class="op">=</span><span class="st">'Ground Truth'</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> keypoint_result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> <span class="bu">len</span>(keypoint_result)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        err <span class="op">=</span> np.linalg.norm((keypoint_result <span class="cf">if</span> keypoint_result.ndim<span class="op">==</span><span class="dv">1</span> <span class="cf">else</span> keypoint_result[<span class="dv">0</span>]) <span class="op">-</span> true_keypoint)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        plt.text(<span class="fl">0.02</span>, <span class="fl">0.98</span>, <span class="ss">f'Error: </span><span class="sc">{</span>err<span class="sc">:.3f}</span><span class="ss">px'</span>, transform<span class="op">=</span>plt.gca().transAxes,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                 bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">'round'</span>, facecolor<span class="op">=</span><span class="st">'white'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>), va<span class="op">=</span><span class="st">'top'</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f'</span><span class="sc">{</span>method_name<span class="sc">}</span><span class="ss"> Result'</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    plt.legend()<span class="op">;</span> plt.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="pipeline-definition" class="level2">
@@ -408,145 +411,191 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="method-1-simpleitk" class="level2">
 <h2 class="anchored" data-anchor-id="method-1-simpleitk">Method 1: SimpleITK</h2>
-<div id="6efe32ac" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_simpleitk(img):</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    sitk_img <span class="op">=</span> sitk.GetImageFromArray(img)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    sitk_img.SetSpacing([<span class="fl">1.0</span>, <span class="fl">1.0</span>])<span class="op">;</span> sitk_img.SetOrigin([<span class="fl">0.0</span>, <span class="fl">0.0</span>])</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    roi_size <span class="op">=</span> [ROI_SIZE, ROI_SIZE]</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    roi_start <span class="op">=</span> [ROI_START_X, ROI_START_Y]</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    roi_img <span class="op">=</span> sitk.RegionOfInterest(sitk_img, roi_size, roi_start)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    target_size <span class="op">=</span> [TARGET_SIZE, TARGET_SIZE]</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    original_spacing <span class="op">=</span> roi_img.GetSpacing()</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    physical_size <span class="op">=</span> [roi_size[i] <span class="op">*</span> original_spacing[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    target_spacing <span class="op">=</span> [physical_size[i] <span class="op">/</span> target_size[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputSpacing(target_spacing)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    resampler.SetSize(target_size)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputDirection(roi_img.GetDirection())</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    resampler.SetInterpolator(sitk.sitkLinear)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> resampler.Execute(roi_img)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    resampled_array <span class="op">=</span> sitk.GetArrayFromImage(resampled_img)</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled_array)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    keypoint <span class="op">=</span> get_keypoint(resampled_array)</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    scale_factor <span class="op">=</span> np.array(roi_size) <span class="op">/</span> np.array(target_size)</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    keypoint_roi <span class="op">=</span> keypoint <span class="op">*</span> scale_factor</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint_roi <span class="op">+</span> np.array([roi_start[<span class="dv">1</span>], roi_start[<span class="dv">0</span>]])</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    segment_sitk <span class="op">=</span> sitk.GetImageFromArray(segment.astype(np.float32))</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetSpacing(target_spacing)</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetOrigin(resampled_img.GetOrigin())</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    back_resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputSpacing(original_spacing)</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetSize(roi_size)</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetInterpolator(sitk.sitkNearestNeighbor)</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> back_resampler.Execute(segment_sitk)</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    segment_roi_array <span class="op">=</span> sitk.GetArrayFromImage(segment_roi)</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros(img.shape, dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi_array</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SimpleITK ==="</span>)</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>sitk_segment, sitk_key <span class="op">=</span> process_with_simpleitk(original_img)</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, sitk_segment, sitk_key, <span class="st">"SimpleITK"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="1a19f947" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_simpleitk(img):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    sitk_img <span class="op">=</span> sitk.GetImageFromArray(img)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    sitk_img.SetSpacing([<span class="fl">1.0</span>, <span class="fl">1.0</span>])<span class="op">;</span> sitk_img.SetOrigin([<span class="fl">0.0</span>, <span class="fl">0.0</span>])</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    roi_size <span class="op">=</span> [ROI_SIZE, ROI_SIZE]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    roi_start <span class="op">=</span> [ROI_START_X, ROI_START_Y]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    roi_img <span class="op">=</span> sitk.RegionOfInterest(sitk_img, roi_size, roi_start)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    target_size <span class="op">=</span> [TARGET_SIZE, TARGET_SIZE]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    original_spacing <span class="op">=</span> roi_img.GetSpacing()</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    physical_size <span class="op">=</span> [roi_size[i] <span class="op">*</span> original_spacing[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    target_spacing <span class="op">=</span> [physical_size[i] <span class="op">/</span> target_size[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputSpacing(target_spacing)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    resampler.SetSize(target_size)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    resampler.SetOutputDirection(roi_img.GetDirection())</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    resampler.SetInterpolator(sitk.sitkLinear)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    resampled_img <span class="op">=</span> resampler.Execute(roi_img)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    resampled_array <span class="op">=</span> sitk.GetArrayFromImage(resampled_img)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled_array)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    keypoint <span class="op">=</span> get_keypoint(resampled_array)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    scale_factor <span class="op">=</span> np.array(roi_size) <span class="op">/</span> np.array(target_size)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    keypoint_roi <span class="op">=</span> keypoint <span class="op">*</span> scale_factor</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint_roi <span class="op">+</span> np.array([roi_start[<span class="dv">1</span>], roi_start[<span class="dv">0</span>]])</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    segment_sitk <span class="op">=</span> sitk.GetImageFromArray(segment.astype(np.float32))</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetSpacing(target_spacing)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    segment_sitk.SetOrigin(resampled_img.GetOrigin())</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    back_resampler <span class="op">=</span> sitk.ResampleImageFilter()</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputSpacing(original_spacing)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetSize(roi_size)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetOutputOrigin(roi_img.GetOrigin())</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetInterpolator(sitk.sitkNearestNeighbor)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    back_resampler.SetDefaultPixelValue(<span class="dv">0</span>)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> back_resampler.Execute(segment_sitk)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    segment_roi_array <span class="op">=</span> sitk.GetArrayFromImage(segment_roi)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros(img.shape, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi_array</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SimpleITK ==="</span>)</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>sitk_segment, sitk_key <span class="op">=</span> process_with_simpleitk(original_img)</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, sitk_segment, sitk_key, <span class="st">"SimpleITK"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== SimpleITK ===</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.0_spacetransformer_motivation-en_files/figure-html/cell-4-output-2.png" width="549" height="565" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 <p>Issues: verbose resampling setup, manual coordinate math, easy axis mistakes.</p>
 </section>
 <section id="method-2-scipy.ndimage" class="level2">
 <h2 class="anchored" data-anchor-id="method-2-scipy.ndimage">Method 2: scipy.ndimage</h2>
-<div id="414fc772" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.ndimage <span class="im">import</span> zoom</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_scipy(img):</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    roi <span class="op">=</span> img[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    factor <span class="op">=</span> TARGET_SIZE <span class="op">/</span> ROI_SIZE</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    resampled <span class="op">=</span> zoom(roi, factor, order<span class="op">=</span><span class="dv">1</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    keypoint <span class="op">=</span> get_keypoint(resampled)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    keypoint_roi <span class="op">=</span> keypoint <span class="op">/</span> factor</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint_roi <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> zoom(segment.astype(np.float32), <span class="fl">1.0</span><span class="op">/</span>factor, order<span class="op">=</span><span class="dv">0</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== scipy.ndimage ==="</span>)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>scipy_segment, scipy_key <span class="op">=</span> process_with_scipy(original_img)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, scipy_segment, scipy_key, <span class="st">"scipy.ndimage"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="26d7250d" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.ndimage <span class="im">import</span> zoom</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_scipy(img):</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    roi <span class="op">=</span> img[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    factor <span class="op">=</span> TARGET_SIZE <span class="op">/</span> ROI_SIZE</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    resampled <span class="op">=</span> zoom(roi, factor, order<span class="op">=</span><span class="dv">1</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    keypoint <span class="op">=</span> get_keypoint(resampled)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    keypoint_roi <span class="op">=</span> keypoint <span class="op">/</span> factor</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint_roi <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> zoom(segment.astype(np.float32), <span class="fl">1.0</span><span class="op">/</span>factor, order<span class="op">=</span><span class="dv">0</span>, mode<span class="op">=</span><span class="st">'constant'</span>, cval<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== scipy.ndimage ==="</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>scipy_segment, scipy_key <span class="op">=</span> process_with_scipy(original_img)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, scipy_segment, scipy_key, <span class="st">"scipy.ndimage"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== scipy.ndimage ===</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.0_spacetransformer_motivation-en_files/figure-html/cell-5-output-2.png" width="549" height="565" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 <p>Issues: manual scaling, rounding errors when reversing zoom.</p>
 </section>
 <section id="method-3-pytorch-interpolate" class="level2">
 <h2 class="anchored" data-anchor-id="method-3-pytorch-interpolate">Method 3: PyTorch interpolate</h2>
-<div id="3d8146a2" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_pytorch(img):</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    tensor <span class="op">=</span> torch.from_numpy(img).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>).<span class="bu">float</span>()</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    roi_tensor <span class="op">=</span> tensor[:, :, ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    resampled <span class="op">=</span> F.interpolate(roi_tensor, size<span class="op">=</span>(TARGET_SIZE, TARGET_SIZE), mode<span class="op">=</span><span class="st">'bilinear'</span>, align_corners<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    resampled_arr <span class="op">=</span> resampled.squeeze().numpy()</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled_arr)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    keypoint <span class="op">=</span> get_keypoint(resampled_arr)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    scale <span class="op">=</span> ROI_SIZE <span class="op">/</span> TARGET_SIZE</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint <span class="op">*</span> scale <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    segment_tensor <span class="op">=</span> torch.from_numpy(segment.astype(np.float32)).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> F.interpolate(segment_tensor, size<span class="op">=</span>(ROI_SIZE, ROI_SIZE), mode<span class="op">=</span><span class="st">'nearest'</span>).squeeze().numpy().astype(np.uint8)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== PyTorch ==="</span>)</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>torch_segment, torch_key <span class="op">=</span> process_with_pytorch(original_img)</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, torch_segment, torch_key, <span class="st">"PyTorch interpolate"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="2b1032a6" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_pytorch(img):</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    tensor <span class="op">=</span> torch.from_numpy(img).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>).<span class="bu">float</span>()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    roi_tensor <span class="op">=</span> tensor[:, :, ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    resampled <span class="op">=</span> F.interpolate(roi_tensor, size<span class="op">=</span>(TARGET_SIZE, TARGET_SIZE), mode<span class="op">=</span><span class="st">'bilinear'</span>, align_corners<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    resampled_arr <span class="op">=</span> resampled.squeeze().numpy()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled_arr)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    keypoint <span class="op">=</span> get_keypoint(resampled_arr)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    scale <span class="op">=</span> ROI_SIZE <span class="op">/</span> TARGET_SIZE</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    keypoint_original <span class="op">=</span> keypoint <span class="op">*</span> scale <span class="op">+</span> [ROI_START_Y, ROI_START_X]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    segment_tensor <span class="op">=</span> torch.from_numpy(segment.astype(np.float32)).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> F.interpolate(segment_tensor, size<span class="op">=</span>(ROI_SIZE, ROI_SIZE), mode<span class="op">=</span><span class="st">'nearest'</span>).squeeze().numpy().astype(np.uint8)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    segment_original <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_original, keypoint_original</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== PyTorch ==="</span>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>torch_segment, torch_key <span class="op">=</span> process_with_pytorch(original_img)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, torch_segment, torch_key, <span class="st">"PyTorch interpolate"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== PyTorch ===</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.0_spacetransformer_motivation-en_files/figure-html/cell-6-output-2.png" width="549" height="565" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 <p>Issues: <code>align_corners</code> confusion, manual batch/channel management, visible mask offset.</p>
 </section>
 <section id="method-4-spacetransformer" class="level2">
 <h2 class="anchored" data-anchor-id="method-4-spacetransformer">Method 4: SpaceTransformer</h2>
-<div id="26554707" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space, warp_point</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.torch <span class="im">import</span> warp_image</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_spacetransformer(img):</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    original_space <span class="op">=</span> Space(shape<span class="op">=</span>[<span class="dv">1</span>]<span class="op">+</span><span class="bu">list</span>(img.shape), spacing<span class="op">=</span>(<span class="fl">1.0</span>,<span class="fl">1.0</span>,<span class="fl">1.0</span>), origin<span class="op">=</span>(<span class="fl">0.0</span>,<span class="fl">0.0</span>,<span class="fl">0.0</span>))</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    target_space <span class="op">=</span> (original_space</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        .apply_bbox([(<span class="dv">0</span>,<span class="dv">1</span>),(ROI_START_Y,ROI_END_Y),(ROI_START_X,ROI_END_X)])</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        .apply_shape((<span class="dv">1</span>, TARGET_SIZE, TARGET_SIZE)))</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    resampled <span class="op">=</span> warp_image(img[<span class="va">None</span>], original_space, target_space,</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                            mode<span class="op">=</span><span class="st">'trilinear'</span>, pad_value<span class="op">=</span><span class="dv">0</span>, cuda_device<span class="op">=</span><span class="st">'cpu'</span>, numpy<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    keypoint_2d <span class="op">=</span> get_keypoint(resampled)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    keypoint_3d <span class="op">=</span> np.array([[<span class="dv">0</span>, keypoint_2d[<span class="dv">0</span>], keypoint_2d[<span class="dv">1</span>]]])</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    segment_back <span class="op">=</span> warp_image(segment[<span class="va">None</span>], target_space, original_space,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                              mode<span class="op">=</span><span class="st">'nearest'</span>, pad_value<span class="op">=</span><span class="dv">0</span>, cuda_device<span class="op">=</span><span class="st">'cpu'</span>, numpy<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    keypoint_back <span class="op">=</span> warp_point(keypoint_3d, target_space, original_space)[<span class="dv">0</span>]</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_back, keypoint_back[<span class="dv">0</span>,<span class="dv">1</span>:<span class="dv">3</span>]</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SpaceTransformer ==="</span>)</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>st_segment, st_key <span class="op">=</span> process_with_spacetransformer(original_img)</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, st_segment, st_key, <span class="st">"SpaceTransformer"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="3f4595e5" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space, warp_point</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.torch <span class="im">import</span> warp_image</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_with_spacetransformer(img):</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    original_space <span class="op">=</span> Space(shape<span class="op">=</span>[<span class="dv">1</span>]<span class="op">+</span><span class="bu">list</span>(img.shape), spacing<span class="op">=</span>(<span class="fl">1.0</span>,<span class="fl">1.0</span>,<span class="fl">1.0</span>), origin<span class="op">=</span>(<span class="fl">0.0</span>,<span class="fl">0.0</span>,<span class="fl">0.0</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    target_space <span class="op">=</span> (original_space</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        .apply_bbox([(<span class="dv">0</span>,<span class="dv">1</span>),(ROI_START_Y,ROI_END_Y),(ROI_START_X,ROI_END_X)])</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        .apply_shape((<span class="dv">1</span>, TARGET_SIZE, TARGET_SIZE)))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    resampled <span class="op">=</span> warp_image(img[<span class="va">None</span>], original_space, target_space,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                            mode<span class="op">=</span><span class="st">'trilinear'</span>, pad_mode<span class="op">=</span><span class="st">'constant'</span>, pad_value<span class="op">=</span><span class="dv">0</span>, cuda_device<span class="op">=</span><span class="st">'cpu'</span>, numpy<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    segment <span class="op">=</span> get_segmentation(resampled)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    keypoint_2d <span class="op">=</span> get_keypoint(resampled)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    keypoint_3d <span class="op">=</span> np.array([[<span class="dv">0</span>, keypoint_2d[<span class="dv">0</span>], keypoint_2d[<span class="dv">1</span>]]])</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">NOTE</span><span class="co">: current spacetransformer-torch versions validate pad_mode for grid_sample</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># and may break padding-based transforms; use a simple nearest upsample + paste back.</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> torch</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    segment_tensor <span class="op">=</span> torch.from_numpy(segment.astype(np.float32)).unsqueeze(<span class="dv">0</span>).unsqueeze(<span class="dv">0</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    segment_roi <span class="op">=</span> F.interpolate(segment_tensor, size<span class="op">=</span>(ROI_SIZE, ROI_SIZE), mode<span class="op">=</span><span class="st">'nearest'</span>).squeeze().numpy().astype(np.uint8)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    segment_back <span class="op">=</span> np.zeros_like(img, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    segment_back[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] <span class="op">=</span> segment_roi</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    keypoint_back <span class="op">=</span> warp_point(keypoint_3d, target_space, original_space)[<span class="dv">0</span>]</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segment_back, keypoint_back[<span class="dv">0</span>,<span class="dv">1</span>:<span class="dv">3</span>]</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SpaceTransformer ==="</span>)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>st_segment, st_key <span class="op">=</span> process_with_spacetransformer(original_img)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>plot_result(original_img, st_segment, st_key, <span class="st">"SpaceTransformer"</span>, true_keypoint)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== SpaceTransformer ===</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.0_spacetransformer_motivation-en_files/figure-html/cell-7-output-2.png" width="549" height="565" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="results" class="level2">

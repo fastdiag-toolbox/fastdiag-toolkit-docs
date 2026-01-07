@@ -339,7 +339,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="problem-simpleitk-axis-order-mismatch" class="level2">
 <h2 class="anchored" data-anchor-id="problem-simpleitk-axis-order-mismatch">1. Problem: SimpleITK Axis Order Mismatch</h2>
 <p><code>SimpleITK.Image.GetSize()</code> reports dimensions in <code>(X, Y, Z)</code>, while <code>sitk.GetArrayFromImage(image)</code> returns a NumPy array with shape <code>(Z, Y, X)</code>. Example:</p>
-<div id="907b454d" class="cell" data-execution_count="1">
+<div id="872ad59b" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dirname <span class="op">=</span> <span class="st">"dicube-testdata/dicom/sample_200"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -351,6 +351,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"GetSize -&gt;"</span>, sitk_image.GetSize(), <span class="st">"(X, Y, Z)"</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>array <span class="op">=</span> sitk.GetArrayFromImage(sitk_image)</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"array.shape -&gt;"</span>, array.shape, <span class="st">"(Z, Y, X)"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>GetSize -&gt; (512, 512, 200) (X, Y, Z)
+array.shape -&gt; (200, 512, 512) (Z, Y, X)</code></pre>
+</div>
 </div>
 <p>The mismatch comes from historical row‑major (C order) vs column‑major (Fortran order) memory layouts across ecosystems.</p>
 </section>
@@ -365,19 +369,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="zerocopy-conversion-and-its-side-effects" class="level2">
 <h2 class="anchored" data-anchor-id="zerocopy-conversion-and-its-side-effects">3. Zero‑Copy Conversion And Its Side Effects</h2>
 <p>SimpleITK exposes ITK memory to NumPy without reordering. By adjusting <code>shape</code>/<code>strides</code>, NumPy interprets column‑major data as row‑major without copying.</p>
-<div id="ade1c451" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>original <span class="op">=</span> np.arange(<span class="dv">10</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original linear data:"</span>, original)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>c_array <span class="op">=</span> np.reshape(original, (<span class="dv">2</span>,<span class="dv">5</span>), order<span class="op">=</span><span class="st">'C'</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">C-order array:</span><span class="ch">\n</span><span class="st">"</span>, c_array)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"C-order strides:"</span>, c_array.strides)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>f_array <span class="op">=</span> np.reshape(original, (<span class="dv">5</span>,<span class="dv">2</span>), order<span class="op">=</span><span class="st">'F'</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">F-order array:</span><span class="ch">\n</span><span class="st">"</span>, f_array)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"F-order strides:"</span>, f_array.strides)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="2de3a47c" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>original <span class="op">=</span> np.arange(<span class="dv">10</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original linear data:"</span>, original)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>c_array <span class="op">=</span> np.reshape(original, (<span class="dv">2</span>,<span class="dv">5</span>), order<span class="op">=</span><span class="st">'C'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">C-order array:</span><span class="ch">\n</span><span class="st">"</span>, c_array)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"C-order strides:"</span>, c_array.strides)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>f_array <span class="op">=</span> np.reshape(original, (<span class="dv">5</span>,<span class="dv">2</span>), order<span class="op">=</span><span class="st">'F'</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">F-order array:</span><span class="ch">\n</span><span class="st">"</span>, f_array)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"F-order strides:"</span>, f_array.strides)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Original linear data: [0 1 2 3 4 5 6 7 8 9]
+
+C-order array:
+ [[0 1 2 3 4]
+ [5 6 7 8 9]]
+C-order strides: (40, 8)
+
+F-order array:
+ [[0 5]
+ [1 6]
+ [2 7]
+ [3 8]
+ [4 9]]
+F-order strides: (8, 40)</code></pre>
+</div>
 </div>
 <p>Zero‑copy is fast but flips axes <code>(X,Y,Z) → (Z,Y,X)</code>, increasing cognitive load and risk.</p>
 </section>
@@ -394,25 +414,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="performance-cost-of-manual-fixes" class="level3">
 <h3 class="anchored" data-anchor-id="performance-cost-of-manual-fixes">4.2. Performance Cost Of Manual Fixes</h3>
 <p>Naively calling <code>.transpose(2,1,0)</code> produces a non‑contiguous view. Many libraries require contiguous arrays, forcing <code>np.ascontiguousarray()</code> (full copy + extra memory).</p>
-<div id="9a9fdf4e" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, time</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>large <span class="op">=</span> np.random.rand(<span class="dv">399</span>,<span class="dv">400</span>,<span class="dv">401</span>).astype(np.float32)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original C-contiguous:"</span>, large.flags[<span class="st">'C_CONTIGUOUS'</span>])</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>transposed <span class="op">=</span> large.transpose(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transposed C-contiguous:"</span>, transposed.flags[<span class="st">'C_CONTIGUOUS'</span>])</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> benchmark(arr, name):</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.time()<span class="op">;</span> _ <span class="op">=</span> np.<span class="bu">sum</span>(arr[<span class="dv">60</span>:<span class="dv">100</span>] <span class="op">*</span> <span class="fl">2.0</span> <span class="op">+</span> <span class="fl">1.0</span>)<span class="op">;</span> ms <span class="op">=</span> (time.time()<span class="op">-</span>start)<span class="op">*</span><span class="dv">1000</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>ms<span class="sc">:.2f}</span><span class="ss"> ms"</span>)<span class="op">;</span> <span class="cf">return</span> ms</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>orig_ms <span class="op">=</span> benchmark(large, <span class="st">"original contiguous"</span>)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>view_ms <span class="op">=</span> benchmark(transposed, <span class="st">"transposed view"</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Slowdown: </span><span class="sc">{</span>(view_ms<span class="op">/</span>orig_ms<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()<span class="op">;</span> contiguous <span class="op">=</span> np.ascontiguousarray(transposed)<span class="op">;</span> copy_ms <span class="op">=</span> (time.time()<span class="op">-</span>start)<span class="op">*</span><span class="dv">1000</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"ascontiguousarray copy: </span><span class="sc">{</span>copy_ms<span class="sc">:.1f}</span><span class="ss"> ms, extra memory: </span><span class="sc">{</span>contiguous<span class="sc">.</span>nbytes<span class="op">/</span><span class="dv">1024</span><span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> MB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="9833c8cd" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, time</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>large <span class="op">=</span> np.random.rand(<span class="dv">399</span>,<span class="dv">400</span>,<span class="dv">401</span>).astype(np.float32)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original C-contiguous:"</span>, large.flags[<span class="st">'C_CONTIGUOUS'</span>])</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>transposed <span class="op">=</span> large.transpose(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transposed C-contiguous:"</span>, transposed.flags[<span class="st">'C_CONTIGUOUS'</span>])</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> benchmark(arr, name):</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.time()<span class="op">;</span> _ <span class="op">=</span> np.<span class="bu">sum</span>(arr[<span class="dv">60</span>:<span class="dv">100</span>] <span class="op">*</span> <span class="fl">2.0</span> <span class="op">+</span> <span class="fl">1.0</span>)<span class="op">;</span> ms <span class="op">=</span> (time.time()<span class="op">-</span>start)<span class="op">*</span><span class="dv">1000</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>ms<span class="sc">:.2f}</span><span class="ss"> ms"</span>)<span class="op">;</span> <span class="cf">return</span> ms</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>orig_ms <span class="op">=</span> benchmark(large, <span class="st">"original contiguous"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>view_ms <span class="op">=</span> benchmark(transposed, <span class="st">"transposed view"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Slowdown: </span><span class="sc">{</span>(view_ms<span class="op">/</span>orig_ms<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()<span class="op">;</span> contiguous <span class="op">=</span> np.ascontiguousarray(transposed)<span class="op">;</span> copy_ms <span class="op">=</span> (time.time()<span class="op">-</span>start)<span class="op">*</span><span class="dv">1000</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"ascontiguousarray copy: </span><span class="sc">{</span>copy_ms<span class="sc">:.1f}</span><span class="ss"> ms, extra memory: </span><span class="sc">{</span>contiguous<span class="sc">.</span>nbytes<span class="op">/</span><span class="dv">1024</span><span class="op">/</span><span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> MB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Original C-contiguous: True
+Transposed C-contiguous: False
+  original contiguous: 21.26 ms
+  transposed view: 15.80 ms
+  Slowdown: -25.7%
+ascontiguousarray copy: 527.5 ms, extra memory: 244.1 MB</code></pre>
+</div>
 </div>
 <p>Deep learning frameworks, CUDA/OpenCL, ONNX, and many imaging libraries require contiguous buffers—making the copy unavoidable.</p>
 </section>
@@ -426,18 +454,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Flip space metadata so spacing/origin/orientation also follow <code>(Z, Y, X)</code>.</li>
 </ol>
 <p>Result: arrays and metadata align; downstream code can treat everything as <code>(Z, Y, X)</code>.</p>
-<div id="c879c22a" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dirname, sort_method<span class="op">=</span>dicube.SortMethod.POSITION_RIGHT_HAND)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- DiCube (consistent) ---"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"array.shape -&gt;"</span>, dcb_image.get_fdata().shape, <span class="st">"(Z, Y, X)"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"space.spacing -&gt;"</span>, dcb_image.space.spacing, <span class="st">"(Z, Y, X)"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- SimpleITK (mixed) ---"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"array.shape -&gt;"</span>, array.shape, <span class="st">"(Z, Y, X)"</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"image.GetSpacing() -&gt;"</span>, sitk_image.GetSpacing(), <span class="st">"(X, Y, Z)"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="7719721e" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dirname, sort_method<span class="op">=</span>dicube.SortMethod.POSITION_RIGHT_HAND)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- DiCube (consistent) ---"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"array.shape -&gt;"</span>, dcb_image.get_fdata().shape, <span class="st">"(Z, Y, X)"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"space.spacing -&gt;"</span>, dcb_image.space.spacing, <span class="st">"(Z, Y, X)"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- SimpleITK (mixed) ---"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"array.shape -&gt;"</span>, array.shape, <span class="st">"(Z, Y, X)"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"image.GetSpacing() -&gt;"</span>, sitk_image.GetSpacing(), <span class="st">"(X, Y, Z)"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- DiCube (consistent) ---
+array.shape -&gt; (200, 512, 512) (Z, Y, X)
+space.spacing -&gt; (0.4499999999999998, 0.4296875, 0.4296875) (Z, Y, X)
+
+--- SimpleITK (mixed) ---
+array.shape -&gt; (200, 512, 512) (Z, Y, X)
+image.GetSpacing() -&gt; (0.4296875, 0.4296875, 0.4499999999999998) (X, Y, Z)</code></pre>
+</div>
 </div>
 <p>DiCube avoids extra rearrangements while exposing an intuitive API, eliminating axis confusion and fragile conversions.</p>
 

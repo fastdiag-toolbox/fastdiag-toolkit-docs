@@ -346,7 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="space-complete-3d-geometry" class="level2">
 <h2 class="anchored" data-anchor-id="space-complete-3d-geometry">Space: Complete 3D Geometry</h2>
 <p>Space objects describe the sampling grid via shape, origin, spacing, and three orientation vectors.</p>
-<div id="fd8ff28b" class="cell" data-execution_count="1">
+<div id="f66f386b" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space</span>
@@ -361,7 +361,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Helper to visualize Y–Z slices of the sampling grid.</p>
-<div id="645320fc" class="cell" data-execution_count="2">
+<div id="8751bc1d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> visualize_sampling_grid(space, color<span class="op">=</span><span class="st">'blue'</span>, show_axes<span class="op">=</span><span class="va">True</span>, label_suffix<span class="op">=</span><span class="st">''</span>):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    shape_yz <span class="op">=</span> space.shape[<span class="dv">1</span>:<span class="dv">3</span>]</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    y_idx, z_idx <span class="op">=</span> np.meshgrid(np.arange(shape_yz[<span class="dv">0</span>]), np.arange(shape_yz[<span class="dv">1</span>]), indexing<span class="op">=</span><span class="st">'ij'</span>)</span>
@@ -393,62 +393,104 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>setup_plot()</span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space)</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Standard Sampling Grid (10×10, 1 mm)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-3-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="transform-examples" class="level2">
 <h2 class="anchored" data-anchor-id="transform-examples">Transform Examples</h2>
 <section id="shape-resize" class="level3">
 <h3 class="anchored" data-anchor-id="shape-resize">Shape (Resize)</h3>
-<div id="bafabe48" class="cell" data-execution_count="3">
+<div id="e8f90e76" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>high_res <span class="op">=</span> standard_space.apply_shape((<span class="dv">1</span>,<span class="dv">20</span>,<span class="dv">20</span>))</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>low_res <span class="op">=</span> standard_space.apply_shape((<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">5</span>))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>setup_plot()<span class="op">;</span> visualize_sampling_grid(standard_space, <span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (10×10)'</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(low_res, <span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (5×5)'</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Resize'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-4-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="flip" class="level3">
 <h3 class="anchored" data-anchor-id="flip">Flip</h3>
-<div id="eec0fb85" class="cell" data-execution_count="4">
+<div id="83dfbaa4" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>flipped <span class="op">=</span> standard_space.apply_flip(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>setup_plot()<span class="op">;</span> visualize_sampling_grid(standard_space, <span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (orig)'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(flipped, <span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (flip Y)'</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Flip (Y axis)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-5-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="axis-swap" class="level3">
 <h3 class="anchored" data-anchor-id="axis-swap">Axis Swap</h3>
-<div id="7bcc1990" class="cell" data-execution_count="5">
+<div id="03c54352" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>rect_space <span class="op">=</span> Space(shape<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">12</span>), origin<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), spacing<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                   x_orientation<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>), y_orientation<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>), z_orientation<span class="op">=</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>swapped <span class="op">=</span> rect_space.apply_swap(<span class="dv">1</span>, <span class="dv">2</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>setup_plot()<span class="op">;</span> visualize_sampling_grid(rect_space, <span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (6×12)'</span>)</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(swapped, <span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (swap Y↔Z)'</span>)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Axis Swap'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-6-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="rotation" class="level3">
 <h3 class="anchored" data-anchor-id="rotation">Rotation</h3>
-<div id="50bf3ddf" class="cell" data-execution_count="6">
+<div id="50b42f2e" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rotated <span class="op">=</span> standard_space.apply_rotate(axis<span class="op">=</span><span class="dv">0</span>, angle<span class="op">=</span><span class="dv">30</span>, unit<span class="op">=</span><span class="st">'degree'</span>, center<span class="op">=</span><span class="st">'center'</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>setup_plot()<span class="op">;</span> visualize_sampling_grid(standard_space, <span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (orig)'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(rotated, <span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (rotate 30°)'</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Rotation (around X)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-7-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="bounding-box-crop" class="level3">
 <h3 class="anchored" data-anchor-id="bounding-box-crop">Bounding Box Crop</h3>
-<div id="2a16c58f" class="cell" data-execution_count="7">
+<div id="47a1946e" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>crop_bbox <span class="op">=</span> np.array([[<span class="dv">0</span>,<span class="dv">1</span>],[<span class="dv">2</span>,<span class="dv">8</span>],[<span class="dv">2</span>,<span class="dv">8</span>]])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cropped <span class="op">=</span> standard_space.apply_bbox(crop_bbox)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>setup_plot()<span class="op">;</span> visualize_sampling_grid(standard_space, <span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (orig)'</span>)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(cropped, <span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (crop 6×6)'</span>)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Bounding Box Crop'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-8-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="complex-transform-chain" class="level3">
 <h3 class="anchored" data-anchor-id="complex-transform-chain">Complex Transform Chain</h3>
-<div id="858012da" class="cell" data-execution_count="8">
+<div id="e506f3c2" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>complex_target <span class="op">=</span> (standard_space</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    .apply_bbox(np.array([[<span class="dv">0</span>,<span class="dv">1</span>],[<span class="dv">2</span>,<span class="dv">8</span>],[<span class="dv">2</span>,<span class="dv">8</span>]]))</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .apply_shape((<span class="dv">1</span>,<span class="dv">12</span>,<span class="dv">12</span>))</span>
@@ -456,15 +498,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>setup_plot()<span class="op">;</span> visualize_sampling_grid(standard_space, <span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (orig)'</span>)</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(complex_target, <span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (Crop→Resample→Rotate)'</span>)</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Complex Chain'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-9-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="float-bounding-box-sampling" class="level3">
 <h3 class="anchored" data-anchor-id="float-bounding-box-sampling">Float Bounding Box Sampling</h3>
-<div id="66eab881" class="cell" data-execution_count="9">
+<div id="672bf58a" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>float_bbox_space <span class="op">=</span> standard_space.apply_float_bbox(np.array([[<span class="dv">0</span>,<span class="dv">1</span>],[<span class="fl">2.5</span>,<span class="fl">5.5</span>],[<span class="fl">2.5</span>,<span class="fl">5.5</span>]]), (<span class="dv">12</span>,<span class="dv">12</span>,<span class="dv">12</span>))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>setup_plot()<span class="op">;</span> visualize_sampling_grid(standard_space, <span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (orig)'</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(float_bbox_space, <span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (float bbox)'</span>)</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Float Bounding Box'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals-en_files/figure-html/cell-10-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 </section>

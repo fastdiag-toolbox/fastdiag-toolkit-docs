@@ -370,7 +370,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="visual-verification" class="level2">
 <h2 class="anchored" data-anchor-id="visual-verification">Visual Verification</h2>
 <p>Plot axial/coronal/sagittal slices to confirm correct spatial arrangement.</p>
-<div id="5991e0cf" class="cell" data-execution_count="1">
+<div id="9189a597" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube <span class="im">import</span> SortMethod</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -416,6 +416,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>ax3.set_xlabel(<span class="st">'Axis 1 (Y): Anterior → Posterior'</span>)</span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>ax3.set_ylabel(<span class="st">'Axis 0 (Z): Inferior → Superior'</span>)</span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== Right-Handed Sorting ===
+Shape: (200, 512, 512)
+Sort method: POSITION_RIGHT_HAND</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.4_sort_method-en_files/figure-html/cell-2-output-2.png" width="559" height="564" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.4_sort_method-en_files/figure-html/cell-2-output-3.png" width="757" height="347" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.4_sort_method-en_files/figure-html/cell-2-output-4.png" width="757" height="347" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="best-practices" class="level2">

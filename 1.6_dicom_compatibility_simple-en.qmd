@@ -87,7 +87,10 @@ DiCube uses HTJ2K (High Throughput JPEG 2000), standardized by DICOM in 2023. Co
 Fallback to uncompressed DICOM for legacy environments:
 
 ```{python}
-uncompressed_dicom = dcb_stream.get_dicom_for_frame(0, force_uncompressed=True)
+from dicube.dicom import DcbStreamingReader
+
+dcb_stream_uncompressed = DcbStreamingReader(dcb_file, force_uncompressed=True)
+uncompressed_dicom = dcb_stream_uncompressed.get_dicom_for_frame(0)
 ```
 
 Pros:

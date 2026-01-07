@@ -349,7 +349,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="space-概念完整的-3d-图像几何描述" class="level2">
 <h2 class="anchored" data-anchor-id="space-概念完整的-3d-图像几何描述">Space 概念：完整的 3D 图像几何描述</h2>
 <p>每一幅医学图像都对应物理世界中的一个规范采样网格。SpaceTransformer 通过 <code>Space</code> 对象的六个要素来完整描述这个网格：形状、原点、间距与三个方向向量。</p>
-<div id="7fbfac05" class="cell" data-execution_count="1">
+<div id="40fd6443" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer.core <span class="im">import</span> Space</span>
@@ -367,7 +367,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 展示标准规范采样网格</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>为了直观展示 Space 变换效果，我们实现 2D 网格可视化：</p>
-<div id="c30c0d4e" class="cell" data-execution_count="2">
+<div id="775509f0" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> visualize_sampling_grid(space, color<span class="op">=</span><span class="st">'blue'</span>, show_axes<span class="op">=</span><span class="va">True</span>, label_suffix<span class="op">=</span><span class="st">''</span>):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">    可视化采样网格的2D投影（绘制所有采样点）</span></span>
@@ -454,13 +454,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>setup_plot()</span>
 <span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space, color<span class="op">=</span><span class="st">'blue'</span>)</span>
 <span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Standard Sampling Grid (10x10, 1mm resolution)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-3-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="空间变换操作演示" class="level2">
 <h2 class="anchored" data-anchor-id="空间变换操作演示">空间变换操作演示</h2>
 <section id="形状变换resize" class="level3">
 <h3 class="anchored" data-anchor-id="形状变换resize">形状变换（Resize）</h3>
-<div id="a478b84b" class="cell" data-execution_count="3">
+<div id="561dbf7d" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建不同分辨率的采样网格</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>high_res_space <span class="op">=</span> standard_space.apply_shape((<span class="dv">1</span>, <span class="dv">20</span>, <span class="dv">20</span>))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>low_res_space <span class="op">=</span> standard_space.apply_shape((<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">5</span>))</span>
@@ -470,11 +477,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space, color<span class="op">=</span><span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (Original)'</span>)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(low_res_space, color<span class="op">=</span><span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (5x5)'</span>)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Low Resolution Transform (10x10 → 5x5)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-4-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="翻转变换" class="level3">
 <h3 class="anchored" data-anchor-id="翻转变换">翻转变换</h3>
-<div id="bf83aa02" class="cell" data-execution_count="4">
+<div id="818bc870" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建翻转的采样网格</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>flipped_space <span class="op">=</span> standard_space.apply_flip(axis<span class="op">=</span><span class="dv">1</span>)  <span class="co"># 沿Y轴翻转</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -483,11 +497,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space, color<span class="op">=</span><span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (Original)'</span>)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(flipped_space, color<span class="op">=</span><span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (Flipped Y-axis)'</span>)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Flip Transform (Y-axis)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-5-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="轴交换变换" class="level3">
 <h3 class="anchored" data-anchor-id="轴交换变换">轴交换变换</h3>
-<div id="f3aed2a5" class="cell" data-execution_count="5">
+<div id="a0a24e56" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建轴交换的采样网格（使用非正方形网格以增强对比）</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rect_space <span class="op">=</span> Space(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    shape<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">6</span>, <span class="dv">12</span>),  <span class="co"># 矩形网格</span></span>
@@ -505,11 +526,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(rect_space, color<span class="op">=</span><span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (Original 6x12)'</span>)</span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(swapped_space, color<span class="op">=</span><span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (Swapped Y↔Z 12x6)'</span>)</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Axis Swap Transform (Y ↔ Z)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-6-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="旋转变换" class="level3">
 <h3 class="anchored" data-anchor-id="旋转变换">旋转变换</h3>
-<div id="0703a52b" class="cell" data-execution_count="6">
+<div id="c9262168" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建旋转的采样网格</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>rotated_space <span class="op">=</span> standard_space.apply_rotate(axis<span class="op">=</span><span class="dv">0</span>, angle<span class="op">=</span><span class="dv">30</span>, unit<span class="op">=</span><span class="st">'degree'</span>, center<span class="op">=</span><span class="st">'center'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -518,11 +546,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space, color<span class="op">=</span><span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (Original)'</span>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(rotated_space, color<span class="op">=</span><span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (Rotated 30°)'</span>)</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Rotation Transform (around X-axis 30°)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-7-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="边界框裁剪" class="level3">
 <h3 class="anchored" data-anchor-id="边界框裁剪">边界框裁剪</h3>
-<div id="772ee4af" class="cell" data-execution_count="7">
+<div id="a4e506e3" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 定义裁剪区域并应用变换</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>crop_bbox <span class="op">=</span> np.array([[<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">2</span>, <span class="dv">8</span>], [<span class="dv">2</span>, <span class="dv">8</span>]])  <span class="co"># X, Y, Z范围</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>cropped_space <span class="op">=</span> standard_space.apply_bbox(crop_bbox)</span>
@@ -532,11 +567,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space, color<span class="op">=</span><span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (Original)'</span>)</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(cropped_space, color<span class="op">=</span><span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (Cropped ROI)'</span>)</span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Bounding Box Crop (6x6 ROI)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-8-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 <section id="复杂变换链" class="level3">
 <h3 class="anchored" data-anchor-id="复杂变换链">复杂变换链</h3>
-<div id="cc7cd622" class="cell" data-execution_count="8">
+<div id="84704a77" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示复杂变换链的抽象规划</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>complex_target_space <span class="op">=</span> (standard_space</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .apply_bbox(np.array([[<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">2</span>, <span class="dv">8</span>], [<span class="dv">2</span>, <span class="dv">8</span>]]))  <span class="co"># 裁剪到中心区域</span></span>
@@ -549,18 +591,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space, color<span class="op">=</span><span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (Original)'</span>)</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(complex_target_space, color<span class="op">=</span><span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (Crop→Resample→Rotate)'</span>)</span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Complex Transform Chain (Crop → Resample → Rotate)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-9-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 </section>
 <section id="浮点边界框采样float-point-bbox-sampling" class="level1">
 <h1>浮点边界框采样（float-point bbox sampling）</h1>
-<div id="fc4e2b7b" class="cell" data-execution_count="9">
+<div id="f2bf3133" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>float_bbox_space <span class="op">=</span> standard_space.apply_float_bbox(np.array([[<span class="dv">0</span>, <span class="dv">1</span>], [<span class="fl">2.5</span>, <span class="fl">5.5</span>], [<span class="fl">2.5</span>, <span class="fl">5.5</span>]]), (<span class="dv">12</span>, <span class="dv">12</span>, <span class="dv">12</span>))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>setup_plot()</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(standard_space, color<span class="op">=</span><span class="st">'blue'</span>, label_suffix<span class="op">=</span><span class="st">' (Original)'</span>)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>visualize_sampling_grid(float_bbox_space, color<span class="op">=</span><span class="st">'red'</span>, label_suffix<span class="op">=</span><span class="st">' (Float Bounding Box)'</span>)</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>finalize_plot(<span class="st">'Float Bounding Box Sampling (6x6 ROI)'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3.1_space_concept_fundamentals_files/figure-html/cell-10-output-1.png" width="949" height="756" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 <section id="space-抽象框架的核心优势" class="level2">
 <h2 class="anchored" data-anchor-id="space-抽象框架的核心优势">Space 抽象框架的核心优势</h2>

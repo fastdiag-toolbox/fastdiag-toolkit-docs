@@ -56,11 +56,23 @@ preview() {
 # 构建模式
 build() {
     log_info "开始渲染 Quarto 项目..."
-    
+
+    # 避免环境变量 QUARTO_PYTHON 指向不存在的解释器导致大量警告
+    if [ -n "${QUARTO_PYTHON:-}" ] && [ ! -x "${QUARTO_PYTHON}" ]; then
+        log_warning "检测到 QUARTO_PYTHON 指向不存在的解释器：${QUARTO_PYTHON}，将改用系统 python3"
+        export QUARTO_PYTHON="$(command -v python3)"
+    fi
+
     # 清理旧的输出
     if [ -d "_site" ]; then
         log_info "清理旧的输出目录..."
         rm -rf _site
+    fi
+
+    # 可选：清理 freeze 缓存（当你修改了 execute/eval 配置但页面没有重新执行时很有用）
+    if [ "${CLEAN_FREEZE:-0}" = "1" ] && [ -d "_freeze" ]; then
+        log_info "清理 _freeze 缓存目录（CLEAN_FREEZE=1）..."
+        rm -rf _freeze
     fi
     
     # 渲染项目

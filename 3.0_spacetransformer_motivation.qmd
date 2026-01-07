@@ -367,7 +367,7 @@ def process_with_spacetransformer(img):
     
     # 执行变换
     resampled_img = warp_image(img[None], original_space, target_space, 
-                                mode='trilinear', pad_value=0, cuda_device='cpu',
+                                mode='trilinear', pad_mode='constant', pad_value=0, cuda_device='cpu',
                                 numpy=True)[0]
     
     # 分析处理
@@ -376,9 +376,13 @@ def process_with_spacetransformer(img):
     
     # 将 2D 关键点转换为 3D 格式 (z=0, y, x) 供 SpaceTransformer 使用
     keypoint_3d = np.array([[0, keypoint_2d[0], keypoint_2d[1]]])  # shape: (1, 3)
-    # 结果回传：一行代码完成逆变换
-    segment_original = warp_image(segment_result[None],     target_space, original_space,
-                                       mode='nearest', pad_value=0, cuda_device='cpu',numpy=True)[0]
+    # 结果回传：当前 spacetransformer-torch 版本在需要 padding 的路径上存在兼容性问题，
+    # 这里用最近邻上采样 + ROI 回填的方式恢复到原图（mask 场景等价于 nearest 回传）。
+    import torch.nn.functional as F
+    segment_tensor = torch.from_numpy(segment_result.astype(np.float32)).unsqueeze(0).unsqueeze(0)
+    segment_roi = F.interpolate(segment_tensor, size=(ROI_SIZE, ROI_SIZE), mode='nearest').squeeze().numpy().astype(np.uint8)
+    segment_original = np.zeros_like(img, dtype=np.uint8)
+    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] = segment_roi
     keypoint_3d_original = warp_point(keypoint_3d, target_space, original_space)[0]
     
     # 转换回2D格式 (y, x)

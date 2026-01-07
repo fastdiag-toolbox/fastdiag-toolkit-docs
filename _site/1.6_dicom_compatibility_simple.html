@@ -350,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="基本使用接口" class="level3">
 <h3 class="anchored" data-anchor-id="基本使用接口">2.1. 基本使用接口</h3>
 <p>DiCube的流式读取器提供了简洁的API接口，支持按帧索引动态生成DICOM数据：</p>
-<div id="5e6b9780" class="cell" data-execution_count="1">
+<div id="fc5667eb" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> DcbStreamingReader</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -367,41 +367,65 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'dicube-testdata/sample_10_0.dcm'</span>, <span class="st">'wb'</span>) <span class="im">as</span> f:</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    f.write(slice_0)</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"✅ 成功生成DICOM数据，大小: </span><span class="sc">{</span><span class="bu">len</span>(slice_0)<span class="sc">}</span><span class="ss"> 字节"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✅ 成功生成DICOM数据，大小: 163034 字节</code></pre>
+</div>
 </div>
 </section>
 <section id="数据处理与可视化分析" class="level3">
 <h3 class="anchored" data-anchor-id="数据处理与可视化分析">2.2. 数据处理与可视化分析</h3>
 <p>流式读取器生成的DICOM数据完全符合标准规范，可以直接被PyDICOM等主流库处理：</p>
-<div id="80798a4b" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> BytesIO</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analyze_dicom_slice(slice_index):</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""分析并显示指定索引的DICOM切片"""</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 获取DICOM字节流并解析</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    dicom_buffer <span class="op">=</span> BytesIO(dcb_stream.get_dicom_for_frame(slice_index))</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> pydicom.dcmread(dicom_buffer, force<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 提取并校正像素数据</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    pixel_array <span class="op">=</span> dataset.pixel_array.astype(<span class="st">'float32'</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(dataset, <span class="st">'RescaleIntercept'</span>):</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        pixel_array <span class="op">+=</span> <span class="bu">float</span>(dataset.RescaleIntercept)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 使用临床标准窗位窗宽显示</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    plt.imshow(pixel_array, cmap<span class="op">=</span><span class="st">'gray'</span>, vmin<span class="op">=-</span><span class="dv">800</span>, vmax<span class="op">=</span><span class="dv">300</span>)  <span class="co"># 肺窗标准参数</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f"DICOM Slice #</span><span class="sc">{</span>slice_index<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dataset</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 分析多个代表性切片</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> slice_idx <span class="kw">in</span> [<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">8</span>]:</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> analyze_dicom_slice(slice_idx)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="196b0311" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> BytesIO</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analyze_dicom_slice(slice_index):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""分析并显示指定索引的DICOM切片"""</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 获取DICOM字节流并解析</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    dicom_buffer <span class="op">=</span> BytesIO(dcb_stream.get_dicom_for_frame(slice_index))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> pydicom.dcmread(dicom_buffer, force<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 提取并校正像素数据</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    pixel_array <span class="op">=</span> dataset.pixel_array.astype(<span class="st">'float32'</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(dataset, <span class="st">'RescaleIntercept'</span>):</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        pixel_array <span class="op">+=</span> <span class="bu">float</span>(dataset.RescaleIntercept)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 使用临床标准窗位窗宽显示</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    plt.imshow(pixel_array, cmap<span class="op">=</span><span class="st">'gray'</span>, vmin<span class="op">=-</span><span class="dv">800</span>, vmax<span class="op">=</span><span class="dv">300</span>)  <span class="co"># 肺窗标准参数</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f"DICOM Slice #</span><span class="sc">{</span>slice_index<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dataset</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 分析多个代表性切片</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> slice_idx <span class="kw">in</span> [<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">8</span>]:</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> analyze_dicom_slice(slice_idx)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.6_dicom_compatibility_simple_files/figure-html/cell-3-output-1.png" width="546" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.6_dicom_compatibility_simple_files/figure-html/cell-3-output-2.png" width="546" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1.6_dicom_compatibility_simple_files/figure-html/cell-3-output-3.png" width="546" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 <p>这种流式处理方式的核心优势在于<strong>按需转换</strong>：系统只在实际访问时才进行DCBS到DICOM的转换，避免了预先转换整个序列所带来的存储开销和延迟。</p>
 </section>
@@ -435,10 +459,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="最大兼容性解决方案" class="level3">
 <h3 class="anchored" data-anchor-id="最大兼容性解决方案">3.3. 最大兼容性解决方案</h3>
-<p>针对兼容性挑战，DiCube 提供“强制解压缩”选项，通过 <code>force_uncompressed=True</code> 生成未压缩的 DICOM：</p>
-<div id="d1d137f8" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 生成最大兼容性的未压缩DICOM</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>uncompressed_dicom <span class="op">=</span> dcb_stream.get_dicom_for_frame(<span class="dv">0</span>, force_uncompressed<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>针对兼容性挑战，DiCube 提供“强制解压缩”选项：初始化 <code>DcbStreamingReader</code> 时传入 <code>force_uncompressed=True</code>，即可生成未压缩的 DICOM：</p>
+<div id="813a6ec0" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 生成最大兼容性的未压缩DICOM</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> DcbStreamingReader</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>dcb_stream_uncompressed <span class="op">=</span> DcbStreamingReader(dcb_file, force_uncompressed<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>uncompressed_dicom <span class="op">=</span> dcb_stream_uncompressed.get_dicom_for_frame(<span class="dv">0</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/liaofz/miniforge3/lib/python3.10/site-packages/dicube/dicom/dicom_builder.py:272: UserWarning:
+
+Failed to decompress pixel data: 'Dataset' object has no attribute 'file_meta'
+</code></pre>
+</div>
 </div>
 <p>这种方案的权衡分析：</p>
 <p><strong>优势：</strong> - 广泛兼容：未压缩 DICOM 几乎被所有医学影像工具支持 - 处理简单：无需考虑解码器依赖和版本问题 - 传输可靠：网络传输中不存在解码失败风险</p>

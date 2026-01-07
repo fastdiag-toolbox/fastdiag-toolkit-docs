@@ -360,7 +360,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="模拟数据构建" class="level2">
 <h2 class="anchored" data-anchor-id="模拟数据构建">2. 模拟数据构建</h2>
 <p>我们用2D掩膜来模拟这一场景：</p>
-<div id="69798609" class="cell" data-execution_count="1">
+<div id="350f4cef" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask <span class="im">import</span> SegmentationMask, MaskArchive</span>
@@ -436,134 +436,193 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"肺段标签数: </span><span class="sc">{</span><span class="bu">len</span>(segment_mapping)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"病灶标签数: </span><span class="sc">{</span><span class="bu">len</span>(lesion_mapping)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"全肺标签数: </span><span class="sc">{</span><span class="bu">len</span>(whole_lung_mapping)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>模拟数据构建完成:
+空间信息: (1, 64, 64)
+肺叶标签数: 5
+肺段标签数: 10
+病灶标签数: 3
+全肺标签数: 1</code></pre>
+</div>
 </div>
 </section>
 <section id="可视化掩膜结构" class="level2">
 <h2 class="anchored" data-anchor-id="可视化掩膜结构">3. 可视化掩膜结构</h2>
-<div id="64afdb04" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 可视化四种掩膜的空间分布</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>masks <span class="op">=</span> [</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    (lobe_mask[<span class="dv">0</span>], <span class="st">"Lung Lobes (5 lobes)"</span>, <span class="st">"Set3"</span>),</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    (segment_mask[<span class="dv">0</span>], <span class="st">"Lung Segments (10 segments)"</span>, <span class="st">"Set3"</span>), </span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    (lesion_mask[<span class="dv">0</span>], <span class="st">"Lung Lesions (3 lesions)"</span>, <span class="st">"Set3"</span>),</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    (whole_lung_mask[<span class="dv">0</span>], <span class="st">"Whole Lung (1 region)"</span>, <span class="st">"Set3"</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (mask, title, cmap) <span class="kw">in</span> <span class="bu">enumerate</span>(masks):</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    axes[i].imshow(mask, cmap<span class="op">=</span>cmap, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    axes[i].set_title(title, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    axes[i].axis(<span class="st">'off'</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Mask overlap relationships:"</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"- Segments overlap with lobes (segments are sub-structures of lobes)"</span>)  </span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"- Lesions overlap with lobes and segments (lesions are located within lobes)"</span>)</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"- Whole lung overlaps with all structures (whole lung contains all regions)"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="2fa09e22" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 可视化四种掩膜的空间分布</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>masks <span class="op">=</span> [</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    (lobe_mask[<span class="dv">0</span>], <span class="st">"Lung Lobes (5 lobes)"</span>, <span class="st">"Set3"</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    (segment_mask[<span class="dv">0</span>], <span class="st">"Lung Segments (10 segments)"</span>, <span class="st">"Set3"</span>), </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    (lesion_mask[<span class="dv">0</span>], <span class="st">"Lung Lesions (3 lesions)"</span>, <span class="st">"Set3"</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    (whole_lung_mask[<span class="dv">0</span>], <span class="st">"Whole Lung (1 region)"</span>, <span class="st">"Set3"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (mask, title, cmap) <span class="kw">in</span> <span class="bu">enumerate</span>(masks):</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    axes[i].imshow(mask, cmap<span class="op">=</span>cmap, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    axes[i].set_title(title, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    axes[i].axis(<span class="st">'off'</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Mask overlap relationships:"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"- Segments overlap with lobes (segments are sub-structures of lobes)"</span>)  </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"- Lesions overlap with lobes and segments (lesions are located within lobes)"</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"- Whole lung overlaps with all structures (whole lung contains all regions)"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2.3_mask_archive_files/figure-html/cell-3-output-1.png" width="991" height="950" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mask overlap relationships:
+- Segments overlap with lobes (segments are sub-structures of lobes)
+- Lesions overlap with lobes and segments (lesions are located within lobes)
+- Whole lung overlaps with all structures (whole lung contains all regions)</code></pre>
+</div>
 </div>
 </section>
 <section id="传统方法独立文件存储" class="level2">
 <h2 class="anchored" data-anchor-id="传统方法独立文件存储">4. 传统方法：独立文件存储</h2>
-<div id="4af44334" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 方法1: 传统的独立文件存储</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 传统方法：独立文件存储 ==="</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建四个独立的SegmentationMask文件</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>lobe_segmask <span class="op">=</span> SegmentationMask(lobe_mask, lobe_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>segment_segmask <span class="op">=</span> SegmentationMask(segment_mask, segment_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>lesion_segmask <span class="op">=</span> SegmentationMask(lesion_mask, lesion_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>whole_lung_segmask <span class="op">=</span> SegmentationMask(whole_lung_mask, whole_lung_mapping, space<span class="op">=</span>space)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 保存为独立文件</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>lobe_segmask.save(<span class="st">"lung_lobes.msk"</span>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>segment_segmask.save(<span class="st">"lung_segments.msk"</span>) </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>lesion_segmask.save(<span class="st">"lung_lesions.msk"</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>whole_lung_segmask.save(<span class="st">"whole_lung.msk"</span>)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>traditional_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算独立文件的总大小</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>independent_files <span class="op">=</span> [<span class="st">"lung_lobes.msk"</span>, <span class="st">"lung_segments.msk"</span>, <span class="st">"lung_lesions.msk"</span>, <span class="st">"whole_lung.msk"</span>]</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>total_size <span class="op">=</span> <span class="bu">sum</span>(Path(f).stat().st_size <span class="cf">for</span> f <span class="kw">in</span> independent_files)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"创建时间: </span><span class="sc">{</span>traditional_time<span class="sc">:.3f}</span><span class="ss">s"</span>)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件数量: </span><span class="sc">{</span><span class="bu">len</span>(independent_files)<span class="sc">}</span><span class="ss"> 个"</span>)</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"总大小: </span><span class="sc">{</span>total_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> independent_files:</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    size <span class="op">=</span> Path(f).stat().st_size</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fd78fa56" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 方法1: 传统的独立文件存储</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 传统方法：独立文件存储 ==="</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建四个独立的SegmentationMask文件</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>lobe_segmask <span class="op">=</span> SegmentationMask(lobe_mask, lobe_mapping, space<span class="op">=</span>space)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>segment_segmask <span class="op">=</span> SegmentationMask(segment_mask, segment_mapping, space<span class="op">=</span>space)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>lesion_segmask <span class="op">=</span> SegmentationMask(lesion_mask, lesion_mapping, space<span class="op">=</span>space)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>whole_lung_segmask <span class="op">=</span> SegmentationMask(whole_lung_mask, whole_lung_mapping, space<span class="op">=</span>space)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 保存为独立文件</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>lobe_segmask.save(<span class="st">"lung_lobes.msk"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>segment_segmask.save(<span class="st">"lung_segments.msk"</span>) </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>lesion_segmask.save(<span class="st">"lung_lesions.msk"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>whole_lung_segmask.save(<span class="st">"whole_lung.msk"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>traditional_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算独立文件的总大小</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>independent_files <span class="op">=</span> [<span class="st">"lung_lobes.msk"</span>, <span class="st">"lung_segments.msk"</span>, <span class="st">"lung_lesions.msk"</span>, <span class="st">"whole_lung.msk"</span>]</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>total_size <span class="op">=</span> <span class="bu">sum</span>(Path(f).stat().st_size <span class="cf">for</span> f <span class="kw">in</span> independent_files)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"创建时间: </span><span class="sc">{</span>traditional_time<span class="sc">:.3f}</span><span class="ss">s"</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件数量: </span><span class="sc">{</span><span class="bu">len</span>(independent_files)<span class="sc">}</span><span class="ss"> 个"</span>)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"总大小: </span><span class="sc">{</span>total_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> independent_files:</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    size <span class="op">=</span> Path(f).stat().st_size</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== 传统方法：独立文件存储 ===
+创建时间: 0.003s
+文件数量: 4 个
+总大小: 1.7 KB
+  - lung_lobes.msk: 0.5 KB
+  - lung_segments.msk: 0.5 KB
+  - lung_lesions.msk: 0.4 KB
+  - whole_lung.msk: 0.3 KB</code></pre>
+</div>
 </div>
 </section>
 <section id="maskarchive-方法归档存储" class="level2">
 <h2 class="anchored" data-anchor-id="maskarchive-方法归档存储">5. MaskArchive 方法：归档存储</h2>
-<div id="19024952" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 方法2: MaskArchive归档存储</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== MaskArchive方法：归档存储 ==="</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建归档并添加所有掩膜</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>archive <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"w"</span>, space<span class="op">=</span>space)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 添加各层级掩膜到归档</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lobe_segmask, <span class="st">"lobes"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(segment_segmask, <span class="st">"segments"</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lesion_segmask, <span class="st">"lesions"</span>) </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(whole_lung_segmask, <span class="st">"whole_lung"</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>archive_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>archive_size <span class="op">=</span> Path(<span class="st">"lung_analysis.mska"</span>).stat().st_size</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"创建时间: </span><span class="sc">{</span>archive_time<span class="sc">:.3f}</span><span class="ss">s"</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件数量: 1 个归档文件"</span>)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"总大小: </span><span class="sc">{</span>archive_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"包含掩膜: </span><span class="sc">{</span><span class="bu">len</span>(archive.all_names())<span class="sc">}</span><span class="ss"> 个"</span>)</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"掩膜列表: </span><span class="sc">{</span>archive<span class="sc">.</span>all_names()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 效率对比</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">=== 效率对比 ==="</span>)</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件管理: </span><span class="sc">{</span><span class="bu">len</span>(independent_files)<span class="sc">}</span><span class="ss"> 个独立文件 → 1 个归档文件"</span>)</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"存储大小: </span><span class="sc">{</span>total_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB → </span><span class="sc">{</span>archive_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> total_size <span class="op">&gt;</span> archive_size:</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    compression <span class="op">=</span> total_size <span class="op">/</span> archive_size</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"存储优化: 压缩比 </span><span class="sc">{</span>compression<span class="sc">:.1f}</span><span class="ss">:1"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="97546ae8" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 方法2: MaskArchive归档存储</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== MaskArchive方法：归档存储 ==="</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建归档并添加所有掩膜</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>archive <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"w"</span>, space<span class="op">=</span>space)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 添加各层级掩膜到归档</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lobe_segmask, <span class="st">"lobes"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(segment_segmask, <span class="st">"segments"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(lesion_segmask, <span class="st">"lesions"</span>) </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>archive.add_segmask(whole_lung_segmask, <span class="st">"whole_lung"</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>archive_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>archive_size <span class="op">=</span> Path(<span class="st">"lung_analysis.mska"</span>).stat().st_size</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"创建时间: </span><span class="sc">{</span>archive_time<span class="sc">:.3f}</span><span class="ss">s"</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件数量: 1 个归档文件"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"总大小: </span><span class="sc">{</span>archive_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"包含掩膜: </span><span class="sc">{</span><span class="bu">len</span>(archive.all_names())<span class="sc">}</span><span class="ss"> 个"</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"掩膜列表: </span><span class="sc">{</span>archive<span class="sc">.</span>all_names()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 效率对比</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">=== 效率对比 ==="</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件管理: </span><span class="sc">{</span><span class="bu">len</span>(independent_files)<span class="sc">}</span><span class="ss"> 个独立文件 → 1 个归档文件"</span>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"存储大小: </span><span class="sc">{</span>total_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB → </span><span class="sc">{</span>archive_size <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.1f}</span><span class="ss"> KB"</span>)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> total_size <span class="op">&gt;</span> archive_size:</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    compression <span class="op">=</span> total_size <span class="op">/</span> archive_size</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"存储优化: 压缩比 </span><span class="sc">{</span>compression<span class="sc">:.1f}</span><span class="ss">:1"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=== MaskArchive方法：归档存储 ===
+创建时间: 0.002s
+文件数量: 1 个归档文件
+总大小: 4.7 KB
+包含掩膜: 4 个
+掩膜列表: ['lobes', 'segments', 'lesions', 'whole_lung']
+
+=== 效率对比 ===
+文件管理: 4 个独立文件 → 1 个归档文件
+存储大小: 1.7 KB → 4.7 KB</code></pre>
+</div>
 </div>
 </section>
 <section id="归档访问与查询" class="level2">
 <h2 class="anchored" data-anchor-id="归档访问与查询">6. 归档访问与查询</h2>
-<div id="6230c2cf" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示归档的访问功能</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 归档访问演示 ==="</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 重新打开归档进行读取</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>reader <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"r"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 查询可用掩膜</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"归档中的掩膜: </span><span class="sc">{</span>reader<span class="sc">.</span>all_names()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 单独加载特定掩膜</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">单独访问掩膜:"</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>loaded_lobes <span class="op">=</span> reader.load_segmask(<span class="st">"lobes"</span>)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"肺叶掩膜: </span><span class="sc">{</span><span class="bu">list</span>(loaded_lobes.mapping.items())<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>loaded_lesions <span class="op">=</span> reader.load_segmask(<span class="st">"lesions"</span>)  </span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"病灶掩膜: </span><span class="sc">{</span><span class="bu">list</span>(loaded_lesions.mapping.items())<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证数据完整性</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">数据完整性验证:"</span>)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始肺叶形状: </span><span class="sc">{</span>lobe_mask<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"加载肺叶形状: </span><span class="sc">{</span>loaded_lobes<span class="sc">.</span>data<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"数据一致性: </span><span class="sc">{</span>np<span class="sc">.</span>array_equal(lobe_mask, loaded_lobes.data)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示语义查询 (基于加载的掩膜)</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>left_upper_lobe_mask <span class="op">=</span> loaded_lobes.get_binary_mask_by_names(<span class="st">"left_upper_lobe"</span>)</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>nodule_1_mask <span class="op">=</span> loaded_lesions.get_binary_mask_by_names(<span class="st">"nodule_1"</span>)</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"左上叶掩膜像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(left_upper_lobe_mask)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"病灶1掩膜像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(nodule_1_mask)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="1a6c07d6" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示归档的访问功能</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 归档访问演示 ==="</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 重新打开归档进行读取</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>reader <span class="op">=</span> MaskArchive(<span class="st">"lung_analysis.mska"</span>, mode<span class="op">=</span><span class="st">"r"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 查询可用掩膜</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"归档中的掩膜: </span><span class="sc">{</span>reader<span class="sc">.</span>all_names()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 单独加载特定掩膜</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">单独访问掩膜:"</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>loaded_lobes <span class="op">=</span> reader.load_segmask(<span class="st">"lobes"</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"肺叶掩膜: </span><span class="sc">{</span><span class="bu">list</span>(loaded_lobes.mapping.items())<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>loaded_lesions <span class="op">=</span> reader.load_segmask(<span class="st">"lesions"</span>)  </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"病灶掩膜: </span><span class="sc">{</span><span class="bu">list</span>(loaded_lesions.mapping.items())<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证数据完整性</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">数据完整性验证:"</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始肺叶形状: </span><span class="sc">{</span>lobe_mask<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"加载肺叶形状: </span><span class="sc">{</span>loaded_lobes<span class="sc">.</span>data<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"数据一致性: </span><span class="sc">{</span>np<span class="sc">.</span>array_equal(lobe_mask, loaded_lobes.data)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示语义查询 (基于加载的掩膜)</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>left_upper_lobe_mask <span class="op">=</span> loaded_lobes.get_binary_mask_by_names(<span class="st">"left_upper_lobe"</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>nodule_1_mask <span class="op">=</span> loaded_lesions.get_binary_mask_by_names(<span class="st">"nodule_1"</span>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"左上叶掩膜像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(left_upper_lobe_mask)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"病灶1掩膜像素数: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">sum</span>(nodule_1_mask)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== 归档访问演示 ===
+归档中的掩膜: ['lobes', 'segments', 'lesions', 'whole_lung']
+
+单独访问掩膜:
+肺叶掩膜: [('left_upper_lobe', 1), ('left_lower_lobe', 2), ('right_upper_lobe', 3), ('right_middle_lobe', 4), ('right_lower_lobe', 5)]
+病灶掩膜: [('nodule_1', 1), ('nodule_2', 2), ('mass_1', 3)]
+
+数据完整性验证:
+原始肺叶形状: (1, 64, 64)
+加载肺叶形状: (1, 64, 64)
+数据一致性: True
+左上叶掩膜像素数: 300
+病灶1掩膜像素数: 25</code></pre>
+</div>
 </div>
 </section>
 <section id="使用建议" class="level2">
@@ -586,15 +645,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="总结">总结</h2>
 <p>MaskArchive 提供了一种简单有效的多掩膜管理方案。通过将相关的掩膜合并到单一归档文件中，它能够简化文件管理、优化存储空间，并为复杂的多层级掩膜组织提供技术支持。</p>
 <p>虽然不是革命性的功能，但在处理大量掩膜文件时，MaskArchive 确实能够带来实用的管理便利。选择使用归档还是独立文件，主要取决于具体的应用场景和文件管理需求。</p>
-<div id="4b39bf5b" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试文件</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>cleanup_files <span class="op">=</span> [<span class="st">"lung_lobes.msk"</span>, <span class="st">"lung_segments.msk"</span>, <span class="st">"lung_lesions.msk"</span>, </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"whole_lung.msk"</span>, <span class="st">"lung_analysis.mska"</span>]</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> cleanup_files:</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(f):</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        os.remove(f)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"测试文件已清理"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="c8f37239" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试文件</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>cleanup_files <span class="op">=</span> [<span class="st">"lung_lobes.msk"</span>, <span class="st">"lung_segments.msk"</span>, <span class="st">"lung_lesions.msk"</span>, </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"whole_lung.msk"</span>, <span class="st">"lung_analysis.mska"</span>]</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> cleanup_files:</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(f):</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        os.remove(f)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"测试文件已清理"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>测试文件已清理</code></pre>
+</div>
 </div>
 
 

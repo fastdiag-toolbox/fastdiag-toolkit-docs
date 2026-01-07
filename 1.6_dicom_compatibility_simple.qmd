@@ -106,11 +106,14 @@ DiCube 采用的 DCBS 格式基于 **HTJ2K（High Throughput JPEG 2000）** 编�
 
 ### 3.3. 最大兼容性解决方案
 
-针对兼容性挑战，DiCube 提供“强制解压缩”选项，通过 `force_uncompressed=True` 生成未压缩的 DICOM：
+针对兼容性挑战，DiCube 提供“强制解压缩”选项：初始化 `DcbStreamingReader` 时传入 `force_uncompressed=True`，即可生成未压缩的 DICOM：
 
 ```{python}
 # 生成最大兼容性的未压缩DICOM
-uncompressed_dicom = dcb_stream.get_dicom_for_frame(0, force_uncompressed=True)
+from dicube.dicom import DcbStreamingReader
+
+dcb_stream_uncompressed = DcbStreamingReader(dcb_file, force_uncompressed=True)
+uncompressed_dicom = dcb_stream_uncompressed.get_dicom_for_frame(0)
 ```
 
 这种方案的权衡分析：

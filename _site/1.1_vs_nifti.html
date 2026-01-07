@@ -352,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="坐标系统混乱不同库的各自为政" class="level3">
 <h3 class="anchored" data-anchor-id="坐标系统混乱不同库的各自为政">1.1. 坐标系统混乱：不同库的“各自为政”</h3>
 <p>NIfTI 格式最令人困惑的问题之一，是其空间坐标定义的不统一。使用不同的标准库读取同一个 NIfTI 文件，竟然会得到截然不同的空间定位结果。这种不一致性为后续的图像配准、融合以及定量分析埋下了巨大的隐患。</p>
-<div id="ea42bc27" class="cell" data-execution_count="1">
+<div id="27126a5c" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nibabel <span class="im">as</span> nib</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -387,6 +387,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>z_nib <span class="op">/=</span> np.linalg.norm(z_nib)</span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Nibabel Z Orientation: </span><span class="sc">{</span>z_nib<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"SimpleITK Z Orientation: </span><span class="sc">{</span>np<span class="sc">.</span>array(sitk_image.GetDirection())[<span class="dv">6</span>:<span class="dv">9</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Nibabel Origin: [ -82.32080078 -134.36405945 -153.72033691] (通常为 RAS+)
+SimpleITK Origin: (86.97265625, 229.64453125, 192.01113891601562) (严格为 LPS+)
+
+Nibabel X Orientation: [1. 0. 0.]
+SimpleITK X Orientation: [-1.  0.  0.]
+
+Nibabel Y Orientation: [0. 1. 0.]
+SimpleITK Y Orientation: [ 0. -1.  0.]
+
+Nibabel Z Orientation: [0. 0. 1.]
+SimpleITK Z Orientation: [0. 0. 1.]</code></pre>
+</div>
 </div>
 <p>从输出结果可以清晰地看到，对于图像原点（Origin）和方向（Orientation），<code>nibabel</code> 和 <code>SimpleITK</code> 的解析大相径庭。方向向量在 X 和 Y 轴上互为相反数，而原点的差异则毫无规律可循。这种混乱的根源在于 NIfTI 对坐标系统的双重定义以及不同社区的解读习惯。</p>
 </section>
@@ -417,15 +430,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong><code>sform</code> (standard form)</strong>：主要用于记录图像<strong>对齐到某个标准空间模板（如 MNI 或 Talairach 脑模板）后</strong>的空间信息。这个矩阵通常是图像配准（registration）过程的产物。</li>
 </ul>
 <p>一个 NIfTI 文件可以同时包含 <code>qform</code> 和 <code>sform</code>，当两者不一致时，不同的读取库会根据自身的应用背景做出不同的选择：</p>
-<div id="aada934c" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 探查NIfTI文件内部的双重变换矩阵</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>qform <span class="op">=</span> nib_image.get_qform()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sform <span class="op">=</span> nib_image.get_sform()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"qform (源自扫描仪坐标):"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(qform, <span class="dv">3</span>))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">sform (对齐至标准空间):"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(sform, <span class="dv">3</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="a8f231c9" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 探查NIfTI文件内部的双重变换矩阵</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>qform <span class="op">=</span> nib_image.get_qform()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sform <span class="op">=</span> nib_image.get_sform()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"qform (源自扫描仪坐标):"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(qform, <span class="dv">3</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">sform (对齐至标准空间):"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(sform, <span class="dv">3</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>qform (源自扫描仪坐标):
+[[   0.961    0.       0.     -86.973]
+ [   0.       0.964    0.    -229.645]
+ [   0.       0.       0.963  192.011]
+ [   0.       0.       0.       1.   ]]
+
+sform (对齐至标准空间):
+[[   0.961    0.       0.     -82.321]
+ [   0.       0.964    0.    -134.364]
+ [   0.       0.       0.963 -153.72 ]
+ [   0.       0.       0.       1.   ]]</code></pre>
+</div>
 </div>
 <ul>
 <li><strong>SimpleITK 的选择</strong>：遵循放射科和临床设备的惯例，优先使用 <code>qform</code>，因为它最忠实地反映了原始扫描信息。</li>
@@ -437,49 +463,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="临床元数据的大量丢失">1.4. 临床元数据的大量丢失</h3>
 <p>从 DICOM 转换为 NIfTI 的过程是“有损”的，但损失的并非像素数据，而是宝贵的元数据（Metadata）。DICOM 文件内嵌了数百个描述患者、检查、设备、序列参数等信息的标签，这些信息对于临床诊断、质量控制和法律追溯至关重要。</p>
 <p>NIfTI 格式的设计初衷是服务于匿名的图像算法研究，因此它几乎丢弃了所有与空间定位无关的元数据。</p>
-<div id="cf5073ab" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 检查原始DICOM元数据</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>dicom_dir <span class="op">=</span> <span class="st">'dicube-testdata/dicom/sample_200'</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>first_slice_path <span class="op">=</span> os.path.join(dicom_dir, <span class="bu">sorted</span>(os.listdir(dicom_dir))[<span class="dv">0</span>])</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>original_dcm <span class="op">=</span> pydicom.dcmread(first_slice_path)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM元数据字段数: </span><span class="sc">{</span><span class="bu">len</span>(original_dcm)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"患者ID (PatientID): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'PatientID'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检查日期 (StudyDate): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'StudyDate'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"设备制造商 (Manufacturer): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'Manufacturer'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"窗宽/窗位 (Window Width/Center): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'WindowWidth'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss"> / </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'WindowCenter'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># NIfTI文件几乎不包含这些信息</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># NIfTI header can be accessed via nib_image.header, but it lacks most clinical metadata.</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">NIfTI格式仅保留了图像尺寸、像素间距、原点和方向等基本空间信息。"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="23a19f8a" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 检查原始DICOM元数据</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>dicom_dir <span class="op">=</span> <span class="st">'dicube-testdata/dicom/sample_200'</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>first_slice_path <span class="op">=</span> os.path.join(dicom_dir, <span class="bu">sorted</span>(os.listdir(dicom_dir))[<span class="dv">0</span>])</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>original_dcm <span class="op">=</span> pydicom.dcmread(first_slice_path)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM元数据字段数: </span><span class="sc">{</span><span class="bu">len</span>(original_dcm)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"患者ID (PatientID): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'PatientID'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"检查日期 (StudyDate): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'StudyDate'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"设备制造商 (Manufacturer): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'Manufacturer'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"窗宽/窗位 (Window Width/Center): </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'WindowWidth'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss"> / </span><span class="sc">{</span>original_dcm<span class="sc">.</span>get(<span class="st">'WindowCenter'</span>, <span class="st">'N/A'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># NIfTI文件几乎不包含这些信息</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># NIfTI header can be accessed via nib_image.header, but it lacks most clinical metadata.</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">NIfTI格式仅保留了图像尺寸、像素间距、原点和方向等基本空间信息。"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>原始DICOM元数据字段数: 196
+患者ID (PatientID): ID12345
+检查日期 (StudyDate): 20230720
+设备制造商 (Manufacturer): Philips
+窗宽/窗位 (Window Width/Center): [750, 750] / [90, 90]
+
+NIfTI格式仅保留了图像尺寸、像素间距、原点和方向等基本空间信息。</code></pre>
+</div>
 </div>
 <p>这种元数据的“蒸发”意味着，一旦数据被转换为 NIfTI，它就与原始的临床情境脱钩。我们无法知道这个图像属于哪位患者、何时检查、由哪台设备扫描、扫描参数是什么。这使得 NIfTI 文件无法被直接用于临床生产环境或作为合规的医疗数据存档。</p>
 </section>
 <section id="压缩效率不足" class="level3">
 <h3 class="anchored" data-anchor-id="压缩效率不足">1.5. 压缩效率不足</h3>
 <p>为了节省存储空间，NIfTI 文件通常使用 <code>.nii.gz</code> 的扩展名，即采用 gzip 进行压缩。Gzip 是一种通用的、无损的压缩算法，但它并非为医学影像这类具有高度空间相关性的数据而优化。因此，其压缩比通常相当有限。</p>
-<div id="924ca748" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 对比原始DICOM和NIfTI格式的存储大小</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>dicom_size <span class="op">=</span> <span class="bu">sum</span>(os.path.getsize(os.path.join(dicom_dir, f)) </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                 <span class="cf">for</span> f <span class="kw">in</span> os.listdir(dicom_dir))</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>nifti_file2 <span class="op">=</span> <span class="st">'dicube-testdata/sample_200.nii.gz'</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># SimpleITK读取DICOM序列</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>series_reader <span class="op">=</span> sitk.ImageSeriesReader()</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dicom_names <span class="op">=</span> series_reader.GetGDCMSeriesFileNames(dicom_dir)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>series_reader.SetFileNames(dicom_names)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>sitk_image_from_dicom <span class="op">=</span> series_reader.Execute()</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>sitk.WriteImage(sitk_image_from_dicom, nifti_file2)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>nifti_size <span class="op">=</span> os.path.getsize(nifti_file2)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM文件夹总大小: </span><span class="sc">{</span>dicom_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"NIfTI (gzip压缩后)大小: </span><span class="sc">{</span>nifti_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"压缩比: </span><span class="sc">{</span>dicom_size <span class="op">/</span> nifti_size<span class="sc">:.2f}</span><span class="ss">x"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="b0eea314" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 对比原始DICOM和NIfTI格式的存储大小</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>dicom_size <span class="op">=</span> <span class="bu">sum</span>(os.path.getsize(os.path.join(dicom_dir, f)) </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                 <span class="cf">for</span> f <span class="kw">in</span> os.listdir(dicom_dir))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>nifti_file2 <span class="op">=</span> <span class="st">'dicube-testdata/sample_200.nii.gz'</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># SimpleITK读取DICOM序列</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>series_reader <span class="op">=</span> sitk.ImageSeriesReader()</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>dicom_names <span class="op">=</span> series_reader.GetGDCMSeriesFileNames(dicom_dir)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>series_reader.SetFileNames(dicom_names)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>sitk_image_from_dicom <span class="op">=</span> series_reader.Execute()</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>sitk.WriteImage(sitk_image_from_dicom, nifti_file2)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>nifti_size <span class="op">=</span> os.path.getsize(nifti_file2)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM文件夹总大小: </span><span class="sc">{</span>dicom_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"NIfTI (gzip压缩后)大小: </span><span class="sc">{</span>nifti_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"压缩比: </span><span class="sc">{</span>dicom_size <span class="op">/</span> nifti_size<span class="sc">:.2f}</span><span class="ss">x"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>原始DICOM文件夹总大小: 102.23 MB
+NIfTI (gzip压缩后)大小: 53.42 MB
+压缩比: 1.91x</code></pre>
+</div>
 </div>
 <p>通常，gzip 只能提供约 2 倍的压缩率，这对于动辄数百兆甚至上G的影像数据而言，存储和传输效率仍然不高。</p>
 </section>
@@ -491,48 +531,68 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="统一且明确的坐标系统坚守lps标准">2.1. 统一且明确的坐标系统：坚守LPS+标准</h3>
 <p>DiCube 彻底摒弃了 NIfTI 模棱两可的双重坐标定义，统一采用 DICOM 标准的 LPS+ 坐标系。这确保了从 DICOM 到 DiCube 的转换过程中，空间信息得到精确、无歧义的保留，保证了与 PACS 系统和各类医学影像软件的无缝对接。</p>
 <p>让我们将 DiCube、SimpleITK（读取 DICOM）和 nibabel（读取 NIfTI）的处理结果进行对比：</p>
-<div id="592c455d" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># DiCube读取DICOM序列</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dicom_dir, sort_method<span class="op">=</span>dicube.SortMethod.POSITION_RIGHT_HAND)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Nibabel读取NIfTI</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>nib_nifti <span class="op">=</span> nib.load(nifti_file2)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- 坐标系统原点对比 ---"</span>)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"SimpleITK (从DICOM): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(sitk_image_from_dicom.GetOrigin(), <span class="dv">3</span>)<span class="sc">}</span><span class="ss"> (LPS+)"</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube      (从DICOM): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(dcb_image.space.origin, <span class="dv">3</span>)<span class="sc">}</span><span class="ss"> (LPS+)"</span>)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Nibabel     (从NIfTI): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(nib_nifti.affine[:<span class="dv">3</span>, <span class="dv">3</span>], <span class="dv">3</span>)<span class="sc">}</span><span class="ss"> (RAS+)"</span>)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">结论：DiCube与SimpleITK对原始DICOM的解读完全一致: </span><span class="sc">{</span>np<span class="sc">.</span>allclose(dcb_image.space.origin, sitk_image_from_dicom.GetOrigin())<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="855326af" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># DiCube读取DICOM序列</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dicom_dir, sort_method<span class="op">=</span>dicube.SortMethod.POSITION_RIGHT_HAND)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Nibabel读取NIfTI</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>nib_nifti <span class="op">=</span> nib.load(nifti_file2)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- 坐标系统原点对比 ---"</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"SimpleITK (从DICOM): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(sitk_image_from_dicom.GetOrigin(), <span class="dv">3</span>)<span class="sc">}</span><span class="ss"> (LPS+)"</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube      (从DICOM): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(dcb_image.space.origin, <span class="dv">3</span>)<span class="sc">}</span><span class="ss"> (LPS+)"</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Nibabel     (从NIfTI): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(nib_nifti.affine[:<span class="dv">3</span>, <span class="dv">3</span>], <span class="dv">3</span>)<span class="sc">}</span><span class="ss"> (RAS+)"</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">结论：DiCube与SimpleITK对原始DICOM的解读完全一致: </span><span class="sc">{</span>np<span class="sc">.</span>allclose(dcb_image.space.origin, sitk_image_from_dicom.GetOrigin())<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- 坐标系统原点对比 ---
+SimpleITK (从DICOM): [-102.08  -31.26 1282.2 ] (LPS+)
+DiCube      (从DICOM): [-102.08  -31.26 1282.2 ] (LPS+)
+Nibabel     (从NIfTI): [ 102.08   31.26 1282.2 ] (RAS+)
+
+结论：DiCube与SimpleITK对原始DICOM的解读完全一致: True</code></pre>
+</div>
 </div>
 <p>结果一目了然：DiCube 的解析结果与同样遵循 DICOM 标准的 SimpleITK 完全一致，从源头上消除了坐标系统的混乱。</p>
 </section>
 <section id="完整的元数据保留与往返能力" class="level3">
 <h3 class="anchored" data-anchor-id="完整的元数据保留与往返能力">2.2. 完整的元数据保留与往返能力</h3>
 <p>DiCube 的核心特性之一是实现了 DICOM 元数据的<strong>无损往返（Lossless Round-trip）</strong>。它将原始 DICOM 文件中的所有元数据（包括私有标签）完整地封装在 DiCube 文件内部。这意味着，你可以随时从 DiCube 文件中恢复出与原始文件一模一样的 DICOM 序列。</p>
-<div id="ebd46ab7" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 将DiCube对象保存为.dcbs文件，然后再转换回DICOM文件夹</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, <span class="st">'dicube-testdata/test.dcbs'</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, <span class="st">'dicube-testdata/roundtrip_test'</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证往返转换后元数据的完整性</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>roundtrip_slice_path <span class="op">=</span> os.path.join(<span class="st">'dicube-testdata/roundtrip_test'</span>, <span class="st">'slice_0000.dcm'</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm <span class="op">=</span> pydicom.dcmread(roundtrip_slice_path)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM字段数: </span><span class="sc">{</span><span class="bu">len</span>(original_dcm)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"往返恢复后字段数: </span><span class="sc">{</span><span class="bu">len</span>(roundtrip_dcm)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"元数据保留率: </span><span class="sc">{</span><span class="bu">len</span>(roundtrip_dcm) <span class="op">/</span> <span class="bu">len</span>(original_dcm) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 关键临床字段一致性校验 ---"</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证关键字段是否完全一致</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>key_fields <span class="op">=</span> [<span class="st">'PatientID'</span>, <span class="st">'StudyDate'</span>, <span class="st">'Manufacturer'</span>, <span class="st">'WindowWidth'</span>, <span class="st">'WindowCenter'</span>]</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> field <span class="kw">in</span> key_fields:</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    original_value <span class="op">=</span> original_dcm.get(field)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    roundtrip_value <span class="op">=</span> roundtrip_dcm.get(field)</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    match <span class="op">=</span> <span class="st">"✓"</span> <span class="cf">if</span> original_value <span class="op">==</span> roundtrip_value <span class="cf">else</span> <span class="st">"✗"</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"字段'</span><span class="sc">{</span>field<span class="sc">}</span><span class="ss">': </span><span class="sc">{</span>match<span class="sc">}</span><span class="ss"> (原始: </span><span class="sc">{</span>original_value<span class="sc">}</span><span class="ss">, 恢复后: </span><span class="sc">{</span>roundtrip_value<span class="sc">}</span><span class="ss">)"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="5a4fa917" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 将DiCube对象保存为.dcbs文件，然后再转换回DICOM文件夹</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, <span class="st">'dicube-testdata/test.dcbs'</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, <span class="st">'dicube-testdata/roundtrip_test'</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证往返转换后元数据的完整性</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>roundtrip_slice_path <span class="op">=</span> os.path.join(<span class="st">'dicube-testdata/roundtrip_test'</span>, <span class="st">'slice_0000.dcm'</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm <span class="op">=</span> pydicom.dcmread(roundtrip_slice_path)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM字段数: </span><span class="sc">{</span><span class="bu">len</span>(original_dcm)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"往返恢复后字段数: </span><span class="sc">{</span><span class="bu">len</span>(roundtrip_dcm)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"元数据保留率: </span><span class="sc">{</span><span class="bu">len</span>(roundtrip_dcm) <span class="op">/</span> <span class="bu">len</span>(original_dcm) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 关键临床字段一致性校验 ---"</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证关键字段是否完全一致</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>key_fields <span class="op">=</span> [<span class="st">'PatientID'</span>, <span class="st">'StudyDate'</span>, <span class="st">'Manufacturer'</span>, <span class="st">'WindowWidth'</span>, <span class="st">'WindowCenter'</span>]</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> field <span class="kw">in</span> key_fields:</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    original_value <span class="op">=</span> original_dcm.get(field)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    roundtrip_value <span class="op">=</span> roundtrip_dcm.get(field)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    match <span class="op">=</span> <span class="st">"✓"</span> <span class="cf">if</span> original_value <span class="op">==</span> roundtrip_value <span class="cf">else</span> <span class="st">"✗"</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"字段'</span><span class="sc">{</span>field<span class="sc">}</span><span class="ss">': </span><span class="sc">{</span>match<span class="sc">}</span><span class="ss"> (原始: </span><span class="sc">{</span>original_value<span class="sc">}</span><span class="ss">, 恢复后: </span><span class="sc">{</span>roundtrip_value<span class="sc">}</span><span class="ss">)"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>原始DICOM字段数: 196
+往返恢复后字段数: 196
+元数据保留率: 100.0%
+
+--- 关键临床字段一致性校验 ---
+字段'PatientID': ✓ (原始: ID12345, 恢复后: ID12345)
+字段'StudyDate': ✓ (原始: 20230720, 恢复后: 20230720)
+字段'Manufacturer': ✓ (原始: Philips, 恢复后: Philips)
+字段'WindowWidth': ✓ (原始: [750, 750], 恢复后: [750.0, 750.0])
+字段'WindowCenter': ✓ (原始: [90, 90], 恢复后: [90.0, 90.0])</code></pre>
+</div>
 </div>
 <p>近乎 100% 的元数据保留率表明 DiCube 具备在临床环境中安全流转的能力，数据保持完整性与可追溯性。</p>
 </section>
@@ -545,55 +605,68 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>标准兼容</strong>：作为 DICOM 标准的一部分，确保了长期的兼容性和互操作性。</li>
 </ul>
 <!-- end list -->
-<div id="5a5fc09c" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 压缩效果对比</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dcb_size <span class="op">=</span> os.path.getsize(<span class="st">'dicube-testdata/test.dcbs'</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- 压缩效率对比 ---"</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM:      </span><span class="sc">{</span>dicom_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"NIfTI (gzip):   </span><span class="sc">{</span>nifti_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB (压缩比: </span><span class="sc">{</span>dicom_size <span class="op">/</span> nifti_size<span class="sc">:.2f}</span><span class="ss">x)"</span>)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube (HTJ2K): </span><span class="sc">{</span>dcb_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB (压缩比: </span><span class="sc">{</span>dicom_size <span class="op">/</span> dcb_size<span class="sc">:.2f}</span><span class="ss">x)"</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">DiCube相比NIfTI，文件体积减小了: </span><span class="sc">{</span>(<span class="dv">1</span> <span class="op">-</span> dcb_size <span class="op">/</span> nifti_size) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="61552d1d" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 压缩效果对比</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dcb_size <span class="op">=</span> os.path.getsize(<span class="st">'dicube-testdata/test.dcbs'</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- 压缩效率对比 ---"</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"原始DICOM:      </span><span class="sc">{</span>dicom_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"NIfTI (gzip):   </span><span class="sc">{</span>nifti_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB (压缩比: </span><span class="sc">{</span>dicom_size <span class="op">/</span> nifti_size<span class="sc">:.2f}</span><span class="ss">x)"</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube (HTJ2K): </span><span class="sc">{</span>dcb_size <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB (压缩比: </span><span class="sc">{</span>dicom_size <span class="op">/</span> dcb_size<span class="sc">:.2f}</span><span class="ss">x)"</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">DiCube相比NIfTI，文件体积减小了: </span><span class="sc">{</span>(<span class="dv">1</span> <span class="op">-</span> dcb_size <span class="op">/</span> nifti_size) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- 压缩效率对比 ---
+原始DICOM:      102.23 MB
+NIfTI (gzip):   53.42 MB (压缩比: 1.91x)
+DiCube (HTJ2K): 29.03 MB (压缩比: 3.52x)
+
+DiCube相比NIfTI，文件体积减小了: 45.7%</code></pre>
+</div>
 </div>
 <p>显著的压缩效率提升意味着更低的存储成本和更快的网络传输速度。</p>
 </section>
 <section id="优化的-io-性能" class="level3">
 <h3 class="anchored" data-anchor-id="优化的-io-性能">2.4. 优化的 I/O 性能</h3>
 <p>除了压缩率，DiCube 的文件结构和 HTJ2K 解码器也为快速读取进行了优化。在大部分场景下，加载 DiCube 文件比加载 gzip 压缩的 NIfTI 文件更快。</p>
-<div id="b0e8b387" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 性能对比测试</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>nifti_loaded <span class="op">=</span> sitk.ReadImage(nifti_file2)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>nifti_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>dcb_loaded <span class="op">=</span> dicube.load(<span class="st">'dicube-testdata/test.dcbs'</span>)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>dcb_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"NIfTI (.nii.gz) 加载耗时: </span><span class="sc">{</span>nifti_time <span class="op">*</span> <span class="dv">1000</span><span class="sc">:.0f}</span><span class="ss"> ms"</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube (.dcbs) 加载耗时: </span><span class="sc">{</span>dcb_time <span class="op">*</span> <span class="dv">1000</span><span class="sc">:.0f}</span><span class="ss"> ms"</span>)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> dcb_time <span class="op">&lt;</span> nifti_time:</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"DiCube 加载性能提升: </span><span class="sc">{</span>(nifti_time <span class="op">/</span> dcb_time <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.0f}</span><span class="ss">%"</span>)</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"NIfTI 在此测试中加载更快。"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="9c36e019" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 性能对比测试</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>nifti_loaded <span class="op">=</span> sitk.ReadImage(nifti_file2)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>nifti_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>dcb_loaded <span class="op">=</span> dicube.load(<span class="st">'dicube-testdata/test.dcbs'</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>dcb_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"NIfTI (.nii.gz) 加载耗时: </span><span class="sc">{</span>nifti_time <span class="op">*</span> <span class="dv">1000</span><span class="sc">:.0f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube (.dcbs) 加载耗时: </span><span class="sc">{</span>dcb_time <span class="op">*</span> <span class="dv">1000</span><span class="sc">:.0f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> dcb_time <span class="op">&lt;</span> nifti_time:</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"DiCube 加载性能提升: </span><span class="sc">{</span>(nifti_time <span class="op">/</span> dcb_time <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.0f}</span><span class="ss">%"</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"NIfTI 在此测试中加载更快。"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NIfTI (.nii.gz) 加载耗时: 520 ms
+DiCube (.dcbs) 加载耗时: 137 ms
+DiCube 加载性能提升: 279%</code></pre>
+</div>
 </div>
 <p>更快的加载速度对于交互式应用和大规模数据处理流水线都至关重要。</p>
-<div id="e16a763a" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试生成的文件和文件夹</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>cleanup_files <span class="op">=</span> [<span class="st">'dicube-testdata/test.dcbs'</span>,<span class="st">'dicube-testdata/sample_200.nii.gz'</span>]</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>cleanup_dirs <span class="op">=</span> [<span class="st">'dicube-testdata/roundtrip_test'</span>]</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> cleanup_files:</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(f):</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        os.remove(f)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> cleanup_dirs:</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(d):</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        shutil.rmtree(d)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="ab6e17e2" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试生成的文件和文件夹</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>cleanup_files <span class="op">=</span> [<span class="st">'dicube-testdata/test.dcbs'</span>,<span class="st">'dicube-testdata/sample_200.nii.gz'</span>]</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>cleanup_dirs <span class="op">=</span> [<span class="st">'dicube-testdata/roundtrip_test'</span>]</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> cleanup_files:</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(f):</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        os.remove(f)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> cleanup_dirs:</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(d):</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>        shutil.rmtree(d)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>

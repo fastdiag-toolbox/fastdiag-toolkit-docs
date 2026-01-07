@@ -384,7 +384,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="从碎片到整体单文件存储" class="level3">
 <h3 class="anchored" data-anchor-id="从碎片到整体单文件存储">从碎片到整体：单文件存储</h3>
 <p>DiCube 将整个 DICOM 序列合并为一个 <code>.dcbs</code>（DiCube Binary Sequence）文件，将对文件系统的随机读写转为高效顺序读写，从根本上缓解 I/O 瓶颈。</p>
-<div id="5f023a7e" class="cell" data-execution_count="1">
+<div id="fb9820c4" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
@@ -406,7 +406,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>非共享元数据：如 <code>ImagePositionPatient</code> 等逐切片变化的字段，以紧凑数组存储并建立索引。</li>
 </ul>
 <p>该设计显著压缩元数据体积，并支持特定字段的毫秒级随机访问。</p>
-<div id="81ce2c0a" class="cell" data-execution_count="2">
+<div id="192e1596" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 仅加载元数据，速度极快</span></span>
@@ -419,6 +419,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 高效批量获取非共享字段</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"一次性获取</span><span class="sc">{</span><span class="bu">len</span>(instance_numbers)<span class="sc">}</span><span class="ss">个InstanceNumber, 前5个: </span><span class="sc">{</span>instance_numbers[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>患者姓名: {'Alphabetic': 'Anonymous'}
+一次性获取200个InstanceNumber, 前5个: [1, 2, 3, 4, 5]</code></pre>
+</div>
 </div>
 </section>
 </section>
@@ -436,137 +440,164 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol></li>
 </ul>
 <p><strong>测试环境配置</strong>（请按需修改路径）</p>
-<div id="931f4b28" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> multiprocessing <span class="im">as</span> mp</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 配置您的数据路径 ---</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>dicom_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000'</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>dicube_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000_dcbs'</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 准备测试数据 ---</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>num_processes <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>series_per_process <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>total_series_needed <span class="op">=</span> num_processes <span class="op">*</span> series_per_process</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>all_dicom_dirs <span class="op">=</span> [d <span class="cf">for</span> d <span class="kw">in</span> os.listdir(dicom_base_dir) <span class="cf">if</span> os.path.isdir(os.path.join(dicom_base_dir, d))]</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>random.seed(time.time())</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>selected_series_names <span class="op">=</span> random.sample(all_dicom_dirs, total_series_needed)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'selected_series_names'</span>,selected_series_names)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>selected_dicom_paths <span class="op">=</span> [os.path.join(dicom_base_dir, name) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>selected_dicube_paths <span class="op">=</span> [os.path.join(dicube_base_dir, name <span class="op">+</span> <span class="st">'.dcbs'</span>) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="df8e0210" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> multiprocessing <span class="im">as</span> mp</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 配置您的数据路径 ---</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dicom_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000'</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>dicube_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000_dcbs'</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 准备测试数据 ---</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>num_processes <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>series_per_process <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>total_series_needed <span class="op">=</span> num_processes <span class="op">*</span> series_per_process</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>all_dicom_dirs <span class="op">=</span> [d <span class="cf">for</span> d <span class="kw">in</span> os.listdir(dicom_base_dir) <span class="cf">if</span> os.path.isdir(os.path.join(dicom_base_dir, d))]</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>random.seed(time.time())</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>selected_series_names <span class="op">=</span> random.sample(all_dicom_dirs, total_series_needed)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'selected_series_names'</span>,selected_series_names)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>selected_dicom_paths <span class="op">=</span> [os.path.join(dicom_base_dir, name) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>selected_dicube_paths <span class="op">=</span> [os.path.join(dicube_base_dir, name <span class="op">+</span> <span class="st">'.dcbs'</span>) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>selected_series_names ['0164', '0627', '0690', '0214', '0923', '0720', '0668', '0560', '0326', '0081', '0154', '0360', '0475', '0998', '0592', '0097', '0359', '0909', '0520', '0357', '0978', '0771', '0331', '0971', '0810', '0931', '0025', '0438', '0744', '0240', '0961', '0953', '0251', '0370', '0899', '0704', '0916', '0445', '0826', '0467', '0435', '0866', '0999', '0791', '0472', '0902', '0043', '0327', '0218', '0630']</code></pre>
+</div>
 </div>
 <section id="存储空间占用对比" class="level3">
 <h3 class="anchored" data-anchor-id="存储空间占用对比">1. 存储空间占用对比</h3>
 <p>在性能测试前，我们首先计算这50个被选中序列分别以DICOM和DiCube格式存储时所占用的磁盘空间。</p>
-<div id="b920d946" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_dir_size(path):</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> os.scandir(path) <span class="im">as</span> it:</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> entry <span class="kw">in</span> it:</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> entry.is_file():</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                total <span class="op">+=</span> entry.stat().st_size</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>dicom_total_size <span class="op">=</span> <span class="bu">sum</span>(get_dir_size(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicom_paths)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dicube_total_size <span class="op">=</span> <span class="bu">sum</span>(os.path.getsize(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicube_paths)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- 50个随机序列存储空间对比 ---"</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM 格式总大小: </span><span class="sc">{</span>dicom_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube 格式总大小: </span><span class="sc">{</span>dicube_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"空间节省率: </span><span class="sc">{</span>(<span class="dv">1</span> <span class="op">-</span> dicube_total_size <span class="op">/</span> dicom_total_size) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="767a464b" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_dir_size(path):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> os.scandir(path) <span class="im">as</span> it:</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> entry <span class="kw">in</span> it:</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> entry.is_file():</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                total <span class="op">+=</span> entry.stat().st_size</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>dicom_total_size <span class="op">=</span> <span class="bu">sum</span>(get_dir_size(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicom_paths)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>dicube_total_size <span class="op">=</span> <span class="bu">sum</span>(os.path.getsize(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicube_paths)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- 50个随机序列存储空间对比 ---"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM 格式总大小: </span><span class="sc">{</span>dicom_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube 格式总大小: </span><span class="sc">{</span>dicube_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"空间节省率: </span><span class="sc">{</span>(<span class="dv">1</span> <span class="op">-</span> dicube_total_size <span class="op">/</span> dicom_total_size) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- 50个随机序列存储空间对比 ---
+DICOM 格式总大小: 3788.96 MB
+DiCube 格式总大小: 1612.92 MB
+空间节省率: 57.4%</code></pre>
+</div>
 </div>
 </section>
 <section id="并发性能测试执行" class="level3">
 <h3 class="anchored" data-anchor-id="并发性能测试执行">2. 并发性能测试执行</h3>
 <p>我们定义了针对四种不同场景的读取函数，并使用多进程池来模拟并发访问。</p>
-<div id="7a5429ef" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 读取函数定义 (Low-level, for a single item) ---</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_meta_only(series_path):</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    files <span class="op">=</span> [os.path.join(series_path, f) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> filepath <span class="kw">in</span> files:</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        pydicom.dcmread(filepath, stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_full(series_path):</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    dcm_series <span class="op">=</span> [pydicom.dcmread(os.path.join(series_path, f)) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 模拟访问像素数据</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    pixels <span class="op">=</span> [ds.pixel_array <span class="cf">for</span> ds <span class="kw">in</span> dcm_series]</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="bu">len</span>(pixels), pixels[<span class="dv">0</span>].shape)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_meta_only(dcbs_path):</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    dicube.load_meta(dcbs_path)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_full(dcbs_path):</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    dcb_image <span class="op">=</span> dicube.load(dcbs_path)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 模拟访问像素数据</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    pixels <span class="op">=</span> dcb_image.raw_image</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pixels.shape</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># --- NEW: Top-level worker functions that are picklable ---</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># These functions take a list of paths and process them.</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_meta_worker(paths):</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_meta_only(path)</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_meta_worker(paths):</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        read_dicube_meta_only(path)</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_full_worker(paths):</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_full(path)</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_full_worker(paths):</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        read_dicube_full(path)</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 测试执行框架 (Unchanged) ---</span></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_performance_test(paths, worker_function, num_processes, series_per_process):</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    tasks <span class="op">=</span> [paths[i<span class="op">*</span>series_per_process:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>series_per_process] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_processes)]</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    pool <span class="op">=</span> mp.Pool(processes<span class="op">=</span>num_processes)</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.time()</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use the worker function directly on the list of task lists</span></span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    pool.<span class="bu">map</span>(worker_function, tasks)</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    end_time <span class="op">=</span> time.time()</span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    pool.close()</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    pool.join()</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> end_time <span class="op">-</span> start_time</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 执行所有测试 (UPDATED to use new worker functions) ---</span></span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 正在执行并发性能测试 ---"</span>)</span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co"># 元数据测试</span></span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>dicom_meta_time <span class="op">=</span> run_performance_test(selected_dicom_paths, dicom_meta_worker, num_processes, series_per_process)</span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>dicube_meta_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_meta_worker, num_processes, series_per_process)</span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a><span class="co"># 完整数据测试</span></span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>dicom_full_time <span class="op">=</span> run_performance_test(selected_dicom_paths, dicom_full_worker, num_processes, series_per_process)</span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>dicube_full_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_full_worker, num_processes, series_per_process)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="d4989a4f" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 读取函数定义 (Low-level, for a single item) ---</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_meta_only(series_path):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    files <span class="op">=</span> [os.path.join(series_path, f) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> filepath <span class="kw">in</span> files:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        pydicom.dcmread(filepath, stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_full(series_path):</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    dcm_series <span class="op">=</span> [pydicom.dcmread(os.path.join(series_path, f)) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 模拟访问像素数据</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    pixels <span class="op">=</span> [ds.pixel_array <span class="cf">for</span> ds <span class="kw">in</span> dcm_series]</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="bu">len</span>(pixels), pixels[<span class="dv">0</span>].shape)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_meta_only(dcbs_path):</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    dicube.load_meta(dcbs_path)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_full(dcbs_path):</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    dcb_image <span class="op">=</span> dicube.load(dcbs_path)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 模拟访问像素数据</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    pixels <span class="op">=</span> dcb_image.raw_image</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pixels.shape</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co"># --- NEW: Top-level worker functions that are picklable ---</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co"># These functions take a list of paths and process them.</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_meta_worker(paths):</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_meta_only(path)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_meta_worker(paths):</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        read_dicube_meta_only(path)</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_full_worker(paths):</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_full(path)</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_full_worker(paths):</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>        read_dicube_full(path)</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 测试执行框架 (Unchanged) ---</span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_performance_test(paths, worker_function, num_processes, series_per_process):</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    tasks <span class="op">=</span> [paths[i<span class="op">*</span>series_per_process:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>series_per_process] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_processes)]</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    pool <span class="op">=</span> mp.Pool(processes<span class="op">=</span>num_processes)</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.time()</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use the worker function directly on the list of task lists</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>    pool.<span class="bu">map</span>(worker_function, tasks)</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>    end_time <span class="op">=</span> time.time()</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>    pool.close()</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>    pool.join()</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> end_time <span class="op">-</span> start_time</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 执行所有测试 (UPDATED to use new worker functions) ---</span></span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 正在执行并发性能测试 ---"</span>)</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="co"># 元数据测试</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>dicom_meta_time <span class="op">=</span> run_performance_test(selected_dicom_paths, dicom_meta_worker, num_processes, series_per_process)</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>dicube_meta_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_meta_worker, num_processes, series_per_process)</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a><span class="co"># 完整数据测试</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>dicom_full_time <span class="op">=</span> run_performance_test(selected_dicom_paths, dicom_full_worker, num_processes, series_per_process)</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>dicube_full_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_full_worker, num_processes, series_per_process)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- 正在执行并发性能测试 ---</code></pre>
+</div>
 </div>
 </section>
 <section id="测试结果与分析" class="level3">
 <h3 class="anchored" data-anchor-id="测试结果与分析">3. 测试结果与分析</h3>
-<div id="c8a92f55" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 并发性能测试结果 (10进程 x 5序列) ---"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 元数据结果</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">场景1: 仅读取元数据"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM  总耗时: </span><span class="sc">{</span>dicom_meta_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube 总耗时: </span><span class="sc">{</span>dicube_meta_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"性能提升: </span><span class="sc">{</span>dicom_meta_time <span class="op">/</span> dicube_meta_time<span class="sc">:.1f}</span><span class="ss"> 倍"</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 完整数据结果</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">场景2: 读取元数据 + 像素数据"</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM  总耗时: </span><span class="sc">{</span>dicom_full_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube 总耗时: </span><span class="sc">{</span>dicube_full_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"性能提升: </span><span class="sc">{</span>dicom_full_time <span class="op">/</span> dicube_full_time<span class="sc">:.1f}</span><span class="ss"> 倍"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="0bd5176d" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 并发性能测试结果 (10进程 x 5序列) ---"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 元数据结果</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">场景1: 仅读取元数据"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM  总耗时: </span><span class="sc">{</span>dicom_meta_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube 总耗时: </span><span class="sc">{</span>dicube_meta_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"性能提升: </span><span class="sc">{</span>dicom_meta_time <span class="op">/</span> dicube_meta_time<span class="sc">:.1f}</span><span class="ss"> 倍"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 完整数据结果</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">场景2: 读取元数据 + 像素数据"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM  总耗时: </span><span class="sc">{</span>dicom_full_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube 总耗时: </span><span class="sc">{</span>dicube_full_time<span class="sc">:.2f}</span><span class="ss"> 秒"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"性能提升: </span><span class="sc">{</span>dicom_full_time <span class="op">/</span> dicube_full_time<span class="sc">:.1f}</span><span class="ss"> 倍"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- 并发性能测试结果 (10进程 x 5序列) ---
+
+场景1: 仅读取元数据
+DICOM  总耗时: 0.97 秒
+DiCube 总耗时: 0.21 秒
+性能提升: 4.6 倍
+
+场景2: 读取元数据 + 像素数据
+DICOM  总耗时: 2.70 秒
+DiCube 总耗时: 5.52 秒
+性能提升: 0.5 倍</code></pre>
+</div>
 </div>
 <p>测试结果清晰地表明，DiCube在两种并发场景下均展现出压倒性的性能优势。尤其是在仅读取元数据的场景中，由于避免了对大量小文件的随机访问和重复解析，性能提升最为显著。在完整数据读取场景中，单文件容器带来的高效I/O同样使DiCube大幅领先。</p>
 <p>值得注意的是，DiCube中的像素数据采用了高效压缩算法，即使考虑解压缩开销，其性能依然远超未压缩的DICOM文件。这种性能优势具有良好的可扩展性——随着并发度的提升，DiCube的领先幅度会进一步扩大。此外，本次测试环境为配备SSD缓存的混合硬盘，已经具备相当不错的读取性能。在纯机械硬盘或云对象存储等I/O受限的环境中，DiCube的性能优势将更加明显，差距可能会呈数量级增长。</p>
@@ -581,45 +612,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>工作流兼容：可随时将 <code>.dcbs</code> 导出为标准 DICOM 文件集，用于 PACS 归档或与存量系统交互。</li>
 </ol>
 <p>以下代码验证了多个关键字段在转换前后的一致性。</p>
-<div id="68079649" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用之前加载的 dcb_image 对象</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>roundtrip_dicom_dir <span class="op">=</span> <span class="st">'dicube-testdata/roundtrip_dicom'</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, roundtrip_dicom_dir)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 读取原始DICOM文件和转换后的DICOM文件进行对比</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>original_dcm_path <span class="op">=</span> os.path.join(dicom_dir, os.listdir(dicom_dir)[<span class="dv">0</span>])</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>original_dcm <span class="op">=</span> pydicom.dcmread(original_dcm_path)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm_path <span class="op">=</span> os.path.join(roundtrip_dicom_dir, <span class="st">'slice_0000.dcm'</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm <span class="op">=</span> pydicom.dcmread(roundtrip_dcm_path)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 往返转换验证 ---"</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>fields_to_check <span class="op">=</span> [</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'PatientName'</span>, <span class="st">'StudyInstanceUID'</span>, <span class="st">'SeriesDescription'</span>, </span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'ImageOrientationPatient'</span>, <span class="st">'PixelSpacing'</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> fields_to_check:</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    original_value <span class="op">=</span> original_dcm.get(tag, <span class="st">'N/A'</span>)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    roundtrip_value <span class="op">=</span> roundtrip_dcm.get(tag, <span class="st">'N/A'</span>)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"字段: </span><span class="sc">{</span>tag<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - 原始值: </span><span class="sc">{</span>original_value<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - 转换后: </span><span class="sc">{</span>roundtrip_value<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 使用 numpy.allclose 进行浮点数组比较</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(original_value, (pydicom.multival.MultiValue, <span class="bu">list</span>)):</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        are_equal <span class="op">=</span> np.allclose(np.array(original_value, dtype<span class="op">=</span><span class="bu">float</span>), np.array(roundtrip_value, dtype<span class="op">=</span><span class="bu">float</span>))</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        are_equal <span class="op">=</span> (original_value <span class="op">==</span> roundtrip_value)</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - 是否一致: </span><span class="sc">{</span>are_equal<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">20</span>)</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"元数据字段总数对比: </span><span class="sc">{</span><span class="bu">len</span>(original_dcm)<span class="sc">}</span><span class="ss"> (原始) vs </span><span class="sc">{</span><span class="bu">len</span>(roundtrip_dcm)<span class="sc">}</span><span class="ss"> (转换后)"</span>)</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试文件</span></span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>os.remove(dcbs_file)</span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>shutil.rmtree(roundtrip_dicom_dir)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="52fa4c6d" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用之前加载的 dcb_image 对象</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>roundtrip_dicom_dir <span class="op">=</span> <span class="st">'dicube-testdata/roundtrip_dicom'</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, roundtrip_dicom_dir)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 读取原始DICOM文件和转换后的DICOM文件进行对比</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>original_dcm_path <span class="op">=</span> os.path.join(dicom_dir, os.listdir(dicom_dir)[<span class="dv">0</span>])</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>original_dcm <span class="op">=</span> pydicom.dcmread(original_dcm_path)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm_path <span class="op">=</span> os.path.join(roundtrip_dicom_dir, <span class="st">'slice_0000.dcm'</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm <span class="op">=</span> pydicom.dcmread(roundtrip_dcm_path)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- 往返转换验证 ---"</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>fields_to_check <span class="op">=</span> [</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'PatientName'</span>, <span class="st">'StudyInstanceUID'</span>, <span class="st">'SeriesDescription'</span>, </span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'ImageOrientationPatient'</span>, <span class="st">'PixelSpacing'</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> fields_to_check:</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    original_value <span class="op">=</span> original_dcm.get(tag, <span class="st">'N/A'</span>)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    roundtrip_value <span class="op">=</span> roundtrip_dcm.get(tag, <span class="st">'N/A'</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"字段: </span><span class="sc">{</span>tag<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - 原始值: </span><span class="sc">{</span>original_value<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - 转换后: </span><span class="sc">{</span>roundtrip_value<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 使用 numpy.allclose 进行浮点数组比较</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(original_value, (pydicom.multival.MultiValue, <span class="bu">list</span>)):</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>        are_equal <span class="op">=</span> np.allclose(np.array(original_value, dtype<span class="op">=</span><span class="bu">float</span>), np.array(roundtrip_value, dtype<span class="op">=</span><span class="bu">float</span>))</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>        are_equal <span class="op">=</span> (original_value <span class="op">==</span> roundtrip_value)</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  - 是否一致: </span><span class="sc">{</span>are_equal<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">20</span>)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"元数据字段总数对比: </span><span class="sc">{</span><span class="bu">len</span>(original_dcm)<span class="sc">}</span><span class="ss"> (原始) vs </span><span class="sc">{</span><span class="bu">len</span>(roundtrip_dcm)<span class="sc">}</span><span class="ss"> (转换后)"</span>)</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试文件</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>os.remove(dcbs_file)</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>shutil.rmtree(roundtrip_dicom_dir)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- 往返转换验证 ---
+字段: PatientName
+  - 原始值: Anonymous
+  - 转换后: Anonymous
+  - 是否一致: True
+--------------------
+字段: StudyInstanceUID
+  - 原始值: 1.3.46.670589.50.2.37266317681035895631.31745749383280305035
+  - 转换后: 1.3.46.670589.50.2.37266317681035895631.31745749383280305035
+  - 是否一致: True
+--------------------
+字段: SeriesDescription
+  - 原始值: MonoE 90keV[HU] 90
+  - 转换后: MonoE 90keV[HU] 90
+  - 是否一致: True
+--------------------
+字段: ImageOrientationPatient
+  - 原始值: [1, 0, 0, 0, 1, 0]
+  - 转换后: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+  - 是否一致: True
+--------------------
+字段: PixelSpacing
+  - 原始值: [0.4296875, 0.4296875]
+  - 转换后: [0.4296875, 0.4296875]
+  - 是否一致: True
+--------------------
+元数据字段总数对比: 196 (原始) vs 196 (转换后)</code></pre>
+</div>
 </div>
 </section>
 <section id="总结从性能瓶颈到技术赋能" class="level2">

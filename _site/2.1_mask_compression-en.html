@@ -58,7 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -103,6 +103,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "搜索"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="styles.css">
@@ -339,7 +342,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="unified-benchmark-harness" class="level2">
 <h2 class="anchored" data-anchor-id="unified-benchmark-harness">1. Unified Benchmark Harness</h2>
-<div id="a272b823" class="cell" data-execution_count="1">
+<div id="120e0725" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os, time, gzip, tempfile</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, nibabel <span class="im">as</span> nib, pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zstandard <span class="im">as</span> zstd</span>
@@ -383,143 +386,344 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>                        _ <span class="op">=</span> loaded.get_binary_mask_by_names(name)</span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>            stats[<span class="st">'decode_time'</span>] <span class="op">=</span> (time.time()<span class="op">-</span>start)<span class="op">*</span><span class="dv">1000</span></span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> stats</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Loaded 21 masks</code></pre>
+</div>
 </div>
 </section>
 <section id="binary-masks" class="level2">
 <h2 class="anchored" data-anchor-id="binary-masks">2. Binary Masks</h2>
-<div id="5f4a386e" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>binary_files <span class="op">=</span> [</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gluteus_maximus_right.nii.gz'</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'urinary_bladder.nii.gz'</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'colon.nii.gz'</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'iliopsoas_left.nii.gz'</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'iliac_artery_left.nii.gz'</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'small_bowel.nii.gz'</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fname <span class="kw">in</span> binary_files:</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    original_path <span class="op">=</span> mask_dir <span class="op">/</span> fname</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    nii <span class="op">=</span> nib.load(original_path)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> nii.get_fdata().astype(np.uint8)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> Space.from_nifti(nii)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    organ <span class="op">=</span> fname.replace(<span class="st">'.nii.gz'</span>, <span class="st">''</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    stats_nifti <span class="op">=</span> run_benchmark(<span class="st">'nifti'</span>, data<span class="op">=</span>data, original_path<span class="op">=</span>original_path)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    stats_npz <span class="op">=</span> run_benchmark(<span class="st">'npz'</span>, data<span class="op">=</span>data)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    stats_medmask <span class="op">=</span> run_benchmark(<span class="st">'medmask'</span>, data<span class="op">=</span>data, space<span class="op">=</span>space, label_mapping<span class="op">=</span>{organ:<span class="dv">1</span>})</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    rows.append({</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Mask'</span>: organ,</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Nonzero'</span>: <span class="bu">int</span>(np.count_nonzero(data)),</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NIfTI (KB)'</span>: stats_nifti[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ (KB)'</span>: stats_npz[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask (KB)'</span>: stats_medmask[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ encode (ms)'</span>: stats_npz[<span class="st">'encode_time'</span>],</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask encode (ms)'</span>: stats_medmask[<span class="st">'encode_time'</span>],</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ decode (ms)'</span>: stats_npz[<span class="st">'decode_time'</span>],</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask decode (ms)'</span>: stats_medmask[<span class="st">'decode_time'</span>]</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>df_binary <span class="op">=</span> pd.DataFrame(rows)</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> df_binary.empty:</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> df_binary.select_dtypes(include<span class="op">=</span>np.number).mean()</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    avg[<span class="st">'Mask'</span>] <span class="op">=</span> <span class="st">'Average'</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    df_binary <span class="op">=</span> pd.concat([df_binary, avg.to_frame().T], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>df_binary[<span class="st">'MedMask vs NIfTI'</span>] <span class="op">=</span> df_binary[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_binary[<span class="st">'MedMask (KB)'</span>]</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>df_binary[<span class="st">'NPZ vs NIfTI'</span>] <span class="op">=</span> df_binary[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_binary[<span class="st">'NPZ (KB)'</span>]</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>display(df_binary.style.<span class="bu">format</span>({</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NIfTI (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'NPZ (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">'MedMask vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span>, <span class="st">'NPZ vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span>,</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Nonzero'</span>: <span class="st">'</span><span class="sc">{:,}</span><span class="st">'</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>}).hide(axis<span class="op">=</span><span class="st">'index'</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="b0d73552" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>binary_files <span class="op">=</span> [</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gluteus_maximus_right.nii.gz'</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'urinary_bladder.nii.gz'</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'colon.nii.gz'</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'iliopsoas_left.nii.gz'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'iliac_artery_left.nii.gz'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'small_bowel.nii.gz'</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fname <span class="kw">in</span> binary_files:</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    original_path <span class="op">=</span> mask_dir <span class="op">/</span> fname</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    nii <span class="op">=</span> nib.load(original_path)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> nii.get_fdata().astype(np.uint8)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> Space.from_nifti(nii)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    organ <span class="op">=</span> fname.replace(<span class="st">'.nii.gz'</span>, <span class="st">''</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    stats_nifti <span class="op">=</span> run_benchmark(<span class="st">'nifti'</span>, data<span class="op">=</span>data, original_path<span class="op">=</span>original_path)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    stats_npz <span class="op">=</span> run_benchmark(<span class="st">'npz'</span>, data<span class="op">=</span>data)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    stats_medmask <span class="op">=</span> run_benchmark(<span class="st">'medmask'</span>, data<span class="op">=</span>data, space<span class="op">=</span>space, label_mapping<span class="op">=</span>{organ:<span class="dv">1</span>})</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    rows.append({</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Mask'</span>: organ,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Nonzero'</span>: <span class="bu">int</span>(np.count_nonzero(data)),</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NIfTI (KB)'</span>: stats_nifti[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ (KB)'</span>: stats_npz[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask (KB)'</span>: stats_medmask[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ encode (ms)'</span>: stats_npz[<span class="st">'encode_time'</span>],</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask encode (ms)'</span>: stats_medmask[<span class="st">'encode_time'</span>],</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ decode (ms)'</span>: stats_npz[<span class="st">'decode_time'</span>],</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask decode (ms)'</span>: stats_medmask[<span class="st">'decode_time'</span>]</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>df_binary <span class="op">=</span> pd.DataFrame(rows)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> df_binary.empty:</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> df_binary.select_dtypes(include<span class="op">=</span>np.number).mean()</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    avg[<span class="st">'Mask'</span>] <span class="op">=</span> <span class="st">'Average'</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    df_binary <span class="op">=</span> pd.concat([df_binary, avg.to_frame().T], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>df_binary[<span class="st">'MedMask vs NIfTI'</span>] <span class="op">=</span> df_binary[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_binary[<span class="st">'MedMask (KB)'</span>]</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>df_binary[<span class="st">'NPZ vs NIfTI'</span>] <span class="op">=</span> df_binary[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_binary[<span class="st">'NPZ (KB)'</span>]</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>display(df_binary.style.<span class="bu">format</span>({</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NIfTI (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'NPZ (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">'MedMask vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span>, <span class="st">'NPZ vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span>,</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Nonzero'</span>: <span class="st">'</span><span class="sc">{:,}</span><span class="st">'</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>}).hide(axis<span class="op">=</span><span class="st">'index'</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_8bd60" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th id="T_8bd60_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Mask</th>
+<th id="T_8bd60_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Nonzero</th>
+<th id="T_8bd60_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">NIfTI (KB)</th>
+<th id="T_8bd60_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">NPZ (KB)</th>
+<th id="T_8bd60_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">MedMask (KB)</th>
+<th id="T_8bd60_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">NPZ encode (ms)</th>
+<th id="T_8bd60_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">MedMask encode (ms)</th>
+<th id="T_8bd60_level0_col7" class="col_heading level0 col7" data-quarto-table-cell-role="th">NPZ decode (ms)</th>
+<th id="T_8bd60_level0_col8" class="col_heading level0 col8" data-quarto-table-cell-role="th">MedMask decode (ms)</th>
+<th id="T_8bd60_level0_col9" class="col_heading level0 col9" data-quarto-table-cell-role="th">MedMask vs NIfTI</th>
+<th id="T_8bd60_level0_col10" class="col_heading level0 col10" data-quarto-table-cell-role="th">NPZ vs NIfTI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_8bd60_row0_col0" class="data row0 col0">gluteus_maximus_right</td>
+<td id="T_8bd60_row0_col1" class="data row0 col1">150,852</td>
+<td id="T_8bd60_row0_col2" class="data row0 col2">72.2</td>
+<td id="T_8bd60_row0_col3" class="data row0 col3">25.5</td>
+<td id="T_8bd60_row0_col4" class="data row0 col4">15.9</td>
+<td id="T_8bd60_row0_col5" class="data row0 col5">48.3</td>
+<td id="T_8bd60_row0_col6" class="data row0 col6">63.6</td>
+<td id="T_8bd60_row0_col7" class="data row0 col7">23.6</td>
+<td id="T_8bd60_row0_col8" class="data row0 col8">17.2</td>
+<td id="T_8bd60_row0_col9" class="data row0 col9">4.5×</td>
+<td id="T_8bd60_row0_col10" class="data row0 col10">2.8×</td>
+</tr>
+<tr class="even">
+<td id="T_8bd60_row1_col0" class="data row1 col0">urinary_bladder</td>
+<td id="T_8bd60_row1_col1" class="data row1 col1">68,016</td>
+<td id="T_8bd60_row1_col2" class="data row1 col2">54.8</td>
+<td id="T_8bd60_row1_col3" class="data row1 col3">15.0</td>
+<td id="T_8bd60_row1_col4" class="data row1 col4">8.4</td>
+<td id="T_8bd60_row1_col5" class="data row1 col5">54.2</td>
+<td id="T_8bd60_row1_col6" class="data row1 col6">66.8</td>
+<td id="T_8bd60_row1_col7" class="data row1 col7">33.5</td>
+<td id="T_8bd60_row1_col8" class="data row1 col8">22.1</td>
+<td id="T_8bd60_row1_col9" class="data row1 col9">6.5×</td>
+<td id="T_8bd60_row1_col10" class="data row1 col10">3.6×</td>
+</tr>
+<tr class="odd">
+<td id="T_8bd60_row2_col0" class="data row2 col0">colon</td>
+<td id="T_8bd60_row2_col1" class="data row2 col1">59,305</td>
+<td id="T_8bd60_row2_col2" class="data row2 col2">55.8</td>
+<td id="T_8bd60_row2_col3" class="data row2 col3">16.4</td>
+<td id="T_8bd60_row2_col4" class="data row2 col4">10.2</td>
+<td id="T_8bd60_row2_col5" class="data row2 col5">41.8</td>
+<td id="T_8bd60_row2_col6" class="data row2 col6">64.6</td>
+<td id="T_8bd60_row2_col7" class="data row2 col7">24.5</td>
+<td id="T_8bd60_row2_col8" class="data row2 col8">9.0</td>
+<td id="T_8bd60_row2_col9" class="data row2 col9">5.4×</td>
+<td id="T_8bd60_row2_col10" class="data row2 col10">3.4×</td>
+</tr>
+<tr class="even">
+<td id="T_8bd60_row3_col0" class="data row3 col0">iliopsoas_left</td>
+<td id="T_8bd60_row3_col1" class="data row3 col1">20,865</td>
+<td id="T_8bd60_row3_col2" class="data row3 col2">49.5</td>
+<td id="T_8bd60_row3_col3" class="data row3 col3">13.3</td>
+<td id="T_8bd60_row3_col4" class="data row3 col4">4.5</td>
+<td id="T_8bd60_row3_col5" class="data row3 col5">45.6</td>
+<td id="T_8bd60_row3_col6" class="data row3 col6">57.8</td>
+<td id="T_8bd60_row3_col7" class="data row3 col7">25.8</td>
+<td id="T_8bd60_row3_col8" class="data row3 col8">9.1</td>
+<td id="T_8bd60_row3_col9" class="data row3 col9">10.9×</td>
+<td id="T_8bd60_row3_col10" class="data row3 col10">3.7×</td>
+</tr>
+<tr class="odd">
+<td id="T_8bd60_row4_col0" class="data row4 col0">iliac_artery_left</td>
+<td id="T_8bd60_row4_col1" class="data row4 col1">1,155</td>
+<td id="T_8bd60_row4_col2" class="data row4 col2">44.2</td>
+<td id="T_8bd60_row4_col3" class="data row4 col3">10.5</td>
+<td id="T_8bd60_row4_col4" class="data row4 col4">1.5</td>
+<td id="T_8bd60_row4_col5" class="data row4 col5">40.2</td>
+<td id="T_8bd60_row4_col6" class="data row4 col6">66.7</td>
+<td id="T_8bd60_row4_col7" class="data row4 col7">25.0</td>
+<td id="T_8bd60_row4_col8" class="data row4 col8">9.2</td>
+<td id="T_8bd60_row4_col9" class="data row4 col9">30.3×</td>
+<td id="T_8bd60_row4_col10" class="data row4 col10">4.2×</td>
+</tr>
+<tr class="even">
+<td id="T_8bd60_row5_col0" class="data row5 col0">small_bowel</td>
+<td id="T_8bd60_row5_col1" class="data row5 col1">244</td>
+<td id="T_8bd60_row5_col2" class="data row5 col2">43.4</td>
+<td id="T_8bd60_row5_col3" class="data row5 col3">9.9</td>
+<td id="T_8bd60_row5_col4" class="data row5 col4">1.1</td>
+<td id="T_8bd60_row5_col5" class="data row5 col5">44.4</td>
+<td id="T_8bd60_row5_col6" class="data row5 col6">57.3</td>
+<td id="T_8bd60_row5_col7" class="data row5 col7">25.0</td>
+<td id="T_8bd60_row5_col8" class="data row5 col8">7.0</td>
+<td id="T_8bd60_row5_col9" class="data row5 col9">39.4×</td>
+<td id="T_8bd60_row5_col10" class="data row5 col10">4.4×</td>
+</tr>
+<tr class="odd">
+<td id="T_8bd60_row6_col0" class="data row6 col0">Average</td>
+<td id="T_8bd60_row6_col1" class="data row6 col1">50,072.833333333336</td>
+<td id="T_8bd60_row6_col2" class="data row6 col2">53.3</td>
+<td id="T_8bd60_row6_col3" class="data row6 col3">15.1</td>
+<td id="T_8bd60_row6_col4" class="data row6 col4">6.9</td>
+<td id="T_8bd60_row6_col5" class="data row6 col5">45.8</td>
+<td id="T_8bd60_row6_col6" class="data row6 col6">62.8</td>
+<td id="T_8bd60_row6_col7" class="data row6 col7">26.2</td>
+<td id="T_8bd60_row6_col8" class="data row6 col8">12.3</td>
+<td id="T_8bd60_row6_col9" class="data row6 col9">7.7×</td>
+<td id="T_8bd60_row6_col10" class="data row6 col10">3.5×</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <p>MedMask dramatically shrinks sparse masks and matches NPZ timings.</p>
 </section>
 <section id="multi-label-masks" class="level2">
 <h2 class="anchored" data-anchor-id="multi-label-masks">3. Multi-Label Masks</h2>
-<div id="967c8fba" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>test_groups <span class="op">=</span> [</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'name'</span>: <span class="st">'Gluteus muscles'</span>, <span class="st">'files'</span>: [<span class="st">'gluteus_maximus_left.nii.gz'</span>,<span class="st">'gluteus_maximus_right.nii.gz'</span>,<span class="st">'gluteus_medius_left.nii.gz'</span>,<span class="st">'gluteus_medius_right.nii.gz'</span>]},</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'name'</span>: <span class="st">'Femur + Hip'</span>, <span class="st">'files'</span>: [<span class="st">'femur_left.nii.gz'</span>,<span class="st">'femur_right.nii.gz'</span>,<span class="st">'hip_left.nii.gz'</span>,<span class="st">'hip_right.nii.gz'</span>]},</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'name'</span>: <span class="st">'Pelvic organs'</span>, <span class="st">'files'</span>: [<span class="st">'urinary_bladder.nii.gz'</span>,<span class="st">'colon.nii.gz'</span>,<span class="st">'small_bowel.nii.gz'</span>]}</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> []</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> group <span class="kw">in</span> test_groups:</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    first_img <span class="op">=</span> nib.load(mask_dir <span class="op">/</span> group[<span class="st">'files'</span>][<span class="dv">0</span>])</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> Space.from_nifti(first_img)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    multi <span class="op">=</span> np.zeros(first_img.shape, dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    mapping <span class="op">=</span> {}</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, fname <span class="kw">in</span> <span class="bu">enumerate</span>(group[<span class="st">'files'</span>], start<span class="op">=</span><span class="dv">1</span>):</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        fpath <span class="op">=</span> mask_dir <span class="op">/</span> fname</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> fpath.exists():</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> nib.load(fpath).get_fdata().astype(np.uint8)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        multi[data <span class="op">&gt;</span> <span class="dv">0</span>] <span class="op">=</span> idx</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        mapping[fname.replace(<span class="st">'.nii.gz'</span>,<span class="st">''</span>)] <span class="op">=</span> idx</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    stats_nifti <span class="op">=</span> run_benchmark(<span class="st">'nifti'</span>, data<span class="op">=</span>multi, space<span class="op">=</span>space)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    stats_npz <span class="op">=</span> run_benchmark(<span class="st">'npz'</span>, data<span class="op">=</span>multi)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    stats_medmask <span class="op">=</span> run_benchmark(<span class="st">'medmask'</span>, data<span class="op">=</span>multi, space<span class="op">=</span>space, label_mapping<span class="op">=</span>mapping)</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    results.append({</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Group'</span>: group[<span class="st">'name'</span>],</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Labels'</span>: <span class="bu">len</span>(group[<span class="st">'files'</span>]),</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NIfTI (KB)'</span>: stats_nifti[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ (KB)'</span>: stats_npz[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask (KB)'</span>: stats_medmask[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ encode (ms)'</span>: stats_npz[<span class="st">'encode_time'</span>],</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask encode (ms)'</span>: stats_medmask[<span class="st">'encode_time'</span>],</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ decode (ms)'</span>: stats_npz[<span class="st">'decode_time'</span>],</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask decode (ms)'</span>: stats_medmask[<span class="st">'decode_time'</span>]</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>df_multi <span class="op">=</span> pd.DataFrame(results)</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> df_multi.empty:</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> df_multi.select_dtypes(include<span class="op">=</span>np.number).mean()</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    avg[<span class="st">'Group'</span>] <span class="op">=</span> <span class="st">'Average'</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    df_multi <span class="op">=</span> pd.concat([df_multi, avg.to_frame().T], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>df_multi[<span class="st">'MedMask vs NIfTI'</span>] <span class="op">=</span> df_multi[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_multi[<span class="st">'MedMask (KB)'</span>]</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>df_multi[<span class="st">'NPZ vs NIfTI'</span>] <span class="op">=</span> df_multi[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_multi[<span class="st">'NPZ (KB)'</span>]</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>display(df_multi.style.<span class="bu">format</span>({</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NIfTI (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'NPZ (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    <span class="st">'MedMask vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span>, <span class="st">'NPZ vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>}).hide(axis<span class="op">=</span><span class="st">'index'</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="c4403e6f" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>test_groups <span class="op">=</span> [</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'name'</span>: <span class="st">'Gluteus muscles'</span>, <span class="st">'files'</span>: [<span class="st">'gluteus_maximus_left.nii.gz'</span>,<span class="st">'gluteus_maximus_right.nii.gz'</span>,<span class="st">'gluteus_medius_left.nii.gz'</span>,<span class="st">'gluteus_medius_right.nii.gz'</span>]},</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'name'</span>: <span class="st">'Femur + Hip'</span>, <span class="st">'files'</span>: [<span class="st">'femur_left.nii.gz'</span>,<span class="st">'femur_right.nii.gz'</span>,<span class="st">'hip_left.nii.gz'</span>,<span class="st">'hip_right.nii.gz'</span>]},</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'name'</span>: <span class="st">'Pelvic organs'</span>, <span class="st">'files'</span>: [<span class="st">'urinary_bladder.nii.gz'</span>,<span class="st">'colon.nii.gz'</span>,<span class="st">'small_bowel.nii.gz'</span>]}</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> []</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> group <span class="kw">in</span> test_groups:</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    first_img <span class="op">=</span> nib.load(mask_dir <span class="op">/</span> group[<span class="st">'files'</span>][<span class="dv">0</span>])</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> Space.from_nifti(first_img)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    multi <span class="op">=</span> np.zeros(first_img.shape, dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    mapping <span class="op">=</span> {}</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, fname <span class="kw">in</span> <span class="bu">enumerate</span>(group[<span class="st">'files'</span>], start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        fpath <span class="op">=</span> mask_dir <span class="op">/</span> fname</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> fpath.exists():</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> nib.load(fpath).get_fdata().astype(np.uint8)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        multi[data <span class="op">&gt;</span> <span class="dv">0</span>] <span class="op">=</span> idx</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        mapping[fname.replace(<span class="st">'.nii.gz'</span>,<span class="st">''</span>)] <span class="op">=</span> idx</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    stats_nifti <span class="op">=</span> run_benchmark(<span class="st">'nifti'</span>, data<span class="op">=</span>multi, space<span class="op">=</span>space)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    stats_npz <span class="op">=</span> run_benchmark(<span class="st">'npz'</span>, data<span class="op">=</span>multi)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    stats_medmask <span class="op">=</span> run_benchmark(<span class="st">'medmask'</span>, data<span class="op">=</span>multi, space<span class="op">=</span>space, label_mapping<span class="op">=</span>mapping)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    results.append({</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Group'</span>: group[<span class="st">'name'</span>],</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Labels'</span>: <span class="bu">len</span>(group[<span class="st">'files'</span>]),</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NIfTI (KB)'</span>: stats_nifti[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ (KB)'</span>: stats_npz[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask (KB)'</span>: stats_medmask[<span class="st">'size'</span>]<span class="op">/</span><span class="dv">1024</span>,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ encode (ms)'</span>: stats_npz[<span class="st">'encode_time'</span>],</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask encode (ms)'</span>: stats_medmask[<span class="st">'encode_time'</span>],</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">'NPZ decode (ms)'</span>: stats_npz[<span class="st">'decode_time'</span>],</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MedMask decode (ms)'</span>: stats_medmask[<span class="st">'decode_time'</span>]</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>df_multi <span class="op">=</span> pd.DataFrame(results)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> df_multi.empty:</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> df_multi.select_dtypes(include<span class="op">=</span>np.number).mean()</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    avg[<span class="st">'Group'</span>] <span class="op">=</span> <span class="st">'Average'</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    df_multi <span class="op">=</span> pd.concat([df_multi, avg.to_frame().T], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>df_multi[<span class="st">'MedMask vs NIfTI'</span>] <span class="op">=</span> df_multi[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_multi[<span class="st">'MedMask (KB)'</span>]</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>df_multi[<span class="st">'NPZ vs NIfTI'</span>] <span class="op">=</span> df_multi[<span class="st">'NIfTI (KB)'</span>] <span class="op">/</span> df_multi[<span class="st">'NPZ (KB)'</span>]</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>display(df_multi.style.<span class="bu">format</span>({</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NIfTI (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'NPZ (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask (KB)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask encode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">'NPZ decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>, <span class="st">'MedMask decode (ms)'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">'</span>,</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>    <span class="st">'MedMask vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span>, <span class="st">'NPZ vs NIfTI'</span>: <span class="st">'</span><span class="sc">{:.1f}</span><span class="st">×'</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>}).hide(axis<span class="op">=</span><span class="st">'index'</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<style type="text/css">
+</style>
+
+<table id="T_250a8" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th id="T_250a8_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Group</th>
+<th id="T_250a8_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Labels</th>
+<th id="T_250a8_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">NIfTI (KB)</th>
+<th id="T_250a8_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">NPZ (KB)</th>
+<th id="T_250a8_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">MedMask (KB)</th>
+<th id="T_250a8_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">NPZ encode (ms)</th>
+<th id="T_250a8_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">MedMask encode (ms)</th>
+<th id="T_250a8_level0_col7" class="col_heading level0 col7" data-quarto-table-cell-role="th">NPZ decode (ms)</th>
+<th id="T_250a8_level0_col8" class="col_heading level0 col8" data-quarto-table-cell-role="th">MedMask decode (ms)</th>
+<th id="T_250a8_level0_col9" class="col_heading level0 col9" data-quarto-table-cell-role="th">MedMask vs NIfTI</th>
+<th id="T_250a8_level0_col10" class="col_heading level0 col10" data-quarto-table-cell-role="th">NPZ vs NIfTI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_250a8_row0_col0" class="data row0 col0">Gluteus muscles</td>
+<td id="T_250a8_row0_col1" class="data row0 col1">4</td>
+<td id="T_250a8_row0_col2" class="data row0 col2">108.9</td>
+<td id="T_250a8_row0_col3" class="data row0 col3">34.3</td>
+<td id="T_250a8_row0_col4" class="data row0 col4">31.6</td>
+<td id="T_250a8_row0_col5" class="data row0 col5">50.1</td>
+<td id="T_250a8_row0_col6" class="data row0 col6">4.2</td>
+<td id="T_250a8_row0_col7" class="data row0 col7">23.0</td>
+<td id="T_250a8_row0_col8" class="data row0 col8">15.7</td>
+<td id="T_250a8_row0_col9" class="data row0 col9">3.4×</td>
+<td id="T_250a8_row0_col10" class="data row0 col10">3.2×</td>
+</tr>
+<tr class="even">
+<td id="T_250a8_row1_col0" class="data row1 col0">Femur + Hip</td>
+<td id="T_250a8_row1_col1" class="data row1 col1">4</td>
+<td id="T_250a8_row1_col2" class="data row1 col2">103.0</td>
+<td id="T_250a8_row1_col3" class="data row1 col3">36.5</td>
+<td id="T_250a8_row1_col4" class="data row1 col4">31.4</td>
+<td id="T_250a8_row1_col5" class="data row1 col5">48.5</td>
+<td id="T_250a8_row1_col6" class="data row1 col6">4.7</td>
+<td id="T_250a8_row1_col7" class="data row1 col7">31.1</td>
+<td id="T_250a8_row1_col8" class="data row1 col8">7.4</td>
+<td id="T_250a8_row1_col9" class="data row1 col9">3.3×</td>
+<td id="T_250a8_row1_col10" class="data row1 col10">2.8×</td>
+</tr>
+<tr class="odd">
+<td id="T_250a8_row2_col0" class="data row2 col0">Pelvic organs</td>
+<td id="T_250a8_row2_col1" class="data row2 col1">3</td>
+<td id="T_250a8_row2_col2" class="data row2 col2">66.6</td>
+<td id="T_250a8_row2_col3" class="data row2 col3">27.0</td>
+<td id="T_250a8_row2_col4" class="data row2 col4">16.7</td>
+<td id="T_250a8_row2_col5" class="data row2 col5">47.7</td>
+<td id="T_250a8_row2_col6" class="data row2 col6">5.1</td>
+<td id="T_250a8_row2_col7" class="data row2 col7">24.1</td>
+<td id="T_250a8_row2_col8" class="data row2 col8">10.6</td>
+<td id="T_250a8_row2_col9" class="data row2 col9">4.0×</td>
+<td id="T_250a8_row2_col10" class="data row2 col10">2.5×</td>
+</tr>
+<tr class="even">
+<td id="T_250a8_row3_col0" class="data row3 col0">Average</td>
+<td id="T_250a8_row3_col1" class="data row3 col1">3.666667</td>
+<td id="T_250a8_row3_col2" class="data row3 col2">92.8</td>
+<td id="T_250a8_row3_col3" class="data row3 col3">32.6</td>
+<td id="T_250a8_row3_col4" class="data row3 col4">26.6</td>
+<td id="T_250a8_row3_col5" class="data row3 col5">48.8</td>
+<td id="T_250a8_row3_col6" class="data row3 col6">4.7</td>
+<td id="T_250a8_row3_col7" class="data row3 col7">26.1</td>
+<td id="T_250a8_row3_col8" class="data row3 col8">11.2</td>
+<td id="T_250a8_row3_col9" class="data row3 col9">3.5×</td>
+<td id="T_250a8_row3_col10" class="data row3 col10">2.8×</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <p>MedMask stays smaller even when storing many labels together.</p>
 </section>
 <section id="packbits-zstandard" class="level2">
 <h2 class="anchored" data-anchor-id="packbits-zstandard">4. PackBits + Zstandard</h2>
 <p>Binary masks benefit from bit packing before Zstd compression.</p>
-<div id="88a87053" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mask_path <span class="op">=</span> mask_dir <span class="op">/</span> <span class="st">'urinary_bladder.nii.gz'</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> nib.load(mask_path)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> img.get_fdata()<span class="op">&gt;</span><span class="dv">0</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> data.tobytes()</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>packbits <span class="op">=</span> np.packbits(data).tobytes()</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>raw_size <span class="op">=</span> <span class="bu">len</span>(raw)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>packbits_size <span class="op">=</span> <span class="bu">len</span>(packbits)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>gzip_size <span class="op">=</span> <span class="bu">len</span>(gzip.compress(raw))</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>zstd_size <span class="op">=</span> <span class="bu">len</span>(zstd.ZstdCompressor().compress(raw))</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>combo_size <span class="op">=</span> <span class="bu">len</span>(zstd.ZstdCompressor().compress(packbits))</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Raw (KB):"</span>, raw_size<span class="op">/</span><span class="dv">1024</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PackBits (KB):"</span>, packbits_size<span class="op">/</span><span class="dv">1024</span>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Gzip (KB):"</span>, gzip_size<span class="op">/</span><span class="dv">1024</span>)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Zstd (KB):"</span>, zstd_size<span class="op">/</span><span class="dv">1024</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PackBits + Zstd (KB):"</span>, combo_size<span class="op">/</span><span class="dv">1024</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="21707840" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mask_path <span class="op">=</span> mask_dir <span class="op">/</span> <span class="st">'urinary_bladder.nii.gz'</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> nib.load(mask_path)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> img.get_fdata()<span class="op">&gt;</span><span class="dv">0</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> data.tobytes()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>packbits <span class="op">=</span> np.packbits(data).tobytes()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>raw_size <span class="op">=</span> <span class="bu">len</span>(raw)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>packbits_size <span class="op">=</span> <span class="bu">len</span>(packbits)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>gzip_size <span class="op">=</span> <span class="bu">len</span>(gzip.compress(raw))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>zstd_size <span class="op">=</span> <span class="bu">len</span>(zstd.ZstdCompressor().compress(raw))</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>combo_size <span class="op">=</span> <span class="bu">len</span>(zstd.ZstdCompressor().compress(packbits))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Raw (KB):"</span>, raw_size<span class="op">/</span><span class="dv">1024</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PackBits (KB):"</span>, packbits_size<span class="op">/</span><span class="dv">1024</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Gzip (KB):"</span>, gzip_size<span class="op">/</span><span class="dv">1024</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Zstd (KB):"</span>, zstd_size<span class="op">/</span><span class="dv">1024</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PackBits + Zstd (KB):"</span>, combo_size<span class="op">/</span><span class="dv">1024</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Raw (KB): 9867.375
+PackBits (KB): 1233.421875
+Gzip (KB): 14.5283203125
+Zstd (KB): 8.013671875
+PackBits + Zstd (KB): 4.390625</code></pre>
+</div>
 </div>
 <p>PackBits removes the structural waste of storing booleans in bytes (~8× reduction). Zstd then compresses the compact stream further.</p>
 </section>

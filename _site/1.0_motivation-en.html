@@ -384,7 +384,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="from-fragments-to-a-single-file" class="level3">
 <h3 class="anchored" data-anchor-id="from-fragments-to-a-single-file">From Fragments to a Single File</h3>
 <p>DiCube consolidates a DICOM series into one <code>.dcbs</code> (DiCube Binary Sequence) file—turning random I/O into efficient sequential I/O.</p>
-<div id="0c894b5e" class="cell" data-execution_count="1">
+<div id="5e53dc34" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
@@ -404,7 +404,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Per‑slice: e.g., <code>ImagePositionPatient</code>—stored as compact arrays with indices.</li>
 </ul>
 <p>This greatly reduces header size and enables millisecond‑level random access to specific fields.</p>
-<div id="324d99b9" class="cell" data-execution_count="2">
+<div id="ec8fefe1" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>meta <span class="op">=</span> dicube.load_meta(dcbs_file)</span>
@@ -414,6 +414,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Loaded </span><span class="sc">{</span><span class="bu">len</span>(instance_numbers)<span class="sc">}</span><span class="ss"> InstanceNumber, first 5: </span><span class="sc">{</span>instance_numbers[:<span class="dv">5</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PatientName: {'Alphabetic': 'Anonymous'}
+Loaded 200 InstanceNumber, first 5: [1, 2, 3, 4, 5]</code></pre>
+</div>
 </div>
 </section>
 </section>
@@ -430,108 +434,128 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Metadata + pixels (full load for 3D/AI)</li>
 </ol></li>
 </ul>
-<div id="bd7e390e" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> multiprocessing <span class="im">as</span> mp</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random, time, os</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom, dicube, numpy <span class="im">as</span> np</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>dicom_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000'</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dicube_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000_dcbs'</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>num_processes <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>series_per_process <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>total_series_needed <span class="op">=</span> num_processes <span class="op">*</span> series_per_process</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>all_dicom_dirs <span class="op">=</span> [d <span class="cf">for</span> d <span class="kw">in</span> os.listdir(dicom_base_dir) <span class="cf">if</span> os.path.isdir(os.path.join(dicom_base_dir, d))]</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>random.seed(time.time())</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>selected_series_names <span class="op">=</span> random.sample(all_dicom_dirs, total_series_needed)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>selected_dicom_paths <span class="op">=</span> [os.path.join(dicom_base_dir, name) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>selected_dicube_paths <span class="op">=</span> [os.path.join(dicube_base_dir, name <span class="op">+</span> <span class="st">'.dcbs'</span>) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="cb11517c" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> multiprocessing <span class="im">as</span> mp</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random, time, os</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom, dicube, numpy <span class="im">as</span> np</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>dicom_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000'</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>dicube_base_dir <span class="op">=</span> <span class="st">'/data/manifest-NLST_allCT/sample_1000_dcbs'</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>num_processes <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>series_per_process <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>total_series_needed <span class="op">=</span> num_processes <span class="op">*</span> series_per_process</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>all_dicom_dirs <span class="op">=</span> [d <span class="cf">for</span> d <span class="kw">in</span> os.listdir(dicom_base_dir) <span class="cf">if</span> os.path.isdir(os.path.join(dicom_base_dir, d))]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>random.seed(time.time())</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>selected_series_names <span class="op">=</span> random.sample(all_dicom_dirs, total_series_needed)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>selected_dicom_paths <span class="op">=</span> [os.path.join(dicom_base_dir, name) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>selected_dicube_paths <span class="op">=</span> [os.path.join(dicube_base_dir, name <span class="op">+</span> <span class="st">'.dcbs'</span>) <span class="cf">for</span> name <span class="kw">in</span> selected_series_names]</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="storage-footprint" class="level3">
 <h3 class="anchored" data-anchor-id="storage-footprint">1. Storage Footprint</h3>
-<div id="0d0de0ed" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_dir_size(path):</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> os.scandir(path) <span class="im">as</span> it:</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> entry <span class="kw">in</span> it:</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> entry.is_file():</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                total <span class="op">+=</span> entry.stat().st_size</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>dicom_total_size <span class="op">=</span> <span class="bu">sum</span>(get_dir_size(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicom_paths)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dicube_total_size <span class="op">=</span> <span class="bu">sum</span>(os.path.getsize(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicube_paths)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Space vs DICOM (50 series) ---"</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM:  </span><span class="sc">{</span>dicom_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube: </span><span class="sc">{</span>dicube_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Saving: </span><span class="sc">{</span>(<span class="dv">1</span> <span class="op">-</span> dicube_total_size <span class="op">/</span> dicom_total_size) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="68e3b9f1" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_dir_size(path):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> os.scandir(path) <span class="im">as</span> it:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> entry <span class="kw">in</span> it:</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> entry.is_file():</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                total <span class="op">+=</span> entry.stat().st_size</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>dicom_total_size <span class="op">=</span> <span class="bu">sum</span>(get_dir_size(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicom_paths)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>dicube_total_size <span class="op">=</span> <span class="bu">sum</span>(os.path.getsize(p) <span class="cf">for</span> p <span class="kw">in</span> selected_dicube_paths)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Space vs DICOM (50 series) ---"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM:  </span><span class="sc">{</span>dicom_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube: </span><span class="sc">{</span>dicube_total_size <span class="op">/</span> (<span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Saving: </span><span class="sc">{</span>(<span class="dv">1</span> <span class="op">-</span> dicube_total_size <span class="op">/</span> dicom_total_size) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- Space vs DICOM (50 series) ---
+DICOM:  3857.73 MB
+DiCube: 1709.64 MB
+Saving: 55.7%</code></pre>
+</div>
 </div>
 </section>
 <section id="concurrency-runtime" class="level3">
 <h3 class="anchored" data-anchor-id="concurrency-runtime">2. Concurrency Runtime</h3>
-<div id="ae5b5c6a" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_meta_only(series_path):</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    files <span class="op">=</span> [os.path.join(series_path, f) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> filepath <span class="kw">in</span> files:</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        pydicom.dcmread(filepath, stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_full(series_path):</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    dcm_series <span class="op">=</span> [pydicom.dcmread(os.path.join(series_path, f)) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    pixels <span class="op">=</span> [ds.pixel_array <span class="cf">for</span> ds <span class="kw">in</span> dcm_series]</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="bu">len</span>(pixels), pixels[<span class="dv">0</span>].shape)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_meta_only(dcbs_path):</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    dicube.load_meta(dcbs_path)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_full(dcbs_path):</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    dcb_image <span class="op">=</span> dicube.load(dcbs_path)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dcb_image.raw_image.shape</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_meta_worker(paths):</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_meta_only(path)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_meta_worker(paths):</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        read_dicube_meta_only(path)</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_full_worker(paths):</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_full(path)</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_full_worker(paths):</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        read_dicube_full(path)</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_performance_test(paths, worker_function, num_processes, series_per_process):</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    tasks <span class="op">=</span> [paths[i<span class="op">*</span>series_per_process:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>series_per_process] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_processes)]</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    pool <span class="op">=</span> mp.Pool(processes<span class="op">=</span>num_processes)</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.time()</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    pool.<span class="bu">map</span>(worker_function, tasks)</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    end_time <span class="op">=</span> time.time()</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    pool.close()<span class="op">;</span> pool.join()</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> end_time <span class="op">-</span> start_time</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>dicom_meta_time  <span class="op">=</span> run_performance_test(selected_dicom_paths,  dicom_meta_worker,  num_processes, series_per_process)</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>dicube_meta_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_meta_worker, num_processes, series_per_process)</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>dicom_full_time  <span class="op">=</span> run_performance_test(selected_dicom_paths,  dicom_full_worker,  num_processes, series_per_process)</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>dicube_full_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_full_worker, num_processes, series_per_process)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="bec563bc" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_meta_only(series_path):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    files <span class="op">=</span> [os.path.join(series_path, f) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> filepath <span class="kw">in</span> files:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        pydicom.dcmread(filepath, stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicom_series_full(series_path):</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    dcm_series <span class="op">=</span> [pydicom.dcmread(os.path.join(series_path, f)) <span class="cf">for</span> f <span class="kw">in</span> os.listdir(series_path) <span class="cf">if</span> f.endswith(<span class="st">'.dcm'</span>)]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    pixels <span class="op">=</span> [ds.pixel_array <span class="cf">for</span> ds <span class="kw">in</span> dcm_series]</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="bu">len</span>(pixels), pixels[<span class="dv">0</span>].shape)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_meta_only(dcbs_path):</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    dicube.load_meta(dcbs_path)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_dicube_full(dcbs_path):</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    dcb_image <span class="op">=</span> dicube.load(dcbs_path)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dcb_image.raw_image.shape</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_meta_worker(paths):</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_meta_only(path)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_meta_worker(paths):</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        read_dicube_meta_only(path)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicom_full_worker(paths):</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        read_dicom_series_full(path)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dicube_full_worker(paths):</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> paths:</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        read_dicube_full(path)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_performance_test(paths, worker_function, num_processes, series_per_process):</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    tasks <span class="op">=</span> [paths[i<span class="op">*</span>series_per_process:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>series_per_process] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_processes)]</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    pool <span class="op">=</span> mp.Pool(processes<span class="op">=</span>num_processes)</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.time()</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    pool.<span class="bu">map</span>(worker_function, tasks)</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    end_time <span class="op">=</span> time.time()</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    pool.close()<span class="op">;</span> pool.join()</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> end_time <span class="op">-</span> start_time</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>dicom_meta_time  <span class="op">=</span> run_performance_test(selected_dicom_paths,  dicom_meta_worker,  num_processes, series_per_process)</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>dicube_meta_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_meta_worker, num_processes, series_per_process)</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>dicom_full_time  <span class="op">=</span> run_performance_test(selected_dicom_paths,  dicom_full_worker,  num_processes, series_per_process)</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>dicube_full_time <span class="op">=</span> run_performance_test(selected_dicube_paths, dicube_full_worker, num_processes, series_per_process)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="results-and-notes" class="level3">
 <h3 class="anchored" data-anchor-id="results-and-notes">3. Results and Notes</h3>
-<div id="1ad94653" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- Concurrency (10 procs × 5 series) ---"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Metadata only"</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM:  </span><span class="sc">{</span>dicom_meta_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube: </span><span class="sc">{</span>dicube_meta_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Speedup: </span><span class="sc">{</span>dicom_meta_time <span class="op">/</span> dicube_meta_time<span class="sc">:.1f}</span><span class="ss">×"</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Metadata + Pixels"</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM:  </span><span class="sc">{</span>dicom_full_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube: </span><span class="sc">{</span>dicube_full_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Speedup: </span><span class="sc">{</span>dicom_full_time <span class="op">/</span> dicube_full_time<span class="sc">:.1f}</span><span class="ss">×"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="03b7ac9d" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- Concurrency (10 procs × 5 series) ---"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Metadata only"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM:  </span><span class="sc">{</span>dicom_meta_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube: </span><span class="sc">{</span>dicube_meta_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Speedup: </span><span class="sc">{</span>dicom_meta_time <span class="op">/</span> dicube_meta_time<span class="sc">:.1f}</span><span class="ss">×"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Metadata + Pixels"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM:  </span><span class="sc">{</span>dicom_full_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DiCube: </span><span class="sc">{</span>dicube_full_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Speedup: </span><span class="sc">{</span>dicom_full_time <span class="op">/</span> dicube_full_time<span class="sc">:.1f}</span><span class="ss">×"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- Concurrency (10 procs × 5 series) ---
+
+Metadata only
+DICOM:  1.17s
+DiCube: 0.20s
+Speedup: 5.8×
+
+Metadata + Pixels
+DICOM:  4.27s
+DiCube: 7.27s
+Speedup: 0.6×</code></pre>
+</div>
 </div>
 <p>DiCube avoids random I/O on many small files and redundant parsing, thus excels in metadata‑only scenarios. In full loads, single‑file sequential I/O and efficient compression also deliver strong gains. With higher concurrency, the gap typically widens. On HDD/object storage, the advantage can grow by orders of magnitude.</p>
 </section>
@@ -544,26 +568,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Metadata integrity: all standard and private tags retained.</li>
 <li>Workflow‑safe: export <code>.dcbs</code> to standard DICOM anytime for PACS/archive.</li>
 </ol>
-<div id="7202249c" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil, os, pydicom, numpy <span class="im">as</span> np</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>roundtrip_dicom_dir <span class="op">=</span> <span class="st">'dicube-testdata/roundtrip_dicom'</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, roundtrip_dicom_dir)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>original_dcm <span class="op">=</span> pydicom.dcmread(os.path.join(dicom_dir, os.listdir(dicom_dir)[<span class="dv">0</span>]))</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm <span class="op">=</span> pydicom.dcmread(os.path.join(roundtrip_dicom_dir, <span class="st">'slice_0000.dcm'</span>))</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>fields_to_check <span class="op">=</span> [<span class="st">'PatientName'</span>,<span class="st">'StudyInstanceUID'</span>,<span class="st">'SeriesDescription'</span>,<span class="st">'ImageOrientationPatient'</span>,<span class="st">'PixelSpacing'</span>]</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> fields_to_check:</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    ov <span class="op">=</span> original_dcm.get(tag, <span class="st">'N/A'</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    rv <span class="op">=</span> roundtrip_dcm.get(tag, <span class="st">'N/A'</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(ov, (pydicom.multival.MultiValue, <span class="bu">list</span>)):</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        eq <span class="op">=</span> np.allclose(np.array(ov, <span class="bu">float</span>), np.array(rv, <span class="bu">float</span>))</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        eq <span class="op">=</span> (ov <span class="op">==</span> rv)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(tag, <span class="st">'-&gt;'</span>, eq)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>os.remove(dcbs_file)<span class="op">;</span> shutil.rmtree(roundtrip_dicom_dir)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="a7686cb7" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil, os, pydicom, numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>roundtrip_dicom_dir <span class="op">=</span> <span class="st">'dicube-testdata/roundtrip_dicom'</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, roundtrip_dicom_dir)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>original_dcm <span class="op">=</span> pydicom.dcmread(os.path.join(dicom_dir, os.listdir(dicom_dir)[<span class="dv">0</span>]))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>roundtrip_dcm <span class="op">=</span> pydicom.dcmread(os.path.join(roundtrip_dicom_dir, <span class="st">'slice_0000.dcm'</span>))</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>fields_to_check <span class="op">=</span> [<span class="st">'PatientName'</span>,<span class="st">'StudyInstanceUID'</span>,<span class="st">'SeriesDescription'</span>,<span class="st">'ImageOrientationPatient'</span>,<span class="st">'PixelSpacing'</span>]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> fields_to_check:</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    ov <span class="op">=</span> original_dcm.get(tag, <span class="st">'N/A'</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    rv <span class="op">=</span> roundtrip_dcm.get(tag, <span class="st">'N/A'</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(ov, (pydicom.multival.MultiValue, <span class="bu">list</span>)):</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        eq <span class="op">=</span> np.allclose(np.array(ov, <span class="bu">float</span>), np.array(rv, <span class="bu">float</span>))</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        eq <span class="op">=</span> (ov <span class="op">==</span> rv)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(tag, <span class="st">'-&gt;'</span>, eq)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>os.remove(dcbs_file)<span class="op">;</span> shutil.rmtree(roundtrip_dicom_dir)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PatientName -&gt; True
+StudyInstanceUID -&gt; True
+SeriesDescription -&gt; True
+ImageOrientationPatient -&gt; True
+PixelSpacing -&gt; True</code></pre>
+</div>
 </div>
 </section>
 <section id="summary-from-bottleneck-to-enabler" class="level2">

@@ -354,7 +354,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="problems-with-traditional-management">1. Problems With Traditional Management</h2>
 <section id="external-config-files" class="level3">
 <h3 class="anchored" data-anchor-id="external-config-files">1.1. External Config Files</h3>
-<div id="81bd370c" class="cell" data-execution_count="1">
+<div id="36ace49f" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, json</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.array([[<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>],[<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>],[<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">0</span>,<span class="dv">0</span>]])</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> {<span class="st">"1"</span>: <span class="st">"liver"</span>, <span class="st">"2"</span>: <span class="st">"spleen"</span>, <span class="st">"3"</span>: <span class="st">"kidney"</span>}</span>
@@ -362,19 +362,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    json.dump(config, f)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Mask shape:"</span>, mask.shape, <span class="st">"labels:"</span>, np.unique(mask))</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Config:"</span>, config)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mask shape: (3, 4) labels: [0 1 2 3]
+Config: {'1': 'liver', '2': 'spleen', '3': 'kidney'}</code></pre>
+</div>
 </div>
 <p>Risks: extra files, sync issues, no guarantee of completeness.</p>
 </section>
 <section id="filenames-npz-keys" class="level3">
 <h3 class="anchored" data-anchor-id="filenames-npz-keys">1.2. Filenames / NPZ Keys</h3>
-<div id="75669ce5" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>np.savez_compressed(<span class="st">'multi_organ.npz'</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    liver <span class="op">=</span> (mask <span class="op">==</span> <span class="dv">1</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    spleen <span class="op">=</span> (mask <span class="op">==</span> <span class="dv">2</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    kidney <span class="op">=</span> (mask <span class="op">==</span> <span class="dv">3</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>loaded <span class="op">=</span> np.load(<span class="st">'multi_organ.npz'</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Keys:"</span>, <span class="bu">list</span>(loaded.keys()))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="528a56e1" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>np.savez_compressed(<span class="st">'multi_organ.npz'</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    liver <span class="op">=</span> (mask <span class="op">==</span> <span class="dv">1</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    spleen <span class="op">=</span> (mask <span class="op">==</span> <span class="dv">2</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    kidney <span class="op">=</span> (mask <span class="op">==</span> <span class="dv">3</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>loaded <span class="op">=</span> np.load(<span class="st">'multi_organ.npz'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Keys:"</span>, <span class="bu">list</span>(loaded.keys()))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Keys: ['liver', 'spleen', 'kidney']</code></pre>
+</div>
 </div>
 <p>Limited expressiveness as label count grows; lacks standardization.</p>
 </section>
@@ -383,61 +390,83 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="medmask-solution">2. MedMask Solution</h2>
 <section id="embedded-bidirectional-mapping" class="level3">
 <h3 class="anchored" data-anchor-id="embedded-bidirectional-mapping">2.1. Embedded Bidirectional Mapping</h3>
-<div id="b583b079" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask.core.mapping <span class="im">import</span> LabelMapping</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mapping <span class="op">=</span> LabelMapping({<span class="st">"liver"</span>: <span class="dv">1</span>, <span class="st">"spleen"</span>: <span class="dv">2</span>, <span class="st">"kidney"</span>: <span class="dv">3</span>})</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Forward:"</span>, mapping[<span class="st">'liver'</span>])</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Inverse:"</span>, mapping.inverse(<span class="dv">1</span>))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Attr access:"</span>, mapping.spleen)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Callable:"</span>, mapping(<span class="st">'kidney'</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="691639a7" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask.core.mapping <span class="im">import</span> LabelMapping</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>mapping <span class="op">=</span> LabelMapping({<span class="st">"liver"</span>: <span class="dv">1</span>, <span class="st">"spleen"</span>: <span class="dv">2</span>, <span class="st">"kidney"</span>: <span class="dv">3</span>})</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Forward:"</span>, mapping[<span class="st">'liver'</span>])</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Inverse:"</span>, mapping.inverse(<span class="dv">1</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Attr access:"</span>, mapping.spleen)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Callable:"</span>, mapping(<span class="st">'kidney'</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Forward: 1
+Inverse: liver
+Attr access: 2
+Callable: 3</code></pre>
+</div>
 </div>
 </section>
 <section id="flexible-access-patterns" class="level3">
 <h3 class="anchored" data-anchor-id="flexible-access-patterns">2.2. Flexible Access Patterns</h3>
-<div id="23241da4" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>liver <span class="op">=</span> mapping[<span class="st">'liver'</span>]</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>spleen <span class="op">=</span> mapping.spleen</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>kidney <span class="op">=</span> mapping(<span class="st">'kidney'</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>organ <span class="op">=</span> mapping.inverse(<span class="dv">1</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Lookup consistency:"</span>, liver, spleen, kidney, organ)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="83d6c36d" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>liver <span class="op">=</span> mapping[<span class="st">'liver'</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>spleen <span class="op">=</span> mapping.spleen</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>kidney <span class="op">=</span> mapping(<span class="st">'kidney'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>organ <span class="op">=</span> mapping.inverse(<span class="dv">1</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Lookup consistency:"</span>, liver, spleen, kidney, organ)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Lookup consistency: 1 2 3 liver</code></pre>
+</div>
 </div>
 </section>
 <section id="json-serialization" class="level3">
 <h3 class="anchored" data-anchor-id="json-serialization">2.3. JSON Serialization</h3>
-<div id="1838fa09" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>json_repr <span class="op">=</span> mapping.to_json()</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>restored <span class="op">=</span> LabelMapping.from_json(json_repr)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Round-trip equal:"</span>, mapping._name_to_label <span class="op">==</span> restored._name_to_label)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="8a1eade6" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>json_repr <span class="op">=</span> mapping.to_json()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>restored <span class="op">=</span> LabelMapping.from_json(json_repr)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Round-trip equal:"</span>, mapping._name_to_label <span class="op">==</span> restored._name_to_label)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Round-trip equal: True</code></pre>
+</div>
 </div>
 </section>
 </section>
 <section id="segmentationmask-integration" class="level2">
 <h2 class="anchored" data-anchor-id="segmentationmask-integration">3. SegmentationMask Integration</h2>
-<div id="81b07e4f" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask <span class="im">import</span> SegmentationMask</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer <span class="im">import</span> Space</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> Space(shape<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>), spacing<span class="op">=</span>(<span class="fl">1.0</span>,<span class="fl">1.0</span>,<span class="fl">1.0</span>))</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>segmask <span class="op">=</span> SegmentationMask(</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    mask_array <span class="op">=</span> mask[np.newaxis, :, :],</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    mapping <span class="op">=</span> {<span class="st">"liver"</span>:<span class="dv">1</span>,<span class="st">"spleen"</span>:<span class="dv">2</span>,<span class="st">"kidney"</span>:<span class="dv">3</span>},</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> space</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, segmask.data.shape)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Space spacing:"</span>, segmask.space.spacing)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Mapping:"</span>, <span class="bu">dict</span>(segmask.mapping.items()))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="15e5a35a" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> medmask <span class="im">import</span> SegmentationMask</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacetransformer <span class="im">import</span> Space</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> Space(shape<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>), spacing<span class="op">=</span>(<span class="fl">1.0</span>,<span class="fl">1.0</span>,<span class="fl">1.0</span>))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>segmask <span class="op">=</span> SegmentationMask(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    mask_array <span class="op">=</span> mask[np.newaxis, :, :],</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    mapping <span class="op">=</span> {<span class="st">"liver"</span>:<span class="dv">1</span>,<span class="st">"spleen"</span>:<span class="dv">2</span>,<span class="st">"kidney"</span>:<span class="dv">3</span>},</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    space <span class="op">=</span> space</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, segmask.data.shape)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Space spacing:"</span>, segmask.space.spacing)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Mapping:"</span>, <span class="bu">dict</span>(segmask.mapping.items()))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Shape: (1, 3, 4)
+Space spacing: (1.0, 1.0, 1.0)
+Mapping: {'liver': 1, 'spleen': 2, 'kidney': 3}</code></pre>
+</div>
 </div>
 <section id="semantic-queries" class="level3">
 <h3 class="anchored" data-anchor-id="semantic-queries">Semantic Queries</h3>
-<div id="da772f6b" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>liver_mask <span class="op">=</span> segmask.get_binary_mask_by_names(<span class="st">"liver"</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Liver nonzero:"</span>, liver_mask.<span class="bu">sum</span>())</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>abdominal <span class="op">=</span> segmask.get_binary_mask_by_names([<span class="st">"liver"</span>,<span class="st">"spleen"</span>])</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Abdominal nonzero:"</span>, abdominal.<span class="bu">sum</span>())</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Label-based equal:"</span>, np.array_equal(liver_mask, segmask.get_binary_mask_by_labels(<span class="dv">1</span>)))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="f8d84223" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>liver_mask <span class="op">=</span> segmask.get_binary_mask_by_names(<span class="st">"liver"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Liver nonzero:"</span>, liver_mask.<span class="bu">sum</span>())</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>abdominal <span class="op">=</span> segmask.get_binary_mask_by_names([<span class="st">"liver"</span>,<span class="st">"spleen"</span>])</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Abdominal nonzero:"</span>, abdominal.<span class="bu">sum</span>())</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Label-based equal:"</span>, np.array_equal(liver_mask, segmask.get_binary_mask_by_labels(<span class="dv">1</span>)))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Liver nonzero: 3
+Abdominal nonzero: 5
+Label-based equal: True</code></pre>
+</div>
 </div>
 </section>
 <section id="maintenance-win" class="level3">
@@ -447,27 +476,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="incremental-build-safety" class="level2">
 <h2 class="anchored" data-anchor-id="incremental-build-safety">4. Incremental Build + Safety</h2>
-<div id="8bf6c9de" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>empty <span class="op">=</span> SegmentationMask.lazy_init(bit_depth<span class="op">=</span><span class="dv">8</span>, space<span class="op">=</span>space)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>liver_region <span class="op">=</span> np.zeros((<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>), dtype<span class="op">=</span><span class="bu">bool</span>)<span class="op">;</span> liver_region[<span class="dv">0</span>,<span class="dv">0</span>:<span class="dv">2</span>,<span class="dv">1</span>:<span class="dv">3</span>] <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>spleen_region <span class="op">=</span> np.zeros((<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>), dtype<span class="op">=</span><span class="bu">bool</span>)<span class="op">;</span> spleen_region[<span class="dv">0</span>,<span class="dv">1</span>:<span class="dv">3</span>,<span class="dv">2</span>:<span class="dv">4</span>] <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>empty.add_label(liver_region, label<span class="op">=</span><span class="dv">1</span>, name<span class="op">=</span><span class="st">"liver"</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>empty.add_label(spleen_region, label<span class="op">=</span><span class="dv">2</span>, name<span class="op">=</span><span class="st">"spleen"</span>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Labels:"</span>, <span class="bu">list</span>(empty.mapping))</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>combined <span class="op">=</span> empty.get_binary_mask_by_names([<span class="st">"liver"</span>,<span class="st">"spleen"</span>])</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Combined nonzero:"</span>, combined.<span class="bu">sum</span>())</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="e15218c1" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>empty <span class="op">=</span> SegmentationMask.lazy_init(bit_depth<span class="op">=</span><span class="dv">8</span>, space<span class="op">=</span>space)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>liver_region <span class="op">=</span> np.zeros((<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>), dtype<span class="op">=</span><span class="bu">bool</span>)<span class="op">;</span> liver_region[<span class="dv">0</span>,<span class="dv">0</span>:<span class="dv">2</span>,<span class="dv">1</span>:<span class="dv">3</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>spleen_region <span class="op">=</span> np.zeros((<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>), dtype<span class="op">=</span><span class="bu">bool</span>)<span class="op">;</span> spleen_region[<span class="dv">0</span>,<span class="dv">1</span>:<span class="dv">3</span>,<span class="dv">2</span>:<span class="dv">4</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>empty.add_label(liver_region, label<span class="op">=</span><span class="dv">1</span>, name<span class="op">=</span><span class="st">"liver"</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>empty.add_label(spleen_region, label<span class="op">=</span><span class="dv">2</span>, name<span class="op">=</span><span class="st">"spleen"</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Labels:"</span>, <span class="bu">list</span>(empty.mapping))</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>combined <span class="op">=</span> empty.get_binary_mask_by_names([<span class="st">"liver"</span>,<span class="st">"spleen"</span>])</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Combined nonzero:"</span>, combined.<span class="bu">sum</span>())</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Labels: ['liver', 'spleen']
+Combined nonzero: 7</code></pre>
+</div>
 </div>
 <p>Duplicate label detection prevents mistakes:</p>
-<div id="098fa965" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    test <span class="op">=</span> SegmentationMask.lazy_init(<span class="dv">8</span>, space<span class="op">=</span>Space(shape<span class="op">=</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>)))</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    test.add_label(np.ones((<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), dtype<span class="op">=</span><span class="bu">bool</span>), <span class="dv">1</span>, <span class="st">"organ_a"</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    test.add_label(np.ones((<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), dtype<span class="op">=</span><span class="bu">bool</span>), <span class="dv">1</span>, <span class="st">"organ_b"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ValueError</span> <span class="im">as</span> e:</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Duplicate prevented:"</span>, e)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="2860b448" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    test <span class="op">=</span> SegmentationMask.lazy_init(<span class="dv">8</span>, space<span class="op">=</span>Space(shape<span class="op">=</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>)))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    test.add_label(np.ones((<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), dtype<span class="op">=</span><span class="bu">bool</span>), <span class="dv">1</span>, <span class="st">"organ_a"</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    test.add_label(np.ones((<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>), dtype<span class="op">=</span><span class="bu">bool</span>), <span class="dv">1</span>, <span class="st">"organ_b"</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ValueError</span> <span class="im">as</span> e:</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Duplicate prevented:"</span>, e)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Duplicate prevented: Label 1 already exists in the mask array.</code></pre>
+</div>
 </div>
 </section>
 <section id="summary-1" class="level2">

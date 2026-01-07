@@ -364,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="挑战二语义信息的外部依赖管理" class="level2">
 <h2 class="anchored" data-anchor-id="挑战二语义信息的外部依赖管理">挑战二：语义信息的外部依赖管理</h2>
 <p>分割掩膜不仅定义了目标的<strong>空间位置</strong>，还需定义其<strong>语义类别</strong>（例如，这是哪个器官）。现有格式缺乏内置的、标准化的语义信息管理机制，导致标签的定义必须在文件外部进行管理。</p>
-<div id="c7eac9c2" class="cell" data-execution_count="1">
+<div id="fe4dff07" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 传统方法：通过外部代码或配置文件关联像素值与语义</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>organ_mapping <span class="op">=</span> {</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: <span class="st">"liver"</span>,</span>
@@ -405,7 +405,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="方法-1数值标签掩膜value-based-mask">方法 1：数值标签掩膜（Value-based Mask）</h3>
 <p>每个像素存储一个整数，代表其所属的单一类别。</p>
 <p><strong>优点</strong>：存储效率高，一个 <code>uint8</code> 数组即可表示多达255个互斥类别。 <strong>缺点</strong>：设计上无法表示重叠。一个像素只能属于一个类别。</p>
-<div id="825341c3" class="cell" data-execution_count="2">
+<div id="85764e6e" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 示例：构建互不重叠的肺叶掩膜</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>lung_lobe_mask <span class="op">=</span> np.zeros((<span class="dv">64</span>, <span class="dv">256</span>, <span class="dv">256</span>), dtype<span class="op">=</span>np.uint8)</span>
@@ -414,6 +414,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"存储的标签: </span><span class="sc">{</span>np<span class="sc">.</span>unique(lung_lobe_mask)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"数据类型: </span><span class="sc">{</span>lung_lobe_mask<span class="sc">.</span>dtype<span class="sc">}</span><span class="ss">, 支持 </span><span class="sc">{</span>np<span class="sc">.</span>iinfo(lung_lobe_mask.dtype)<span class="sc">.</span><span class="bu">max</span><span class="sc">}</span><span class="ss"> 个互斥类别"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>存储的标签: [0 1 2]
+数据类型: uint8, 支持 255 个互斥类别</code></pre>
+</div>
 </div>
 <p><strong>局限性</strong>：无法在同一数组中表示一个跨越区域 <code>1</code> 和 <code>2</code> 的病灶，因为赋值会覆盖已有的肺叶信息。</p>
 </section>
@@ -421,35 +425,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="方法-2位掩膜bitmask">方法 2：位掩膜（Bitmask）</h3>
 <p>使用二进制的每一位（bit）代表一个目标。</p>
 <p><strong>优点</strong>：通过按位或（<code>OR</code>）运算，允许一个像素同时属于多个类别。 <strong>缺点</strong>：可表示的目标数量有硬性上限，存储效率较低。</p>
-<div id="6ca4fe79" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 示例：使用位掩膜表示重叠</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>bit_mask <span class="op">=</span> np.zeros((<span class="dv">64</span>, <span class="dv">256</span>, <span class="dv">256</span>), dtype<span class="op">=</span>np.uint8)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 第0位代表左上叶</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>left_upper_lobe <span class="op">=</span> np.zeros_like(bit_mask)<span class="op">;</span> left_upper_lobe[<span class="dv">10</span>:<span class="dv">30</span>, <span class="dv">50</span>:<span class="dv">150</span>, <span class="dv">60</span>:<span class="dv">160</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>bit_mask <span class="op">|=</span> (left_upper_lobe <span class="op">&lt;&lt;</span> <span class="dv">0</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 第2位代表一个重叠的病灶</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>lesion <span class="op">=</span> np.zeros_like(bit_mask)<span class="op">;</span> lesion[<span class="dv">15</span>:<span class="dv">35</span>, <span class="dv">60</span>:<span class="dv">140</span>, <span class="dv">70</span>:<span class="dv">150</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>bit_mask <span class="op">|=</span> (lesion <span class="op">&lt;&lt;</span> <span class="dv">2</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"最大可表示的重叠结构数: </span><span class="sc">{</span>bit_mask<span class="sc">.</span>dtype<span class="sc">.</span>itemsize <span class="op">*</span> <span class="dv">8</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="c16ad647" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 示例：使用位掩膜表示重叠</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bit_mask <span class="op">=</span> np.zeros((<span class="dv">64</span>, <span class="dv">256</span>, <span class="dv">256</span>), dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 第0位代表左上叶</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>left_upper_lobe <span class="op">=</span> np.zeros_like(bit_mask)<span class="op">;</span> left_upper_lobe[<span class="dv">10</span>:<span class="dv">30</span>, <span class="dv">50</span>:<span class="dv">150</span>, <span class="dv">60</span>:<span class="dv">160</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>bit_mask <span class="op">|=</span> (left_upper_lobe <span class="op">&lt;&lt;</span> <span class="dv">0</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 第2位代表一个重叠的病灶</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>lesion <span class="op">=</span> np.zeros_like(bit_mask)<span class="op">;</span> lesion[<span class="dv">15</span>:<span class="dv">35</span>, <span class="dv">60</span>:<span class="dv">140</span>, <span class="dv">70</span>:<span class="dv">150</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>bit_mask <span class="op">|=</span> (lesion <span class="op">&lt;&lt;</span> <span class="dv">2</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"最大可表示的重叠结构数: </span><span class="sc">{</span>bit_mask<span class="sc">.</span>dtype<span class="sc">.</span>itemsize <span class="op">*</span> <span class="dv">8</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>最大可表示的重叠结构数: 8</code></pre>
+</div>
 </div>
 <p><strong>局限性</strong>：一个 <code>uint8</code> 数组最多支持 <strong>8</strong> 个可重叠目标，<code>uint64</code> 也仅支持 <strong>64</strong> 个。这对于需要分割上百个解剖结构（如 TotalSegmentator 数据集）的复杂任务是远远不够的。</p>
 </section>
 <section id="实际工程中的管理复杂性" class="level3">
 <h3 class="anchored" data-anchor-id="实际工程中的管理复杂性">实际工程中的管理复杂性</h3>
 <p>由于上述底层数据结构的限制，目前处理复杂分割任务的普遍做法是：为每个分割目标存储一个独立的掩膜文件。</p>
-<div id="731187d9" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 检查一个全身分割病例的文件存储情况</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>mask_dir <span class="op">=</span> <span class="st">'dicube-testdata/mask/s0000'</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>mask_files <span class="op">=</span> <span class="bu">list</span>(Path(mask_dir).glob(<span class="st">'*.nii.gz'</span>))</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"单个病例的分割结果包含: </span><span class="sc">{</span><span class="bu">len</span>(mask_files)<span class="sc">}</span><span class="ss"> 个独立的 .nii.gz 文件"</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件总大小: </span><span class="sc">{</span><span class="bu">sum</span>(os.path.getsize(f) <span class="cf">for</span> f <span class="kw">in</span> mask_files) <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="4555bef7" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 检查一个全身分割病例的文件存储情况</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>mask_dir <span class="op">=</span> <span class="st">'dicube-testdata/mask/s0000'</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>mask_files <span class="op">=</span> <span class="bu">list</span>(Path(mask_dir).glob(<span class="st">'*.nii.gz'</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"单个病例的分割结果包含: </span><span class="sc">{</span><span class="bu">len</span>(mask_files)<span class="sc">}</span><span class="ss"> 个独立的 .nii.gz 文件"</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"文件总大小: </span><span class="sc">{</span><span class="bu">sum</span>(os.path.getsize(f) <span class="cf">for</span> f <span class="kw">in</span> mask_files) <span class="op">/</span> <span class="dv">1024</span> <span class="op">/</span> <span class="dv">1024</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>单个病例的分割结果包含: 117 个独立的 .nii.gz 文件
+文件总大小: 5.12 MB</code></pre>
+</div>
 </div>
 <p>这种“一个目标一文件”的模式，导致了数据管理的碎片化，给数据存储、传输和下游处理带来了显著的复杂性。</p>
 </section>
