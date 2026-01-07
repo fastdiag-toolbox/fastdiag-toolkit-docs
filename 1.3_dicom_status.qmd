@@ -4,19 +4,19 @@ format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
+sidebar: zh
 ---
 
-## 什么是CONSISTENT状态：规范的三维采样网格
+## 什么是 `CONSISTENT` 状态：规范的三维采样网格
 
 DiCube主要为静态三维医学图像服务，其核心假设是整个3D图像在空间中对应着一个规范的采样网格（regular meshgrid）。当DICOM序列处于`CONSISTENT`状态时，它满足以下条件：
 
-1. **统一的像素间距**：所有切片的PixelSpacing相同
-2. **一致的图像尺寸**：所有切片的Rows和Columns相同  
-3. **规律的切片间距**：Z轴方向上切片位置呈等间距分布
-4. **统一的图像方向**：所有切片的ImageOrientationPatient相同
-5. **连续的实例编号**：InstanceNumber从1开始连续递增
-6. **完整的元数据**：所有必需的DICOM标签都存在且有效
+1. **统一的像素间距**：所有切片的 `PixelSpacing` 相同
+2. **一致的图像尺寸**：所有切片的 `Rows` 与 `Columns` 相同  
+3. **规律的切片间距**：Z 轴方向上切片位置等间距
+4. **统一的图像方向**：所有切片的 `ImageOrientationPatient` 相同
+5. **连续的实例编号**：`InstanceNumber` 从 1 开始连续递增
+6. **完整的元数据**：所有必需的 DICOM 标签存在且有效
 
 ```{python}
 import dicube
@@ -55,11 +55,11 @@ print(f"图像方向统一: {orientation_consistent}")
 
 只有当序列满足所有这些条件时，DiCube才能为其计算准确的空间信息（Space），构建完整的三维采样网格。
 
-## 非Location相关的状态问题
+## 非 Location 相关的状态问题
 
 DiCube使用四种模式来分类非Location相关的字段问题：`missing`、`non_uniform`、`gap`、`duplicate`。
 
-### 1. Missing 问题：关键字段缺失
+### 1. Missing：关键字段缺失
 
 ```{python}
 # 演示missing问题的检测
@@ -90,7 +90,7 @@ def demo_missing_problems():
 demo_missing_problems()
 ```
 
-### 2. Non_uniform 问题：字段值不一致
+### 2. Non_uniform：字段值不一致
 
 ```{python}
 def demo_non_uniform_problems():
@@ -124,7 +124,7 @@ def demo_non_uniform_problems():
 demo_non_uniform_problems()
 ```
 
-### 3. Duplicate 问题：重复值
+### 3. Duplicate：重复值
 
 ```{python}
 def demo_duplicate_problems():
@@ -150,7 +150,7 @@ def demo_duplicate_problems():
 demo_duplicate_problems()
 ```
 
-### 4. Gap 问题：数值跳跃
+### 4. Gap：数值跳跃
 
 ```{python}
 def demo_gap_problems():
@@ -183,7 +183,7 @@ def demo_gap_problems():
 demo_gap_problems()
 ```
 
-## Location相关的状态问题
+## Location 相关的状态问题
 
 Location相关的问题主要涉及切片在三维空间中的位置排列，这些问题会破坏规范采样网格的连续性。
 

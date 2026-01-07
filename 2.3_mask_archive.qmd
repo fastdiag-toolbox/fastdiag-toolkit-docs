@@ -4,7 +4,7 @@ format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
+sidebar: zh
 ---
 
 ## 摘要
@@ -167,7 +167,7 @@ for f in independent_files:
     print(f"  - {f}: {size / 1024:.1f} KB")
 ```
 
-## 5. MaskArchive方法：归档存储
+## 5. MaskArchive 方法：归档存储
 
 ```{python}
 # 方法2: MaskArchive归档存储

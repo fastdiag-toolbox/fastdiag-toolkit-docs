@@ -134,6 +134,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text">GitHub</span></a>
@@ -279,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Space概念详解</span></a>
+ <span class="menu-text">Space 概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -294,10 +302,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">该页面内容</h2>
    
   <ul>
-  <li><a href="#传统dicom的历史包袱元数据冗余" id="toc-传统dicom的历史包袱元数据冗余" class="nav-link active" data-scroll-target="#传统dicom的历史包袱元数据冗余">1. 传统DICOM的“历史包袱”：元数据冗余</a></li>
-  <li><a href="#拥抱标准基于dicom-json构建" id="toc-拥抱标准基于dicom-json构建" class="nav-link" data-scroll-target="#拥抱标准基于dicom-json构建">2. 拥抱标准：基于DICOM JSON构建</a></li>
+  <li><a href="#传统-dicom-的历史包袱元数据冗余" id="toc-传统-dicom-的历史包袱元数据冗余" class="nav-link active" data-scroll-target="#传统-dicom-的历史包袱元数据冗余">1. 传统 DICOM 的“历史包袱”：元数据冗余</a></li>
+  <li><a href="#拥抱标准基于-dicom-json-构建" id="toc-拥抱标准基于-dicom-json-构建" class="nav-link" data-scroll-target="#拥抱标准基于-dicom-json-构建">2. 拥抱标准：基于 DICOM JSON 构建</a></li>
   <li><a href="#dicommeta的核心设计共享与非共享元数据的分离" id="toc-dicommeta的核心设计共享与非共享元数据的分离" class="nav-link" data-scroll-target="#dicommeta的核心设计共享与非共享元数据的分离">3. DicomMeta的核心设计：共享与非共享元数据的分离</a></li>
-  <li><a href="#极致的压缩效率json-与-zstandard-的天作之合" id="toc-极致的压缩效率json-与-zstandard-的天作之合" class="nav-link" data-scroll-target="#极致的压缩效率json-与-zstandard-的天作之合">4. 极致的压缩效率：JSON 与 Zstandard 的天作之合</a></li>
+  <li><a href="#极致压缩json-zstandard" id="toc-极致压缩json-zstandard" class="nav-link" data-scroll-target="#极致压缩json-zstandard">4. 极致压缩：JSON + Zstandard</a></li>
   <li><a href="#提升开发体验commontags-枚举" id="toc-提升开发体验commontags-枚举" class="nav-link" data-scroll-target="#提升开发体验commontags-枚举">5. 提升开发体验：CommonTags 枚举</a></li>
   <li><a href="#性能的飞跃秒级与毫秒级的较量" id="toc-性能的飞跃秒级与毫秒级的较量" class="nav-link" data-scroll-target="#性能的飞跃秒级与毫秒级的较量">6. 性能的飞跃：秒级与毫秒级的较量</a></li>
   <li><a href="#总结" id="toc-总结" class="nav-link" data-scroll-target="#总结">7. 总结</a></li>
@@ -326,11 +334,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="传统dicom的历史包袱元数据冗余" class="level2">
-<h2 class="anchored" data-anchor-id="传统dicom的历史包袱元数据冗余">1. 传统DICOM的“历史包袱”：元数据冗余</h2>
+<section id="传统-dicom-的历史包袱元数据冗余" class="level2">
+<h2 class="anchored" data-anchor-id="传统-dicom-的历史包袱元数据冗余">1. 传统 DICOM 的“历史包袱”：元数据冗余</h2>
 <p>DICOM 作为医学影像的基石，其设计源于上世纪末，采用了“一文件一图像（切片）”的存储模式。这种模式在当时是合理的，但随着影像设备采集的图像层数急剧增加（从几十层到数千层），其固有的<strong>元数据冗余</strong>问题成为了一个巨大的性能瓶颈和存储负担。</p>
-<p>在一个包含数百个 <code>.dcm</code> 文件的CT序列中，绝大部分描述患者身份、检查信息、设备参数的元数据在每个文件中都被完整地复制了一遍。只有像切片位置、实例编号这类与特定切片相关的少数信息是变化的。</p>
-<div id="296bf465" class="cell" data-execution_count="1">
+<p>在一个包含数百个 <code>.dcm</code> 文件的 CT 序列中，绝大部分描述患者身份、检查信息、设备参数的元数据在每个文件中都被完整地复制了一遍。只有像切片位置、实例编号这类与特定切片相关的少数信息是变化的。</p>
+<div id="fab7a380" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -360,11 +368,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>正如代码所示，绝大多数元数据是<strong>序列共享</strong>的，而 <code>InstanceNumber</code> 等则是<strong>切片独有</strong>的。这种设计不仅浪费了大量存储空间，更严重的是，当需要获取整个序列的某个信息时（例如窗宽窗位），程序必须遍历并解析数百个文件，导致了极低的 I/O 效率。</p>
 </section>
-<section id="拥抱标准基于dicom-json构建" class="level2">
-<h2 class="anchored" data-anchor-id="拥抱标准基于dicom-json构建">2. 拥抱标准：基于DICOM JSON构建</h2>
-<p>为了让DICOM更好地融入现代Web和数据科学生态，DICOM标准委员会在 PS3.18 部分正式引入了 <a href="https://www.google.com/search?q=https://dicom.nema.org/medical/dicom/current/output/html/part18.html%23chapter_F">DICOM JSON模型</a>。它为DICOM元数据提供了一种标准化的、人类可读的JSON表示形式，极大地简化了非医疗专业软件对DICOM信息的解析和利用。</p>
+<section id="拥抱标准基于-dicom-json-构建" class="level2">
+<h2 class="anchored" data-anchor-id="拥抱标准基于-dicom-json-构建">2. 拥抱标准：基于 DICOM JSON 构建</h2>
+<p>为了让 DICOM 更好地融入现代 Web 和数据科学生态，DICOM 标准委员会在 PS3.18 部分引入了 DICOM JSON 模型。它为 DICOM 元数据提供了标准化、人类可读的 JSON 表示，简化了非医疗软件对 DICOM 信息的解析与利用。</p>
 <p>DiCube 没有重新发明轮子，而是完全遵从这一现代化标准来组织其内部的元数据。</p>
-<div id="8d1605b9" class="cell" data-execution_count="2">
+<div id="903d741c" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># PyDICOM原生支持将元数据导出为DICOM JSON</span></span>
@@ -392,13 +400,13 @@ Tag 00200013 (VR: IS): 73</code></pre>
 </section>
 <section id="dicommeta的核心设计共享与非共享元数据的分离" class="level2">
 <h2 class="anchored" data-anchor-id="dicommeta的核心设计共享与非共享元数据的分离">3. DicomMeta的核心设计：共享与非共享元数据的分离</h2>
-<p><code>DicomMeta</code> 是 DiCube 中负责高效管理元数据的核心类。它的设计理念直击传统DICOM的痛点，通过引入<strong>共享/非共享元数据分离机制</strong>，从根本上解决了冗余问题。</p>
+<p><code>DicomMeta</code> 是 DiCube 中负责高效管理元数据的核心类。它通过<strong>共享/非共享元数据分离机制</strong>直击传统 DICOM 的冗余痛点。</p>
 <ul>
 <li><strong>共享 (Shared) 元数据</strong>: 在整个图像序列中保持不变的信息，如 <code>PatientID</code>、<code>StudyInstanceUID</code>、<code>Modality</code> 等。这部分数据只存储一次。</li>
 <li><strong>非共享 (Per-Slice) 元数据</strong>: 每个切片独有的信息，如 <code>InstanceNumber</code>、<code>ImagePositionPatient</code>、<code>SliceLocation</code> 等。这部分数据会为每个切片单独存储。</li>
 </ul>
 <p>当从DICOM文件夹加载数据时，DiCube会自动分析并分离这两类元数据。</p>
-<div id="6029d8b4" class="cell" data-execution_count="3">
+<div id="60117fc7" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 从DICOM文件夹加载数据，DiCube在内部自动完成元数据分离</span></span>
@@ -796,7 +804,7 @@ I2000             200        -1282.2   [-102.08, -31.26, 1282.2]         202944.
 </div>
 </div>
 <p>这种智能分离机制带来了立竿见影的好处：元数据存储占用急剧减少，并且访问序列级信息（如患者姓名）时无需遍历，实现了O(1)时间复杂度的查找。</p>
-<div id="f1b7fff7" class="cell" data-execution_count="4">
+<div id="1ea966b3" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 检查共享元数据</span></span>
@@ -819,11 +827,11 @@ InstanceNumber (是否为共享数据: False)
 </div>
 </div>
 </section>
-<section id="极致的压缩效率json-与-zstandard-的天作之合" class="level2">
-<h2 class="anchored" data-anchor-id="极致的压缩效率json-与-zstandard-的天作之合">4. 极致的压缩效率：JSON 与 Zstandard 的天作之合</h2>
+<section id="极致压缩json-zstandard" class="level2">
+<h2 class="anchored" data-anchor-id="极致压缩json-zstandard">4. 极致压缩：JSON + Zstandard</h2>
 <p>分离元数据解决了冗余，但如何高效地存储这些结构化的文本信息呢？DiCube 选择了由Facebook开发的现代化压缩算法 <strong>Zstandard (zstd)</strong>。</p>
-<p>Zstd 特别擅长压缩具有重复模式的结构化文本数据（如JSON），在压缩比和解压速度上均显著优于传统的 gzip。</p>
-<div id="f083791c" class="cell" data-execution_count="5">
+<p>Zstd 擅长压缩具有重复模式的结构化文本数据（如 JSON），在压缩比与解压速度上均显著优于传统 gzip。</p>
+<div id="4897ace1" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 估算原始DICOM头文件的总大小</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dicom_header_total_size <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>all_files <span class="op">=</span> <span class="bu">list</span>(Path(dicom_dir).glob(<span class="st">"*"</span>))</span>
@@ -857,7 +865,7 @@ InstanceNumber (是否为共享数据: False)
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"元数据压缩比高达: </span><span class="sc">{</span>dicom_header_total_size <span class="op">/</span> dicube_meta_size<span class="sc">:.1f}</span><span class="ss">x"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>原始DICOM头文件总大小 (估算): 2280.90 KB
-DiCube Zstd压缩后元数据大小: 25.72 KB
+DiCube Zstd压缩后元数据大小: 25.73 KB
 元数据压缩比高达: 88.7x</code></pre>
 </div>
 </div>
@@ -867,7 +875,7 @@ DiCube Zstd压缩后元数据大小: 25.72 KB
 <h2 class="anchored" data-anchor-id="提升开发体验commontags-枚举">5. 提升开发体验：CommonTags 枚举</h2>
 <p>直接操作 <code>(0010,0010)</code> 这样的十六进制标签不仅难以记忆，而且容易出错。为了提升代码的可读性和健壮性，DiCube 提供了一个便捷的 <code>CommonTags</code> 枚举类，收录了绝大部分常用的DICOM标签。</p>
 <p>开发者可以通过语义化的名称来访问元数据，使代码更加清晰、易于维护。</p>
-<div id="5c7f6ff0" class="cell" data-execution_count="6">
+<div id="a3381140" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用CommonTags枚举类，代码更具可读性</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>positions <span class="op">=</span> meta.get_values(CommonTags.ImagePositionPatient)</span>
@@ -889,7 +897,7 @@ DiCube Zstd压缩后元数据大小: 25.72 KB
 <li><strong>DiCube方式</strong>：只需打开1个文件，解压一小块元数据，并直接访问解析好的列表。</li>
 </ul>
 <!-- end list -->
-<div id="c3099163" class="cell" data-execution_count="7">
+<div id="2f7419a7" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 传统DICOM方式：遍历所有文件</span></span>
@@ -913,10 +921,10 @@ DiCube Zstd压缩后元数据大小: 25.72 KB
 <span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理临时文件</span></span>
 <span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>os.remove(<span class="st">"temp_demo.dcbs"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>传统DICOM I/O耗时: 149.66 毫秒
-DiCube DicomMeta 耗时: 3.30 毫秒
+<pre><code>传统DICOM I/O耗时: 157.19 毫秒
+DiCube DicomMeta 耗时: 5.42 毫秒
 
-性能提升: 45.4 倍</code></pre>
+性能提升: 29.0 倍</code></pre>
 </div>
 </div>
 <p>几十倍的性能提升是显而易见的。这背后是 I/O 模式的根本性变革：从多次、琐碎的文件操作，转变为一次性、集中的数据块读取。</p>

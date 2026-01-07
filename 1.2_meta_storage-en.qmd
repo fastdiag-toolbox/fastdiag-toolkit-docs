@@ -1,0 +1,125 @@
+---
+title: "Metadata Storage Mechanism"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## 1. Legacy DICOM Pattern: Redundant Headers
+
+DICOM’s one‑file‑per‑slice model leads to heavy repetition of series‑level metadata across hundreds of files. Only a few fields vary per slice (e.g., `InstanceNumber`, `ImagePositionPatient`). This bloats storage and hurts I/O when scanning entire series for a single field.
+
+```{python}
+import pydicom, os
+from pathlib import Path
+
+dicom_dir = "dicube-testdata/dicom/sample_200"
+dicom_files = list(Path(dicom_dir).glob("*"))[:2]
+ds1 = pydicom.dcmread(dicom_files[0], stop_before_pixels=True)
+ds2 = pydicom.dcmread(dicom_files[1], stop_before_pixels=True)
+
+print("PatientName same:", ds1.PatientName == ds2.PatientName)
+print("SeriesInstanceUID same:", ds1.SeriesInstanceUID == ds2.SeriesInstanceUID)
+print("InstanceNumber same:", ds1.InstanceNumber == ds2.InstanceNumber)
+```
+
+## 2. Embracing DICOM JSON
+
+DICOM PS3.18 defines a JSON model for headers—human‑readable and tool‑friendly. DiCube adopts it internally to maximize interoperability and future‑proofing.
+
+```{python}
+import json
+ds = pydicom.dcmread(dicom_files[0], stop_before_pixels=True)
+dicom_json_str = ds.to_json()
+data = json.loads(dicom_json_str)
+for tag in ["00100010","00080021","00200013"]:  # PatientName, SeriesDate, InstanceNumber
+    if tag in data:
+        vr = data[tag]["vr"]
+        value = data[tag].get("Value", ["N/A"])[0]
+        print(f"Tag {tag} (VR: {vr}): {value}")
+```
+
+## 3. DicomMeta: Split Shared vs Per‑Slice
+
+DiCube’s `DicomMeta` separates shared vs per‑slice fields to remove redundancy and enable O(1) shared lookups and fast vectorized per‑slice queries.
+
+```{python}
+import dicube
+from dicube.dicom import CommonTags
+
+dcb_image = dicube.load_from_dicom_folder(dicom_dir)
+dicube.save(dcb_image, "temp_demo.dcbs")
+meta = dicube.load_meta("temp_demo.dcbs")
+meta.display()
+
+patient_name = meta.get_shared_value(CommonTags.PatientName)
+print("PatientName:", patient_name, "(shared)")
+
+instance_numbers = meta.get_values(CommonTags.InstanceNumber)
+print("InstanceNumber count:", len(instance_numbers))
+```
+
+## 4. Extreme Compression: JSON + Zstandard
+
+Structured, repetitive text (JSON) compresses extremely well with Zstandard (zstd).
+
+```{python}
+from pathlib import Path
+import zstandard as zstd
+import numpy as np
+
+all_files = list(Path(dicom_dir).glob("*"))
+dicom_header_total_size = 0
+for f in all_files:
+    total_size = os.path.getsize(f)
+    ds = pydicom.dcmread(f)
+    pixel_size = ds.pixel_array.nbytes if hasattr(ds,'pixel_array') else 0
+    dicom_header_total_size += (total_size - pixel_size)
+
+meta_json_str = meta.to_json()
+compressed = zstd.ZstdCompressor(level=9).compress(meta_json_str.encode('utf-8'))
+print("DICOM header total (est.):", dicom_header_total_size/1024, "KB")
+print("DiCube meta (zstd):", len(compressed)/1024, "KB")
+```
+
+## 5. Developer Ergonomics: CommonTags
+
+Semantic tag enums replace error‑prone hex codes and improve readability.
+
+```{python}
+instance_numbers = meta.get_values(CommonTags.InstanceNumber)
+positions = meta.get_values(CommonTags.ImagePositionPatient)
+print("Instance range:", min(instance_numbers), "-", max(instance_numbers))
+print("Z range:", positions[0][2], "→", positions[-1][2])
+```
+
+## 6. Performance Leap
+
+Vectorized metadata access vs file‑by‑file parsing delivers order‑of‑magnitude wins.
+
+```{python}
+import time
+
+start = time.time();
+dicom_instance_numbers = []
+for f in all_files:
+    ds = pydicom.dcmread(f, stop_before_pixels=True)
+    dicom_instance_numbers.append(int(ds.InstanceNumber))
+dicom_ms = (time.time()-start)*1000
+
+start = time.time();
+dicube_instance_numbers = meta.get_values(CommonTags.InstanceNumber)
+dicube_ms = (time.time()-start)*1000
+
+print(f"DICOM: {dicom_ms:.2f} ms, DiCube: {dicube_ms:.2f} ms, Speedup: {dicom_ms/dicube_ms:.1f}×")
+os.remove("temp_demo.dcbs")
+```
+
+## 7. Summary
+
+- Remove redundancy by splitting shared/per‑slice; JSON + zstd yields tiny headers
+- Millisecond‑level access for common queries; ideal for listing, previews, and AI
+- Standards‑aligned (DICOM JSON), future‑proof and interoperable
+

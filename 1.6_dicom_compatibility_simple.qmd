@@ -4,10 +4,10 @@ format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
+sidebar: zh
 ---
 
-## 1. 问题背景：PACS系统集成需求
+## 1. 问题背景：PACS 系统集成需求
 
 DiCube作为高效的医学影像存储方案，需要与现有DICOM生态系统无缝集成，以确保PACS厂商能够顺利采用这一技术。
 
@@ -15,7 +15,7 @@ DiCube作为高效的医学影像存储方案，需要与现有DICOM生态系统
 
 ## 2. 流式读取机制：技术实现与性能优势
 
-### 2.1 基本使用接口
+### 2.1. 基本使用接口
 
 DiCube的流式读取器提供了简洁的API接口，支持按帧索引动态生成DICOM数据：
 
@@ -38,7 +38,7 @@ with open('dicube-testdata/sample_10_0.dcm', 'wb') as f:
 print(f"✅ 成功生成DICOM数据，大小: {len(slice_0)} 字节")
 ```
 
-### 2.2 数据处理与可视化分析
+### 2.2. 数据处理与可视化分析
 
 流式读取器生成的DICOM数据完全符合标准规范，可以直接被PyDICOM等主流库处理：
 
@@ -76,54 +76,57 @@ for slice_idx in [0, 4, 8]:
 
 这种流式处理方式的核心优势在于**按需转换**：系统只在实际访问时才进行DCBS到DICOM的转换，避免了预先转换整个序列所带来的存储开销和延迟。
 
-## 3. 编码兼容性挑战：HTJ2K标准的生态现状
+## 3. 编码兼容性挑战：HTJ2K 标准的生态现状
 
-### 3.1 技术标准演进背景
+### 3.1. 技术标准演进背景
 
-DiCube采用的DCBS格式基于**HTJ2K（High Throughput JPEG 2000）**编码器，该技术于2023年正式被DICOM标准委员会认可并纳入官方规范。HTJ2K相比传统JPEG 2000具有显著的性能优势：
+DiCube 采用的 DCBS 格式基于 **HTJ2K（High Throughput JPEG 2000）** 编码器，该技术于 2023 年被 DICOM 标准委员会纳入官方规范。HTJ2K 相比传统 JPEG 2000 具有显著优势：
 
-- **编码速度提升**：相比标准JPEG 2000，编码效率提高约10-15倍
-- **压缩质量保持**：在相同压缩比下保持无损或近无损的图像质量
-- **硬件友好性**：更适合GPU并行加速和硬件实现
+- 编码速度提升：相比标准 JPEG 2000，编码效率提高约 10–15 倍
+- 压缩质量保持：在相同压缩比下保持无损或近无损的图像质量
+- 硬件友好性：更适合 GPU 并行与硬件实现
 
 然而，作为一个相对较新的标准，HTJ2K在现有医学影像生态系统中的支持程度存在显著差异。
 
-### 3.2 当前兼容性状况分析
+### 3.2. 当前兼容性状况分析
 
-基于广泛的测试和调研，我们梳理了主要工具和平台对HTJ2K编码DICOM文件的支持状况：
+基于测试与调研，我们梳理了主要工具和平台对 HTJ2K 编码 DICOM 文件的支持状况：
 
 **✅ 已支持的工具链**
 
-- **PyDICOM** ≥3.0.0：需配合 `pylibjpeg-openjpeg` >2.0 和 `pylibjpeg` >2.0
-- **Python-GDCM** 3.0.26：原生支持HTJ2K解码
-- **ITK-SNAP** 4.4.0：医学影像可视化工具，支持HTJ2K格式
+- PyDICOM ≥ 3.0.0：需配合 `pylibjpeg-openjpeg` > 2.0 与 `pylibjpeg` > 2.0
+- Python-GDCM 3.0.26：原生支持 HTJ2K 解码
+- ITK-SNAP 4.4.0：可视化工具，支持 HTJ2K
 
 **❌ 尚未支持的工具**
 
-- **Horos** 4.0.1：Mac平台流行的DICOM查看器
-- **SimpleITK** 2.5.2：影响部分Python科学计算工作流
+- Horos 4.0.1：Mac 平台 DICOM 查看器
+- SimpleITK 2.5.2：影响部分 Python 科学计算工作流
 
 
-### 3.3 最大兼容性解决方案
+### 3.3. 最大兼容性解决方案
 
-针对兼容性挑战，DiCube提供了**强制解压缩**选项，通过`force_uncompressed=True`参数生成未压缩的DICOM文件：
+针对兼容性挑战，DiCube 提供“强制解压缩”选项：初始化 `DcbStreamingReader` 时传入 `force_uncompressed=True`，即可生成未压缩的 DICOM：
 
-```python
+```{python}
 # 生成最大兼容性的未压缩DICOM
-uncompressed_dicom = dcb_stream.get_dicom_for_frame(0, force_uncompressed=True)
+from dicube.dicom import DcbStreamingReader
+
+dcb_stream_uncompressed = DcbStreamingReader(dcb_file, force_uncompressed=True)
+uncompressed_dicom = dcb_stream_uncompressed.get_dicom_for_frame(0)
 ```
 
 这种方案的权衡分析：
 
 **优势：**
-- **广泛兼容**：未压缩DICOM几乎被所有医学影像工具支持
-- **处理简单**：无需考虑解码器依赖和版本问题
-- **传输可靠**：在网络传输中不存在解码失败的风险
+- 广泛兼容：未压缩 DICOM 几乎被所有医学影像工具支持
+- 处理简单：无需考虑解码器依赖和版本问题
+- 传输可靠：网络传输中不存在解码失败风险
 
 **劣势：**
-- **文件体积**：未压缩文件通常比HTJ2K压缩版本大5-10倍
-- **网络负载**：增加PACS系统的存储和带宽压力
-- **传输延迟**：大文件传输时间显著增加
+- 文件体积：未压缩文件通常比 HTJ2K 压缩版本大 5–10 倍
+- 网络负载：增加 PACS 系统的存储与带宽压力
+- 传输延迟：大文件传输时间显著增加
 
 ## 4. 部署建议：渐进式兼容性策略
 
@@ -134,4 +137,3 @@ uncompressed_dicom = dcb_stream.get_dicom_for_frame(0, force_uncompressed=True)
 3. **监控升级**：跟踪关键依赖库的更新，逐步扩大HTJ2K的使用范围
 
 这种策略平衡了技术先进性与现实兼容性的需求，为DiCube在医疗机构的广泛采用提供了可行路径。
-

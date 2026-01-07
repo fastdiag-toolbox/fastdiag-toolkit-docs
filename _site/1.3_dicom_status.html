@@ -134,6 +134,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text">GitHub</span></a>
@@ -279,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Space概念详解</span></a>
+ <span class="menu-text">Space 概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -294,15 +302,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">该页面内容</h2>
    
   <ul>
-  <li><a href="#什么是consistent状态规范的三维采样网格" id="toc-什么是consistent状态规范的三维采样网格" class="nav-link active" data-scroll-target="#什么是consistent状态规范的三维采样网格">什么是CONSISTENT状态：规范的三维采样网格</a></li>
-  <li><a href="#非location相关的状态问题" id="toc-非location相关的状态问题" class="nav-link" data-scroll-target="#非location相关的状态问题">非Location相关的状态问题</a>
+  <li><a href="#什么是-consistent-状态规范的三维采样网格" id="toc-什么是-consistent-状态规范的三维采样网格" class="nav-link active" data-scroll-target="#什么是-consistent-状态规范的三维采样网格">什么是 <code>CONSISTENT</code> 状态：规范的三维采样网格</a></li>
+  <li><a href="#非-location-相关的状态问题" id="toc-非-location-相关的状态问题" class="nav-link" data-scroll-target="#非-location-相关的状态问题">非 Location 相关的状态问题</a>
   <ul class="collapse">
-  <li><a href="#missing-问题关键字段缺失" id="toc-missing-问题关键字段缺失" class="nav-link" data-scroll-target="#missing-问题关键字段缺失">1. Missing 问题：关键字段缺失</a></li>
-  <li><a href="#non_uniform-问题字段值不一致" id="toc-non_uniform-问题字段值不一致" class="nav-link" data-scroll-target="#non_uniform-问题字段值不一致">2. Non_uniform 问题：字段值不一致</a></li>
-  <li><a href="#duplicate-问题重复值" id="toc-duplicate-问题重复值" class="nav-link" data-scroll-target="#duplicate-问题重复值">3. Duplicate 问题：重复值</a></li>
-  <li><a href="#gap-问题数值跳跃" id="toc-gap-问题数值跳跃" class="nav-link" data-scroll-target="#gap-问题数值跳跃">4. Gap 问题：数值跳跃</a></li>
+  <li><a href="#missing关键字段缺失" id="toc-missing关键字段缺失" class="nav-link" data-scroll-target="#missing关键字段缺失">1. Missing：关键字段缺失</a></li>
+  <li><a href="#non_uniform字段值不一致" id="toc-non_uniform字段值不一致" class="nav-link" data-scroll-target="#non_uniform字段值不一致">2. Non_uniform：字段值不一致</a></li>
+  <li><a href="#duplicate重复值" id="toc-duplicate重复值" class="nav-link" data-scroll-target="#duplicate重复值">3. Duplicate：重复值</a></li>
+  <li><a href="#gap数值跳跃" id="toc-gap数值跳跃" class="nav-link" data-scroll-target="#gap数值跳跃">4. Gap：数值跳跃</a></li>
   </ul></li>
-  <li><a href="#location相关的状态问题" id="toc-location相关的状态问题" class="nav-link" data-scroll-target="#location相关的状态问题">Location相关的状态问题</a>
+  <li><a href="#location-相关的状态问题" id="toc-location-相关的状态问题" class="nav-link" data-scroll-target="#location-相关的状态问题">Location 相关的状态问题</a>
   <ul class="collapse">
   <li><a href="#missing-location位置信息缺失" id="toc-missing-location位置信息缺失" class="nav-link" data-scroll-target="#missing-location位置信息缺失">1. Missing Location：位置信息缺失</a></li>
   <li><a href="#dwelling-location位置停滞" id="toc-dwelling-location位置停滞" class="nav-link" data-scroll-target="#dwelling-location位置停滞">2. Dwelling Location：位置停滞</a></li>
@@ -343,19 +351,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="什么是consistent状态规范的三维采样网格" class="level2">
-<h2 class="anchored" data-anchor-id="什么是consistent状态规范的三维采样网格">什么是CONSISTENT状态：规范的三维采样网格</h2>
+<section id="什么是-consistent-状态规范的三维采样网格" class="level2">
+<h2 class="anchored" data-anchor-id="什么是-consistent-状态规范的三维采样网格">什么是 <code>CONSISTENT</code> 状态：规范的三维采样网格</h2>
 <p>DiCube主要为静态三维医学图像服务，其核心假设是整个3D图像在空间中对应着一个规范的采样网格（regular meshgrid）。当DICOM序列处于<code>CONSISTENT</code>状态时，它满足以下条件：</p>
 <ol type="1">
-<li><strong>统一的像素间距</strong>：所有切片的PixelSpacing相同</li>
-<li><strong>一致的图像尺寸</strong>：所有切片的Rows和Columns相同<br>
+<li><strong>统一的像素间距</strong>：所有切片的 <code>PixelSpacing</code> 相同</li>
+<li><strong>一致的图像尺寸</strong>：所有切片的 <code>Rows</code> 与 <code>Columns</code> 相同<br>
 </li>
-<li><strong>规律的切片间距</strong>：Z轴方向上切片位置呈等间距分布</li>
-<li><strong>统一的图像方向</strong>：所有切片的ImageOrientationPatient相同</li>
-<li><strong>连续的实例编号</strong>：InstanceNumber从1开始连续递增</li>
-<li><strong>完整的元数据</strong>：所有必需的DICOM标签都存在且有效</li>
+<li><strong>规律的切片间距</strong>：Z 轴方向上切片位置等间距</li>
+<li><strong>统一的图像方向</strong>：所有切片的 <code>ImageOrientationPatient</code> 相同</li>
+<li><strong>连续的实例编号</strong>：<code>InstanceNumber</code> 从 1 开始连续递增</li>
+<li><strong>完整的元数据</strong>：所有必需的 DICOM 标签存在且有效</li>
 </ol>
-<div id="0087368c" class="cell" data-execution_count="1">
+<div id="fe54bebc" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube <span class="im">import</span> get_dicom_status, DicomStatus</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
@@ -399,12 +407,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>只有当序列满足所有这些条件时，DiCube才能为其计算准确的空间信息（Space），构建完整的三维采样网格。</p>
 </section>
-<section id="非location相关的状态问题" class="level2">
-<h2 class="anchored" data-anchor-id="非location相关的状态问题">非Location相关的状态问题</h2>
+<section id="非-location-相关的状态问题" class="level2">
+<h2 class="anchored" data-anchor-id="非-location-相关的状态问题">非 Location 相关的状态问题</h2>
 <p>DiCube使用四种模式来分类非Location相关的字段问题：<code>missing</code>、<code>non_uniform</code>、<code>gap</code>、<code>duplicate</code>。</p>
-<section id="missing-问题关键字段缺失" class="level3">
-<h3 class="anchored" data-anchor-id="missing-问题关键字段缺失">1. Missing 问题：关键字段缺失</h3>
-<div id="cf91f5ef" class="cell" data-execution_count="2">
+<section id="missing关键字段缺失" class="level3">
+<h3 class="anchored" data-anchor-id="missing关键字段缺失">1. Missing：关键字段缺失</h3>
+<div id="d89de18d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 演示missing问题的检测</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> copy</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom.dicom_tags <span class="im">import</span> get_tag_key</span>
@@ -439,9 +447,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="non_uniform-问题字段值不一致" class="level3">
-<h3 class="anchored" data-anchor-id="non_uniform-问题字段值不一致">2. Non_uniform 问题：字段值不一致</h3>
-<div id="a79b8f39" class="cell" data-execution_count="3">
+<section id="non_uniform字段值不一致" class="level3">
+<h3 class="anchored" data-anchor-id="non_uniform字段值不一致">2. Non_uniform：字段值不一致</h3>
+<div id="69c8d3ee" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo_non_uniform_problems():</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== Non_uniform 问题演示 ==="</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -479,9 +487,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="duplicate-问题重复值" class="level3">
-<h3 class="anchored" data-anchor-id="duplicate-问题重复值">3. Duplicate 问题：重复值</h3>
-<div id="7afe9a52" class="cell" data-execution_count="4">
+<section id="duplicate重复值" class="level3">
+<h3 class="anchored" data-anchor-id="duplicate重复值">3. Duplicate：重复值</h3>
+<div id="2dd70105" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo_duplicate_problems():</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== Duplicate 问题演示 ==="</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -513,9 +521,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="gap-问题数值跳跃" class="level3">
-<h3 class="anchored" data-anchor-id="gap-问题数值跳跃">4. Gap 问题：数值跳跃</h3>
-<div id="5f991eea" class="cell" data-execution_count="5">
+<section id="gap数值跳跃" class="level3">
+<h3 class="anchored" data-anchor-id="gap数值跳跃">4. Gap：数值跳跃</h3>
+<div id="58855c15" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo_gap_problems():</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== Gap 问题演示 ==="</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -555,8 +563,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="location相关的状态问题" class="level2">
-<h2 class="anchored" data-anchor-id="location相关的状态问题">Location相关的状态问题</h2>
+<section id="location-相关的状态问题" class="level2">
+<h2 class="anchored" data-anchor-id="location-相关的状态问题">Location 相关的状态问题</h2>
 <p>Location相关的问题主要涉及切片在三维空间中的位置排列，这些问题会破坏规范采样网格的连续性。</p>
 <section id="missing-location位置信息缺失" class="level3">
 <h3 class="anchored" data-anchor-id="missing-location位置信息缺失">1. Missing Location：位置信息缺失</h3>

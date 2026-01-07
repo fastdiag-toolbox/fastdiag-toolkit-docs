@@ -4,11 +4,11 @@ format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
+sidebar: zh
 ---
 
 
-## 1\. 问题描述：SimpleITK的轴序不一致
+## 1. 问题描述：SimpleITK 的轴序不一致
 
 在使用SimpleITK处理医学影像时，一个常见的问题是`SimpleITK.Image`对象和它转换成的NumPy数组在轴的顺序上不一致。具体来说，`image.GetSize()`返回的维度顺序是 `(X, Y, Z)`，而`sitk.GetArrayFromImage(image)`返回的NumPy数组的 `shape` 属性却是 `(Z, Y, X)`。
 
@@ -33,7 +33,7 @@ print("array.shape ->", array.shape, "(Z, Y, X)")
 
 这种不一致并非程序错误，而是一个为了性能而做的设计选择。它源于不同编程生态系统对多维数组存储方式的历史差异。
 
-## 2\. 历史背景：行优先 (C-Order) 与列优先 (F-Order)
+## 2. 历史背景：行优先 (C-Order) 与列优先 (F-Order)
 
 计算机内存本质上是一维线性的。多维数组在内存中的存储方式主要有两种标准：
 
@@ -43,9 +43,9 @@ print("array.shape ->", array.shape, "(Z, Y, X)")
 
 医学影像领域的许多基础库，如ITK、VTK，以及DICOM标准的设计，都深受Fortran科学计算传统的影响，因此其内部数据表示和元数据都遵循 `(X, Y, Z)` 的列优先约定。SimpleITK作为ITK的接口，自然也继承了这一约定。
 
-## 3\. 技术原理：零拷贝转换及其后果
+## 3. 技术原理：零拷贝转换及其后果
 
-当调用`sitk.GetArrayFromImage()`时，SimpleITK为了最大化效率，采用了\*\*零拷贝（Zero-Copy）\*\*机制。它不会在内存中重新排列数据来适应NumPy的行优先标准，而是直接将ITK管理的内存块暴露给NumPy，同时提供一套新的“解读规则”（即`shape`和`strides`元数据），让NumPy能以行优先的方式去理解这段原本按列优先存储的数据。
+当调用 `sitk.GetArrayFromImage()` 时，SimpleITK 为了最大化效率，采用了零拷贝（Zero-Copy）机制。它不会在内存中重新排列数据来适应 NumPy 的行优先标准，而是直接将 ITK 管理的内存块暴露给 NumPy，同时提供一套新的“解读规则”（即 `shape` 和 `strides` 元数据），让 NumPy 能以行优先的方式去理解这段原本按列优先存储的数据。
 
 我们可以用NumPy模拟这个过程。对于同一段线性数据，可以通过不同的`strides`（步长）信息，将其解释为不同的多维结构。
 
@@ -72,7 +72,7 @@ print(f"F-order Strides: {f_order_array.strides}")
 
 SimpleITK的零拷贝操作虽然速度极快，但其直接后果就是轴序的翻转 `(X, Y, Z) -> (Z, Y, X)`。这个结果给开发者带来了实际的编程负担和潜在风险。
 
-## 4\. 给开发者带来的实际问题
+## 4. 给开发者带来的实际问题
 
 轴序不一致会引发两类主要问题：认知负担和性能开销。
 
@@ -146,7 +146,7 @@ print(f"额外内存占用: {contiguous_copy_xyz.nbytes / 1024 / 1024:.1f} MB")
 
 结论是，手动修正轴序问题，要么牺牲计算性能和访问效率，要么付出高昂的时间和内存成本。这个代价在深度学习和GPU计算场景中尤其显著，因为每次模型推理都需要进行连续化处理。
 
-## 5\. DiCube的解决方案：设计上的一致性
+## 5. DiCube的解决方案：设计上的一致性
 
 DiCube的设计哲学是将复杂性封装在库内部，为用户提供一个简单、一致的编程接口。它选择在数据加载阶段一次性解决轴序问题。
 

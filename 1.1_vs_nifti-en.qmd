@@ -1,0 +1,144 @@
+---
+title: "Compared With NIfTI"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+## 1. Problem: NIfTI’s Core Challenges In Clinical Workflows
+
+NIfTI is the de facto format in neuroimaging research, enabling sharing and algorithm development. However, when used in rigorous clinical workflows, three issues become prominent: inconsistent spatial conventions, heavy metadata loss, and limited compression efficiency.
+
+These issues compound across the lifecycle from acquisition (DICOM) → research (NIfTI) → back to clinical systems (e.g., navigation/archiving), creating obstacles for consistency and traceability.
+
+### 1.1. Spatial Inconsistency Across Libraries
+
+Reading the same NIfTI file using different libraries can yield inconsistent origin and orientation (RAS+ vs LPS+ practices), leading to downstream registration and analysis risks.
+
+```{python}
+import nibabel as nib
+import SimpleITK as sitk
+import numpy as np
+
+nifti_file = "dicube-testdata/nifti/CT_Philips.nii.gz"
+nib_image = nib.load(nifti_file)
+sitk_image = sitk.ReadImage(nifti_file)
+
+print(f"Nibabel Origin: {nib_image.affine[:3, 3]} (RAS+ oriented)")
+print(f"SimpleITK Origin: {sitk_image.GetOrigin()} (LPS+ oriented)")
+
+x_nib = nib_image.affine[:3, 0]; x_nib /= np.linalg.norm(x_nib)
+print(f"Nibabel X Orientation: {x_nib}")
+print(f"SimpleITK X Orientation: {np.array(sitk_image.GetDirection())[:3]}")
+
+y_nib = nib_image.affine[:3, 1]; y_nib /= np.linalg.norm(y_nib)
+print(f"Nibabel Y Orientation: {y_nib}")
+print(f"SimpleITK Y Orientation: {np.array(sitk_image.GetDirection())[3:6]}")
+
+z_nib = nib_image.affine[:3, 2]; z_nib /= np.linalg.norm(z_nib)
+print(f"Nibabel Z Orientation: {z_nib}")
+print(f"SimpleITK Z Orientation: {np.array(sitk_image.GetDirection())[6:9]}")
+```
+
+### 1.2. Coordinate Systems: LPS+ vs RAS+
+
+- LPS+ (DICOM/clinical): X→Left, Y→Posterior, Z→Superior
+- RAS+ (neuro/research): X→Right, Y→Anterior, Z→Superior
+
+They differ on X and Y directions, explaining the common sign flips across libraries.
+
+### 1.3. Dual Affines: `qform` vs `sform`
+
+NIfTI stores two affine transforms: `qform` (scanner space) and `sform` (aligned/standard space). Libraries may prefer one over the other, producing varying origins/orientations for the same file.
+
+```{python}
+qform = nib_image.get_qform()
+sform = nib_image.get_sform()
+print("qform (scanner space):\n", np.round(qform, 3))
+print("\nsform (standard space):\n", np.round(sform, 3))
+```
+
+### 1.4. Metadata Loss
+
+Converting from DICOM to NIfTI typically drops most clinical metadata (patient, study, device, acquisition parameters). The file becomes detached from its clinical context and is hard to round‑trip safely.
+
+### 1.5. Limited Compression Efficiency
+
+`.nii.gz` uses gzip (DEFLATE), a general‑purpose codec not optimized for medical images. Compression ratios are typically 2–4×, leaving room for improvement.
+
+## 2. DiCube: Designed For Clinical + Research Together
+
+### 2.1. Unified Coordinate System (LPS+)
+
+DiCube adopts DICOM’s LPS+ consistently. Reading the same DICOM series, DiCube matches SimpleITK’s interpretation.
+
+```{python}
+import os
+import pydicom
+import dicube, numpy as np
+import SimpleITK as sitk
+
+dicom_dir = "dicube-testdata/dicom/sample_200"
+
+# SimpleITK read DICOM series (LPS+)
+series_reader = sitk.ImageSeriesReader()
+series_ids = series_reader.GetGDCMSeriesIDs(dicom_dir)
+series_files = series_reader.GetGDCMSeriesFileNames(dicom_dir, series_ids[0])
+series_reader.SetFileNames(series_files)
+sitk_image_from_dicom = series_reader.Execute()
+
+# Keep one original DICOM for later round-trip comparisons
+original_dcm = pydicom.dcmread(series_files[0], stop_before_pixels=True)
+
+dcb_image = dicube.load_from_dicom_folder(dicom_dir, sort_method=dicube.SortMethod.POSITION_RIGHT_HAND)
+print("SimpleITK (from DICOM):", np.round(sitk_image_from_dicom.GetOrigin(), 3))
+print("DiCube      (from DICOM):", np.round(dcb_image.space.origin, 3))
+```
+
+### 2.2. Full Metadata Preservation and Round‑Trip
+
+DiCube embeds all DICOM metadata (including private tags) and supports lossless DICOM round‑trip.
+
+```{python}
+import os
+import pydicom
+
+dicube.save(dcb_image, 'dicube-testdata/test.dcbs')
+dicube.save_to_dicom_folder(dcb_image, 'dicube-testdata/roundtrip_test')
+
+roundtrip_slice_path = 'dicube-testdata/roundtrip_test/slice_0000.dcm'
+roundtrip_dcm = pydicom.dcmread(roundtrip_slice_path)
+
+print("Round‑trip fields match:")
+for field in ['PatientID','StudyDate','Manufacturer','WindowWidth','WindowCenter']:
+    print(field, original_dcm.get(field) == roundtrip_dcm.get(field))
+```
+
+### 2.3. Efficient Medical Compression (HTJ2K)
+
+HTJ2K (a DICOM standard codec) provides significantly higher compression ratios and fast throughput compared to gzip for imaging data.
+
+### 2.4. Optimized I/O
+
+Single‑file structure + efficient codec lead to faster loads than `.nii.gz` in many scenarios.
+
+```{python}
+import time
+
+start = time.time(); _ = sitk.ReadImage(nifti_file); nifti_ms = (time.time()-start)*1000
+start = time.time(); _ = dicube.load('dicube-testdata/test.dcbs'); dcb_ms = (time.time()-start)*1000
+print(f"NIfTI load: {nifti_ms:.0f} ms, DiCube load: {dcb_ms:.0f} ms")
+```
+
+## 3. Summary
+
+| Feature         | NIfTI Issue                             | DiCube Solution                                 |
+| -------------- | --------------------------------------- | ------------------------------------------------|
+| Coordinates     | Mixed LPS+/RAS+, `qform`/`sform` ambiguity | Unified LPS+ (DICOM‑consistent)                  |
+| Metadata        | >95% clinical metadata lost             | 100% lossless round‑trip with full tags         |
+| Compression     | Gzip (2–4×)                              | HTJ2K (often 5–15× or better)                   |
+| DICOM Workflow  | One‑way lossy conversion                 | Two‑way lossless; safe clinical container       |
+| I/O + API       | Gzip‑bound I/O, library variance         | Single‑file + clear, consistent APIs            |
+
+Conclusion: NIfTI works well for pure research exchange. For applications that require integrity, traceability, and clinical interoperability, DiCube offers a safer, faster, and more reliable modern alternative.

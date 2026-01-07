@@ -4,14 +4,14 @@ format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
+sidebar: zh
 ---
 
-## 1\. 传统DICOM的“历史包袱”：元数据冗余
+## 1. 传统 DICOM 的“历史包袱”：元数据冗余
 
 DICOM 作为医学影像的基石，其设计源于上世纪末，采用了“一文件一图像（切片）”的存储模式。这种模式在当时是合理的，但随着影像设备采集的图像层数急剧增加（从几十层到数千层），其固有的**元数据冗余**问题成为了一个巨大的性能瓶颈和存储负担。
 
-在一个包含数百个 `.dcm` 文件的CT序列中，绝大部分描述患者身份、检查信息、设备参数的元数据在每个文件中都被完整地复制了一遍。只有像切片位置、实例编号这类与特定切片相关的少数信息是变化的。
+在一个包含数百个 `.dcm` 文件的 CT 序列中，绝大部分描述患者身份、检查信息、设备参数的元数据在每个文件中都被完整地复制了一遍。只有像切片位置、实例编号这类与特定切片相关的少数信息是变化的。
 
 ```{python}
 import pydicom
@@ -39,9 +39,9 @@ print(f"两个切片的 InstanceNumber 相同: {instance_same}")
 
 正如代码所示，绝大多数元数据是**序列共享**的，而 `InstanceNumber` 等则是**切片独有**的。这种设计不仅浪费了大量存储空间，更严重的是，当需要获取整个序列的某个信息时（例如窗宽窗位），程序必须遍历并解析数百个文件，导致了极低的 I/O 效率。
 
-## 2\. 拥抱标准：基于DICOM JSON构建
+## 2. 拥抱标准：基于 DICOM JSON 构建
 
-为了让DICOM更好地融入现代Web和数据科学生态，DICOM标准委员会在 PS3.18 部分正式引入了 [DICOM JSON模型](https://www.google.com/search?q=https://dicom.nema.org/medical/dicom/current/output/html/part18.html%23chapter_F)。它为DICOM元数据提供了一种标准化的、人类可读的JSON表示形式，极大地简化了非医疗专业软件对DICOM信息的解析和利用。
+为了让 DICOM 更好地融入现代 Web 和数据科学生态，DICOM 标准委员会在 PS3.18 部分引入了 DICOM JSON 模型。它为 DICOM 元数据提供了标准化、人类可读的 JSON 表示，简化了非医疗软件对 DICOM 信息的解析与利用。
 
 DiCube 没有重新发明轮子，而是完全遵从这一现代化标准来组织其内部的元数据。
 
@@ -67,9 +67,9 @@ for tag in key_tags:
 
 通过采用DICOM JSON标准，DiCube确保了其元数据的**互操作性**和**未来兼容性**。
 
-## 3\. DicomMeta的核心设计：共享与非共享元数据的分离
+## 3. DicomMeta的核心设计：共享与非共享元数据的分离
 
-`DicomMeta` 是 DiCube 中负责高效管理元数据的核心类。它的设计理念直击传统DICOM的痛点，通过引入**共享/非共享元数据分离机制**，从根本上解决了冗余问题。
+`DicomMeta` 是 DiCube 中负责高效管理元数据的核心类。它通过**共享/非共享元数据分离机制**直击传统 DICOM 的冗余痛点。
 
   - **共享 (Shared) 元数据**: 在整个图像序列中保持不变的信息，如 `PatientID`、`StudyInstanceUID`、`Modality` 等。这部分数据只存储一次。
   - **非共享 (Per-Slice) 元数据**: 每个切片独有的信息，如 `InstanceNumber`、`ImagePositionPatient`、`SliceLocation` 等。这部分数据会为每个切片单独存储。
@@ -112,11 +112,11 @@ print(f"共找到 {len(instance_numbers)} 个InstanceNumber")
 print(f"范围从: {min(instance_numbers)} 到 {max(instance_numbers)}")
 ```
 
-## 4\. 极致的压缩效率：JSON 与 Zstandard 的天作之合
+## 4. 极致压缩：JSON + Zstandard
 
 分离元数据解决了冗余，但如何高效地存储这些结构化的文本信息呢？DiCube 选择了由Facebook开发的现代化压缩算法 **Zstandard (zstd)**。
 
-Zstd 特别擅长压缩具有重复模式的结构化文本数据（如JSON），在压缩比和解压速度上均显著优于传统的 gzip。
+Zstd 擅长压缩具有重复模式的结构化文本数据（如 JSON），在压缩比与解压速度上均显著优于传统 gzip。
 
 ```{python}
 # 估算原始DICOM头文件的总大小
@@ -154,7 +154,7 @@ print(f"元数据压缩比高达: {dicom_header_total_size / dicube_meta_size:.1
 
 超过 80 倍的压缩比！这表明 `DicomMeta` 的共享机制与 zstd 压缩形成了完美的组合拳，将元数据存储开销降至最低。
 
-## 5\. 提升开发体验：CommonTags 枚举
+## 5. 提升开发体验：CommonTags 枚举
 
 直接操作 `(0010,0010)` 这样的十六进制标签不仅难以记忆，而且容易出错。为了提升代码的可读性和健壮性，DiCube 提供了一个便捷的 `CommonTags` 枚举类，收录了绝大部分常用的DICOM标签。
 
@@ -170,7 +170,7 @@ print(f"实例编号范围: {min(instance_numbers)} - {max(instance_numbers)}")
 print(f"切片Z轴位置范围: 从 {positions[0][2]:.2f} 到 {positions[-1][2]:.2f}")
 ```
 
-## 6\. 性能的飞跃：秒级与毫秒级的较量
+## 6. 性能的飞跃：秒级与毫秒级的较量
 
 `DicomMeta` 的设计优势最终体现在了性能上。让我们来实际对比一下，从一个包含200个切片的序列中读取所有 `InstanceNumber` 所需的时间。
 
@@ -206,7 +206,7 @@ os.remove("temp_demo.dcbs")
 
 几十倍的性能提升是显而易见的。这背后是 I/O 模式的根本性变革：从多次、琐碎的文件操作，转变为一次性、集中的数据块读取。
 
-## 7\. 总结
+## 7. 总结
 
 DiCube 的 `DicomMeta` 机制并非简单的元数据存储，而是一套针对现代医学影像数据处理特点精心设计的解决方案。其核心优势在于：
 

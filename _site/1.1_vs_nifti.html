@@ -134,6 +134,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text">GitHub</span></a>
@@ -279,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Space概念详解</span></a>
+ <span class="menu-text">Space 概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -294,11 +302,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">该页面内容</h2>
    
   <ul>
-  <li><a href="#问题描述nifti在临床应用中的核心挑战" id="toc-问题描述nifti在临床应用中的核心挑战" class="nav-link active" data-scroll-target="#问题描述nifti在临床应用中的核心挑战">1. 问题描述：NIfTI在临床应用中的核心挑战</a>
+  <li><a href="#问题描述nifti-在临床应用中的核心挑战" id="toc-问题描述nifti-在临床应用中的核心挑战" class="nav-link active" data-scroll-target="#问题描述nifti-在临床应用中的核心挑战">1. 问题描述：NIfTI 在临床应用中的核心挑战</a>
   <ul class="collapse">
   <li><a href="#坐标系统混乱不同库的各自为政" id="toc-坐标系统混乱不同库的各自为政" class="nav-link" data-scroll-target="#坐标系统混乱不同库的各自为政">1.1. 坐标系统混乱：不同库的“各自为政”</a></li>
   <li><a href="#坐标系之争lps-vs-ras" id="toc-坐标系之争lps-vs-ras" class="nav-link" data-scroll-target="#坐标系之争lps-vs-ras">1.2. 坐标系之争：LPS+ vs RAS+</a></li>
-  <li><a href="#双重仿射矩阵的困惑qform-vs-sform" id="toc-双重仿射矩阵的困惑qform-vs-sform" class="nav-link" data-scroll-target="#双重仿射矩阵的困惑qform-vs-sform">1.3. 双重仿射矩阵的困惑：qform vs sform</a></li>
+  <li><a href="#双重仿射矩阵的困惑qform-vs-sform" id="toc-双重仿射矩阵的困惑qform-vs-sform" class="nav-link" data-scroll-target="#双重仿射矩阵的困惑qform-vs-sform">1.3. 双重仿射矩阵的困惑：<code>qform</code> vs <code>sform</code></a></li>
   <li><a href="#临床元数据的大量丢失" id="toc-临床元数据的大量丢失" class="nav-link" data-scroll-target="#临床元数据的大量丢失">1.4. 临床元数据的大量丢失</a></li>
   <li><a href="#压缩效率不足" id="toc-压缩效率不足" class="nav-link" data-scroll-target="#压缩效率不足">1.5. 压缩效率不足</a></li>
   </ul></li>
@@ -307,7 +315,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#统一且明确的坐标系统坚守lps标准" id="toc-统一且明确的坐标系统坚守lps标准" class="nav-link" data-scroll-target="#统一且明确的坐标系统坚守lps标准">2.1. 统一且明确的坐标系统：坚守LPS+标准</a></li>
   <li><a href="#完整的元数据保留与往返能力" id="toc-完整的元数据保留与往返能力" class="nav-link" data-scroll-target="#完整的元数据保留与往返能力">2.2. 完整的元数据保留与往返能力</a></li>
   <li><a href="#高效的现代医学影像压缩htj2k" id="toc-高效的现代医学影像压缩htj2k" class="nav-link" data-scroll-target="#高效的现代医学影像压缩htj2k">2.3. 高效的现代医学影像压缩：HTJ2K</a></li>
-  <li><a href="#优化的io性能" id="toc-优化的io性能" class="nav-link" data-scroll-target="#优化的io性能">2.4. 优化的I/O性能</a></li>
+  <li><a href="#优化的-io-性能" id="toc-优化的-io-性能" class="nav-link" data-scroll-target="#优化的-io-性能">2.4. 优化的 I/O 性能</a></li>
   </ul></li>
   <li><a href="#总结对比" id="toc-总结对比" class="nav-link" data-scroll-target="#总结对比">3. 总结对比</a></li>
   </ul>
@@ -335,15 +343,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="问题描述nifti在临床应用中的核心挑战" class="level2">
-<h2 class="anchored" data-anchor-id="问题描述nifti在临床应用中的核心挑战">1. 问题描述：NIfTI在临床应用中的核心挑战</h2>
-<p>NIfTI 格式作为神经影像研究领域的通用标准，极大地促进了学术交流与算法开发。然而，当试图将其应用于严谨的临床工作流时，其固有的设计缺陷便暴露无遗。本文将深入探讨 NIfTI 在实际临床应用中面临的三个核心挑战：<strong>坐标系统混乱</strong>、<strong>元数据大量丢失</strong>和<strong>压缩效率不足</strong>。</p>
-<p>这些问题并非孤立存在，而是在数据从临床影像设备（DICOM格式）转换到研究环境（NIfTI格式），再尝试回归临床系统（例如用于手术导航或存档）的完整生命周期中相互交织，构成了数据一致性和可追溯性的巨大障碍。</p>
+<section id="问题描述nifti-在临床应用中的核心挑战" class="level2">
+<h2 class="anchored" data-anchor-id="问题描述nifti-在临床应用中的核心挑战">1. 问题描述：NIfTI 在临床应用中的核心挑战</h2>
+<p>结论：NIfTI 在临床工作流中的三大痛点是坐标系统不一致、元数据丢失与压缩效率不足；DiCube 提供统一坐标（LPS+）、无损往返与 HTJ2K 压缩的系统性应对。</p>
+<p>NIfTI 格式作为神经影像研究领域的通用标准，极大地促进了学术交流与算法开发。然而，当试图将其应用于严谨的临床工作流时，其固有的设计缺陷便暴露无遗。本文聚焦 NIfTI 在实际临床应用中面临的三个核心挑战：<strong>坐标系统混乱</strong>、<strong>元数据大量丢失</strong>、<strong>压缩效率不足</strong>。</p>
+<p>这些问题并非孤立存在，而是在数据从临床影像设备（DICOM 格式）转换到研究环境（NIfTI 格式），再尝试回归临床系统（例如用于手术导航或存档）的完整生命周期中相互交织，形成数据一致性与可追溯性的障碍。</p>
 <p>让我们首先通过代码演示，直观地揭示这些问题的具体表现。</p>
 <section id="坐标系统混乱不同库的各自为政" class="level3">
 <h3 class="anchored" data-anchor-id="坐标系统混乱不同库的各自为政">1.1. 坐标系统混乱：不同库的“各自为政”</h3>
 <p>NIfTI 格式最令人困惑的问题之一，是其空间坐标定义的不统一。使用不同的标准库读取同一个 NIfTI 文件，竟然会得到截然不同的空间定位结果。这种不一致性为后续的图像配准、融合以及定量分析埋下了巨大的隐患。</p>
-<div id="f93b23ef" class="cell" data-execution_count="1">
+<div id="27126a5c" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nibabel <span class="im">as</span> nib</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> SimpleITK <span class="im">as</span> sitk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -414,14 +423,14 @@ SimpleITK Z Orientation: [0. 0. 1.]</code></pre>
 <p>两者在Z轴上定义一致，但在X轴和Y轴上方向完全相反。这就是为什么我们在上面的代码输出中看到 X 和 Y 方向向量互为相反数。<code>SimpleITK</code> 严格遵循 DICOM 的 LPS+ 约定，而 <code>nibabel</code> 则更倾向于神经影像研究的 RAS+ 约定。</p>
 </section>
 <section id="双重仿射矩阵的困惑qform-vs-sform" class="level3">
-<h3 class="anchored" data-anchor-id="双重仿射矩阵的困惑qform-vs-sform">1.3. 双重仿射矩阵的困惑：qform vs sform</h3>
+<h3 class="anchored" data-anchor-id="双重仿射矩阵的困惑qform-vs-sform">1.3. 双重仿射矩阵的困惑：<code>qform</code> vs <code>sform</code></h3>
 <p>仅仅是 LPS+ 和 RAS+ 的区别还不足以解释原点（Origin）的巨大差异。NIfTI 格式内部设计了两个独立的仿射变换矩阵来描述图像空间与世界空间的关系，这进一步加剧了混乱：</p>
 <ul>
 <li><strong><code>qform</code> (quaternion form)</strong>：主要用于记录图像<strong>相对于扫描仪设备坐标系</strong>的空间信息。它通常直接从原始 DICOM 头的 <code>Image Position (Patient)</code> 和 <code>Image Orientation (Patient)</code> 标签计算得来，反映的是图像采集时的物理位置和方向。</li>
 <li><strong><code>sform</code> (standard form)</strong>：主要用于记录图像<strong>对齐到某个标准空间模板（如 MNI 或 Talairach 脑模板）后</strong>的空间信息。这个矩阵通常是图像配准（registration）过程的产物。</li>
 </ul>
 <p>一个 NIfTI 文件可以同时包含 <code>qform</code> 和 <code>sform</code>，当两者不一致时，不同的读取库会根据自身的应用背景做出不同的选择：</p>
-<div id="bffa5bc1" class="cell" data-execution_count="2">
+<div id="a8f231c9" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 探查NIfTI文件内部的双重变换矩阵</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>qform <span class="op">=</span> nib_image.get_qform()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sform <span class="op">=</span> nib_image.get_sform()</span>
@@ -454,7 +463,7 @@ sform (对齐至标准空间):
 <h3 class="anchored" data-anchor-id="临床元数据的大量丢失">1.4. 临床元数据的大量丢失</h3>
 <p>从 DICOM 转换为 NIfTI 的过程是“有损”的，但损失的并非像素数据，而是宝贵的元数据（Metadata）。DICOM 文件内嵌了数百个描述患者、检查、设备、序列参数等信息的标签，这些信息对于临床诊断、质量控制和法律追溯至关重要。</p>
 <p>NIfTI 格式的设计初衷是服务于匿名的图像算法研究，因此它几乎丢弃了所有与空间定位无关的元数据。</p>
-<div id="4c73e3e8" class="cell" data-execution_count="3">
+<div id="23a19f8a" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -487,7 +496,7 @@ NIfTI格式仅保留了图像尺寸、像素间距、原点和方向等基本空
 <section id="压缩效率不足" class="level3">
 <h3 class="anchored" data-anchor-id="压缩效率不足">1.5. 压缩效率不足</h3>
 <p>为了节省存储空间，NIfTI 文件通常使用 <code>.nii.gz</code> 的扩展名，即采用 gzip 进行压缩。Gzip 是一种通用的、无损的压缩算法，但它并非为医学影像这类具有高度空间相关性的数据而优化。因此，其压缩比通常相当有限。</p>
-<div id="0b887524" class="cell" data-execution_count="4">
+<div id="b0eea314" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 对比原始DICOM和NIfTI格式的存储大小</span></span>
@@ -521,8 +530,8 @@ NIfTI (gzip压缩后)大小: 53.42 MB
 <section id="统一且明确的坐标系统坚守lps标准" class="level3">
 <h3 class="anchored" data-anchor-id="统一且明确的坐标系统坚守lps标准">2.1. 统一且明确的坐标系统：坚守LPS+标准</h3>
 <p>DiCube 彻底摒弃了 NIfTI 模棱两可的双重坐标定义，统一采用 DICOM 标准的 LPS+ 坐标系。这确保了从 DICOM 到 DiCube 的转换过程中，空间信息得到精确、无歧义的保留，保证了与 PACS 系统和各类医学影像软件的无缝对接。</p>
-<p>让我们将 DiCube、SimpleITK（读取DICOM）和 Nibabel（读取NIfTI）的处理结果进行直接对比：</p>
-<div id="d5afa594" class="cell" data-execution_count="5">
+<p>让我们将 DiCube、SimpleITK（读取 DICOM）和 nibabel（读取 NIfTI）的处理结果进行对比：</p>
+<div id="855326af" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -551,7 +560,7 @@ Nibabel     (从NIfTI): [ 102.08   31.26 1282.2 ] (RAS+)
 <section id="完整的元数据保留与往返能力" class="level3">
 <h3 class="anchored" data-anchor-id="完整的元数据保留与往返能力">2.2. 完整的元数据保留与往返能力</h3>
 <p>DiCube 的核心特性之一是实现了 DICOM 元数据的<strong>无损往返（Lossless Round-trip）</strong>。它将原始 DICOM 文件中的所有元数据（包括私有标签）完整地封装在 DiCube 文件内部。这意味着，你可以随时从 DiCube 文件中恢复出与原始文件一模一样的 DICOM 序列。</p>
-<div id="676bef43" class="cell" data-execution_count="6">
+<div id="5a4fa917" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 将DiCube对象保存为.dcbs文件，然后再转换回DICOM文件夹</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, <span class="st">'dicube-testdata/test.dcbs'</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>dicube.save_to_dicom_folder(dcb_image, <span class="st">'dicube-testdata/roundtrip_test'</span>)</span>
@@ -585,7 +594,7 @@ Nibabel     (从NIfTI): [ 102.08   31.26 1282.2 ] (RAS+)
 字段'WindowCenter': ✓ (原始: [90, 90], 恢复后: [90.0, 90.0])</code></pre>
 </div>
 </div>
-<p>近乎 100% 的元数据保留率证明了 DiCube 具备在临床环境中安全流转的能力，数据始终保持其完整性和可追溯性。</p>
+<p>近乎 100% 的元数据保留率表明 DiCube 具备在临床环境中安全流转的能力，数据保持完整性与可追溯性。</p>
 </section>
 <section id="高效的现代医学影像压缩htj2k" class="level3">
 <h3 class="anchored" data-anchor-id="高效的现代医学影像压缩htj2k">2.3. 高效的现代医学影像压缩：HTJ2K</h3>
@@ -596,7 +605,7 @@ Nibabel     (从NIfTI): [ 102.08   31.26 1282.2 ] (RAS+)
 <li><strong>标准兼容</strong>：作为 DICOM 标准的一部分，确保了长期的兼容性和互操作性。</li>
 </ul>
 <!-- end list -->
-<div id="403fd5f8" class="cell" data-execution_count="7">
+<div id="61552d1d" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 压缩效果对比</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dcb_size <span class="op">=</span> os.path.getsize(<span class="st">'dicube-testdata/test.dcbs'</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -616,10 +625,10 @@ DiCube相比NIfTI，文件体积减小了: 45.7%</code></pre>
 </div>
 <p>显著的压缩效率提升意味着更低的存储成本和更快的网络传输速度。</p>
 </section>
-<section id="优化的io性能" class="level3">
-<h3 class="anchored" data-anchor-id="优化的io性能">2.4. 优化的I/O性能</h3>
+<section id="优化的-io-性能" class="level3">
+<h3 class="anchored" data-anchor-id="优化的-io-性能">2.4. 优化的 I/O 性能</h3>
 <p>除了压缩率，DiCube 的文件结构和 HTJ2K 解码器也为快速读取进行了优化。在大部分场景下，加载 DiCube 文件比加载 gzip 压缩的 NIfTI 文件更快。</p>
-<div id="0f1b883e" class="cell" data-execution_count="8">
+<div id="9c36e019" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 性能对比测试</span></span>
@@ -639,13 +648,13 @@ DiCube相比NIfTI，文件体积减小了: 45.7%</code></pre>
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
 <span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"NIfTI 在此测试中加载更快。"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>NIfTI (.nii.gz) 加载耗时: 566 ms
-DiCube (.dcbs) 加载耗时: 149 ms
-DiCube 加载性能提升: 280%</code></pre>
+<pre><code>NIfTI (.nii.gz) 加载耗时: 520 ms
+DiCube (.dcbs) 加载耗时: 137 ms
+DiCube 加载性能提升: 279%</code></pre>
 </div>
 </div>
 <p>更快的加载速度对于交互式应用和大规模数据处理流水线都至关重要。</p>
-<div id="2c673783" class="cell" data-execution_count="9">
+<div id="ab6e17e2" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 清理测试生成的文件和文件夹</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>

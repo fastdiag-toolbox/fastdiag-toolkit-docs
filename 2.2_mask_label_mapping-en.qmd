@@ -1,0 +1,143 @@
+---
+title: "Semantic Mapping System"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## Summary
+
+Traditional mask workflows rely on external configs or filenames to map numeric labels to anatomy, leading to inconsistency and maintenance burden. MedMask embeds a bidirectional semantic mapping so masks are self-describing.
+
+## 1. Problems With Traditional Management
+
+### 1.1. External Config Files
+
+```{python}
+import numpy as np, json
+mask = np.array([[0,0,1,1],[0,2,2,1],[3,3,0,0]])
+config = {"1": "liver", "2": "spleen", "3": "kidney"}
+with open('label_config.json','w') as f:
+    json.dump(config, f)
+print("Mask shape:", mask.shape, "labels:", np.unique(mask))
+print("Config:", config)
+```
+
+Risks: extra files, sync issues, no guarantee of completeness.
+
+### 1.2. Filenames / NPZ Keys
+
+```{python}
+np.savez_compressed('multi_organ.npz',
+    liver = (mask == 1),
+    spleen = (mask == 2),
+    kidney = (mask == 3)
+)
+loaded = np.load('multi_organ.npz')
+print("Keys:", list(loaded.keys()))
+```
+
+Limited expressiveness as label count grows; lacks standardization.
+
+## 2. MedMask Solution
+
+### 2.1. Embedded Bidirectional Mapping
+
+```{python}
+from medmask.core.mapping import LabelMapping
+
+mapping = LabelMapping({"liver": 1, "spleen": 2, "kidney": 3})
+print("Forward:", mapping['liver'])
+print("Inverse:", mapping.inverse(1))
+print("Attr access:", mapping.spleen)
+print("Callable:", mapping('kidney'))
+```
+
+### 2.2. Flexible Access Patterns
+
+```{python}
+liver = mapping['liver']
+spleen = mapping.spleen
+kidney = mapping('kidney')
+organ = mapping.inverse(1)
+print("Lookup consistency:", liver, spleen, kidney, organ)
+```
+
+### 2.3. JSON Serialization
+
+```{python}
+json_repr = mapping.to_json()
+restored = LabelMapping.from_json(json_repr)
+print("Round-trip equal:", mapping._name_to_label == restored._name_to_label)
+```
+
+## 3. SegmentationMask Integration
+
+```{python}
+from medmask import SegmentationMask
+from spacetransformer import Space
+
+space = Space(shape=(1,3,4), spacing=(1.0,1.0,1.0))
+segmask = SegmentationMask(
+    mask_array = mask[np.newaxis, :, :],
+    mapping = {"liver":1,"spleen":2,"kidney":3},
+    space = space
+)
+print("Shape:", segmask.data.shape)
+print("Space spacing:", segmask.space.spacing)
+print("Mapping:", dict(segmask.mapping.items()))
+```
+
+### Semantic Queries
+
+```{python}
+liver_mask = segmask.get_binary_mask_by_names("liver")
+print("Liver nonzero:", liver_mask.sum())
+
+abdominal = segmask.get_binary_mask_by_names(["liver","spleen"])
+print("Abdominal nonzero:", abdominal.sum())
+
+print("Label-based equal:", np.array_equal(liver_mask, segmask.get_binary_mask_by_labels(1)))
+```
+
+### Maintenance Win
+
+Code references organ names, not label integers, so changing mappings no longer requires code edits.
+
+## 4. Incremental Build + Safety
+
+```{python}
+empty = SegmentationMask.lazy_init(bit_depth=8, space=space)
+
+liver_region = np.zeros((1,3,4), dtype=bool); liver_region[0,0:2,1:3] = True
+spleen_region = np.zeros((1,3,4), dtype=bool); spleen_region[0,1:3,2:4] = True
+
+empty.add_label(liver_region, label=1, name="liver")
+empty.add_label(spleen_region, label=2, name="spleen")
+print("Labels:", list(empty.mapping))
+combined = empty.get_binary_mask_by_names(["liver","spleen"])
+print("Combined nonzero:", combined.sum())
+```
+
+Duplicate label detection prevents mistakes:
+
+```{python}
+from dicube.dicom import CommonTags
+try:
+    test = SegmentationMask.lazy_init(8, space=Space(shape=(2,2,2)))
+    test.add_label(np.ones((2,2,2), dtype=bool), 1, "organ_a")
+    test.add_label(np.ones((2,2,2), dtype=bool), 1, "organ_b")
+except ValueError as e:
+    print("Duplicate prevented:", e)
+```
+
+## 5. Summary
+
+| Traditional | MedMask | Benefit |
+| ----------- | ------- | ------- |
+| External configs | Embedded mapping | Self-contained data |
+| Manual validation | Runtime consistency checks | Fewer human errors |
+| Hard-coded labels | Semantic queries | Readable, maintainable code |
+| Cross-team sync | Self-describing files | Easier collaboration |

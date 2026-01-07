@@ -1,0 +1,157 @@
+---
+title: "DICOM Series Status"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## What Is `CONSISTENT`: A Regular 3D Sampling Grid
+
+For static 3D images, DiCube assumes a regular sampling grid. A series is `CONSISTENT` if it satisfies:
+
+1. Uniform pixel spacing: `PixelSpacing` shared
+2. Uniform image shape: `Rows` and `Columns` shared
+3. Regular slice spacing: Z positions are evenly spaced
+4. Uniform orientation: `ImageOrientationPatient` shared
+5. Contiguous instance numbers: `InstanceNumber` starts at 1 and increments by 1
+6. Complete metadata: all required DICOM tags exist and are valid
+
+```{python}
+import dicube
+from dicube import get_dicom_status, DicomStatus
+from dicube.dicom import CommonTags
+
+dirname = 'dicube-testdata/dicom/sample_200'
+img = dicube.load_from_dicom_folder(dirname)
+meta = img.dicom_meta
+status = get_dicom_status(meta)
+print("Status:", status.value)
+
+spacing_consistent = meta.is_shared(CommonTags.PixelSpacing)
+print("Spacing shared:", spacing_consistent)
+if spacing_consistent:
+    print("  spacing:", meta.get_shared_value(CommonTags.PixelSpacing), "mm")
+
+shape_consistent = (meta.is_shared(CommonTags.Rows) and meta.is_shared(CommonTags.Columns))
+print("Shape shared:", shape_consistent)
+if shape_consistent:
+    rows = meta.get_shared_value(CommonTags.Rows)
+    cols = meta.get_shared_value(CommonTags.Columns)
+    print(f"  shape: {cols}×{rows}")
+
+orientation_consistent = meta.is_shared(CommonTags.ImageOrientationPatient)
+print("Orientation shared:", orientation_consistent)
+```
+
+## Non‑Location Issues
+
+Four categories: `missing`, `non_uniform`, `gap`, `duplicate`.
+
+### 1. Missing: Key Field Absent
+
+```{python}
+import copy
+from dicube.dicom.dicom_tags import get_tag_key
+
+def demo_missing():
+    print("=== Missing Demo ===")
+    t1 = copy.deepcopy(meta)
+    t1._merged_data.pop(get_tag_key(CommonTags.PixelSpacing), None)
+    print("Drop PixelSpacing ->", get_dicom_status(t1).value)
+
+    t2 = copy.deepcopy(meta)
+    t2._merged_data.pop(get_tag_key(CommonTags.Columns), None)
+    print("Drop Columns ->", get_dicom_status(t2).value)
+
+    t3 = copy.deepcopy(meta)
+    t3._merged_data.pop(get_tag_key(CommonTags.BitsStored), None)
+    print("Drop BitsStored ->", get_dicom_status(t3).value)
+
+demo_missing()
+```
+
+### 2. Non_uniform: Values Inconsistent
+
+```{python}
+def demo_non_uniform():
+    print("=== Non_uniform Demo ===")
+    t1 = copy.deepcopy(meta)
+    n = t1.slice_count
+    spacing_values = [[0.5,0.5] if i < n//2 else [1.0,1.0] for i in range(n)]
+    t1.set_nonshared_item(CommonTags.PixelSpacing, spacing_values)
+    print("Inconsistent PixelSpacing ->", get_dicom_status(t1).value)
+
+    t2 = copy.deepcopy(meta)
+    cols_values = [512 if i < n//2 else 256 for i in range(n)]
+    t2.set_nonshared_item(CommonTags.Columns, cols_values)
+    print("Inconsistent Columns ->", get_dicom_status(t2).value)
+
+demo_non_uniform()
+```
+
+### 3. Duplicate: Repeated Values
+
+```{python}
+def demo_duplicate():
+    print("=== Duplicate Demo ===")
+    t = copy.deepcopy(meta)
+    n = t.slice_count
+    t.set_nonshared_item(CommonTags.InstanceNumber, [1]*n)
+    print("Duplicate InstanceNumber ->", get_dicom_status(t).value)
+
+    nums = t.get_values(CommonTags.InstanceNumber)
+    print("unique:", len(set(nums)), "total:", len(nums))
+
+demo_duplicate()
+```
+
+### 4. Gap: Jumps
+
+```{python}
+def demo_gap():
+    print("=== Gap Demo ===")
+    t = copy.deepcopy(meta)
+    n = t.slice_count
+    gap_numbers = list(range(1, n+1))
+    for i in range(3, len(gap_numbers)):
+        gap_numbers[i] += 1
+    t.set_nonshared_item(CommonTags.InstanceNumber, gap_numbers)
+    print("Gap InstanceNumber ->", get_dicom_status(t).value)
+
+    nums = sorted([int(x) for x in t.get_values(CommonTags.InstanceNumber)])
+    diffs = [nums[i+1]-nums[i] for i in range(len(nums)-1)]
+    print("diffs:", diffs[:7], "...")
+
+demo_gap()
+```
+
+## Location‑Related Issues
+
+- Missing location (both `ImagePositionPatient` and `SliceLocation` absent)
+- Dwelling location (repeated positions)
+- Reversed location (mixed forward/backward)
+- Gap location (irregular large gaps vs average spacing)
+
+## Compatibility Strategy
+
+DiCube keeps working under imperfect data with clear limitations:
+
+1. Pixels: load/process normally, apply rescale if needed
+2. Metadata: retain all tags for round‑trip integrity
+3. Space: set to None and warn if spatial consistency fails
+4. Limitations: spatial ops (transform, resample, registration) disabled without valid space
+
+## Priority: Report Only the Most Severe Issue
+
+Checks follow severity order (Series UID, Instance Number, dtype, spacing/shape/orientation, location, others). Only the first failing category is reported to avoid overload.
+
+## Summary
+
+- `CONSISTENT` = regular 3D grid
+- Non‑location issues: missing / non_uniform / gap / duplicate
+- Location issues: dwelling / reversed / gap
+- Fail‑soft design: keep working where possible, restrict spatial ops when invalid
+- Severity‑ordered reporting to focus on root cause first
+

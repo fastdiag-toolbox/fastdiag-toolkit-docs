@@ -1,0 +1,244 @@
+---
+title: "Design Rationale and Motivation"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+## Introduction: Classic Standard, Modern Pressures
+
+DICOM is the lingua franca of medical imaging. It unifies image format and enables interoperability across vendors and software. But its core design, born in the 1980s, did not anticipate today’s AI-, big‑data-, and high‑concurrency‑driven workflows.
+
+Building a next‑gen workstation that integrates AI, 3D visualization, and large‑scale data management, we found several DICOM design choices have become structural bottlenecks. This article outlines the challenges and introduces DiCube—a systematic redesign that remains 100% round‑trip compatible with the existing DICOM ecosystem.
+
+## Four Core Challenges in Modern Workflows
+
+### 1. File Fragmentation: The Concurrency I/O Bottleneck
+
+Typical CT/MR series contain hundreds to thousands of individual `.dcm` files. Modern workstations need concurrent access (communication, 3D rendering, archiving, AI). Many small files under concurrency cause frequent random I/O and hammer performance. SSDs help, but for TB‑scale daily growth, HDDs remain the cost‑effective backbone; latency spikes as data turns cold.
+
+### 2. Redundant Metadata: Wasted Storage and Bandwidth
+
+Most per‑series metadata (patient, acquisition parameters, device model) is identical across slices, yet DICOM repeats it in every `.dcm`. A 500‑slice series replicates the same info 500 times—wasting storage and bandwidth. Worse, supposed‑to‑be‑shared fields may diverge across files, introducing downstream data‑quality risks.
+
+### 3. Missing Built‑in Constraints: Data Quality Uncertainty
+
+Real‑world DICOM often exhibits issues: missing files, empty/wrong tags, non‑contiguous or duplicate `InstanceNumber`, inconsistent pixel spacing, etc. Vendors add external QC modules to detect/patch. Tolerance varies by AI algorithm; universal QC rules are elusive, raising integration complexity and fragility.
+
+### 4. Sequential Parsing: Inefficient Metadata Access
+
+DICOM’s binary layout lacks a global index; parsers scan sequentially from the header to locate tags. Even to get a few fields like `ImagePositionPatient` or `InstanceNumber`, you must parse full metadata blocks for every file. Popular libraries (e.g., PyDICOM) often load full headers into memory—inefficient for batch AI or fast preview.
+
+## DiCube: A Systemic Redesign of Imaging Data
+
+DiCube is not an incremental tweak; it rethinks storage and access around modern workflows:
+
+1. Unified File Container: pack an image series into a single file to eliminate fragmentation.
+2. Smart Metadata: split shared vs per‑slice attributes and build efficient indices.
+3. Modern Codecs: use HTJ2K, etc., for better compression and fast (de)coding.
+4. 100% Round‑Trip: lossless conversion to/from standard DICOM.
+
+### From Fragments to a Single File
+
+DiCube consolidates a DICOM series into one `.dcbs` (DiCube Binary Sequence) file—turning random I/O into efficient sequential I/O.
+
+```{python}
+import dicube
+import time
+import os
+
+dicom_dir = 'dicube-testdata/dicom/sample_200'
+dcbs_file = 'dicube-testdata/test_sequence.dcbs'
+
+dcb_image = dicube.load_from_dicom_folder(dicom_dir)
+dicube.save(dcb_image, dcbs_file)
+```
+
+### From Redundancy to Indexed Metadata
+
+DiCube separates metadata into:
+
+- Shared: e.g., patient ID, study date—stored once per `.dcbs`.
+- Per‑slice: e.g., `ImagePositionPatient`—stored as compact arrays with indices.
+
+This greatly reduces header size and enables millisecond‑level random access to specific fields.
+
+```{python}
+from dicube.dicom import CommonTags
+
+meta = dicube.load_meta(dcbs_file)
+
+patient_name = meta.get_shared_value(CommonTags.PatientName)
+print(f"PatientName: {patient_name}")
+
+instance_numbers = meta.get_values(CommonTags.InstanceNumber)
+print(f"Loaded {len(instance_numbers)} InstanceNumber, first 5: {instance_numbers[:5]}")
+```
+
+## High‑Concurrency Benchmark: Realistic Load
+
+We measure DiCube under realistic concurrency:
+
+- Concurrency: 10 processes
+- Workload: each handles 5 random series
+- Data: sample 50 series from a 1000‑series corpus to reduce cache bias
+- Scenarios:
+  1. Metadata only (list/build views)
+  2. Metadata + pixels (full load for 3D/AI)
+
+```{python}
+import multiprocessing as mp
+import random, time, os
+import pydicom, dicube, numpy as np
+
+dicom_base_dir = '/data/manifest-NLST_allCT/sample_1000'
+dicube_base_dir = '/data/manifest-NLST_allCT/sample_1000_dcbs'
+
+num_processes = 10
+series_per_process = 5
+total_series_needed = num_processes * series_per_process
+
+all_dicom_dirs = [d for d in os.listdir(dicom_base_dir) if os.path.isdir(os.path.join(dicom_base_dir, d))]
+random.seed(time.time())
+selected_series_names = random.sample(all_dicom_dirs, total_series_needed)
+selected_dicom_paths = [os.path.join(dicom_base_dir, name) for name in selected_series_names]
+selected_dicube_paths = [os.path.join(dicube_base_dir, name + '.dcbs') for name in selected_series_names]
+```
+
+### 1. Storage Footprint
+
+```{python}
+def get_dir_size(path):
+    total = 0
+    with os.scandir(path) as it:
+        for entry in it:
+            if entry.is_file():
+                total += entry.stat().st_size
+    return total
+
+dicom_total_size = sum(get_dir_size(p) for p in selected_dicom_paths)
+dicube_total_size = sum(os.path.getsize(p) for p in selected_dicube_paths)
+
+print("--- Space vs DICOM (50 series) ---")
+print(f"DICOM:  {dicom_total_size / (1024**2):.2f} MB")
+print(f"DiCube: {dicube_total_size / (1024**2):.2f} MB")
+print(f"Saving: {(1 - dicube_total_size / dicom_total_size) * 100:.1f}%")
+```
+
+### 2. Concurrency Runtime
+
+```{python}
+def read_dicom_series_meta_only(series_path):
+    files = [os.path.join(series_path, f) for f in os.listdir(series_path) if f.endswith('.dcm')]
+    for filepath in files:
+        pydicom.dcmread(filepath, stop_before_pixels=True)
+
+def read_dicom_series_full(series_path):
+    dcm_series = [pydicom.dcmread(os.path.join(series_path, f)) for f in os.listdir(series_path) if f.endswith('.dcm')]
+    pixels = [ds.pixel_array for ds in dcm_series]
+    return (len(pixels), pixels[0].shape)
+
+def read_dicube_meta_only(dcbs_path):
+    dicube.load_meta(dcbs_path)
+
+def read_dicube_full(dcbs_path):
+    dcb_image = dicube.load(dcbs_path)
+    return dcb_image.raw_image.shape
+
+def dicom_meta_worker(paths):
+    for path in paths:
+        read_dicom_series_meta_only(path)
+
+def dicube_meta_worker(paths):
+    for path in paths:
+        read_dicube_meta_only(path)
+
+def dicom_full_worker(paths):
+    for path in paths:
+        read_dicom_series_full(path)
+
+def dicube_full_worker(paths):
+    for path in paths:
+        read_dicube_full(path)
+
+def run_performance_test(paths, worker_function, num_processes, series_per_process):
+    tasks = [paths[i*series_per_process:(i+1)*series_per_process] for i in range(num_processes)]
+    pool = mp.Pool(processes=num_processes)
+    start_time = time.time()
+    pool.map(worker_function, tasks)
+    end_time = time.time()
+    pool.close(); pool.join()
+    return end_time - start_time
+
+dicom_meta_time  = run_performance_test(selected_dicom_paths,  dicom_meta_worker,  num_processes, series_per_process)
+dicube_meta_time = run_performance_test(selected_dicube_paths, dicube_meta_worker, num_processes, series_per_process)
+dicom_full_time  = run_performance_test(selected_dicom_paths,  dicom_full_worker,  num_processes, series_per_process)
+dicube_full_time = run_performance_test(selected_dicube_paths, dicube_full_worker, num_processes, series_per_process)
+```
+
+### 3. Results and Notes
+
+```{python}
+print("\n--- Concurrency (10 procs × 5 series) ---")
+print("\nMetadata only")
+print(f"DICOM:  {dicom_meta_time:.2f}s")
+print(f"DiCube: {dicube_meta_time:.2f}s")
+print(f"Speedup: {dicom_meta_time / dicube_meta_time:.1f}×")
+
+print("\nMetadata + Pixels")
+print(f"DICOM:  {dicom_full_time:.2f}s")
+print(f"DiCube: {dicube_full_time:.2f}s")
+print(f"Speedup: {dicom_full_time / dicube_full_time:.1f}×")
+```
+
+DiCube avoids random I/O on many small files and redundant parsing, thus excels in metadata‑only scenarios. In full loads, single‑file sequential I/O and efficient compression also deliver strong gains. With higher concurrency, the gap typically widens. On HDD/object storage, the advantage can grow by orders of magnitude.
+
+## Seamless Integration: 100% DICOM Round‑Trip
+
+DiCube guarantees lossless round‑trip to/from DICOM:
+
+1. Lossless: pixels and metadata preserved across DICOM → DiCube → DICOM.
+2. Metadata integrity: all standard and private tags retained.
+3. Workflow‑safe: export `.dcbs` to standard DICOM anytime for PACS/archive.
+
+```{python}
+import shutil, os, pydicom, numpy as np
+
+roundtrip_dicom_dir = 'dicube-testdata/roundtrip_dicom'
+dicube.save_to_dicom_folder(dcb_image, roundtrip_dicom_dir)
+
+original_dcm = pydicom.dcmread(os.path.join(dicom_dir, os.listdir(dicom_dir)[0]))
+roundtrip_dcm = pydicom.dcmread(os.path.join(roundtrip_dicom_dir, 'slice_0000.dcm'))
+
+fields_to_check = ['PatientName','StudyInstanceUID','SeriesDescription','ImageOrientationPatient','PixelSpacing']
+for tag in fields_to_check:
+    ov = original_dcm.get(tag, 'N/A')
+    rv = roundtrip_dcm.get(tag, 'N/A')
+    if isinstance(ov, (pydicom.multival.MultiValue, list)):
+        eq = np.allclose(np.array(ov, float), np.array(rv, float))
+    else:
+        eq = (ov == rv)
+    print(tag, '->', eq)
+
+os.remove(dcbs_file); shutil.rmtree(roundtrip_dicom_dir)
+```
+
+## Summary: From Bottleneck to Enabler
+
+| Area            | DICOM Limitation                   | DiCube Solution                 | Gain            |
+| --------------- | ---------------------------------- | --------------------------------| ----------------|
+| File mgmt       | Many small files; I/O bottleneck   | Single‑file container           | 3–10× concurrency|
+| Metadata        | Redundant; sequential parsing      | Dedup + indexed queries         | 10–50× access   |
+| Storage         | No efficient standard compression  | HTJ2K integrated                | 50–70% space    |
+| Integration     | Complex parsing/transform logic    | Modern APIs and data structures | Faster dev      |
+
+Key values:
+
+1. Immediate performance gains without changing business logic.
+2. Strong data foundation for AI training, real‑time analysis, and high concurrency.
+3. Zero‑risk migration path via lossless round‑trip with DICOM.
+
+Introduce DiCube as a high‑performance intermediate format and focus engineering effort on product logic—not fighting low‑level I/O and headers.
+

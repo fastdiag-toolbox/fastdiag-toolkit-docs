@@ -1,0 +1,65 @@
+---
+title: "FastDiag Toolkit"
+subtitle: "Efficient Medical Imaging Toolkit"
+lang: en
+sidebar: en
+---
+
+## Motivation
+
+Medical imaging AI requires reliable data pipelines and consistent spatial semantics. Established Python libraries such as `pydicom`, SimpleITK, and nibabel remain focused on traditional imaging workstations, and their designs predate today’s requirements for concurrent loading, compute orchestration, and large-scale data management. When building a new generation of imaging platforms, issues such as fragmented datasets, missing metadata, and ambiguous coordinate systems repeatedly slow down development.
+
+FastDiag Toolkit was created to close these gaps. It provides modern building blocks for AI workflows so that training, inference, and clinical systems can exchange data without losing fidelity or performance.
+
+## Core Components
+
+### DiCube: Medical Image Sequence Storage
+
+DiCube stores an entire DICOM series in a `.dcbs` single-file container, optimized for high-concurrency I/O and cold-data archiving.
+
+- Sequential reads minimize random seeks on mechanical drives
+- HTJ2K lossless compression typically yields a 3× size reduction and a 5× read speedup
+- Shared and slice-level metadata are separated and indexed
+- Full round-trip conversion to standard DICOM remains available
+
+[GitHub Repository](https://github.com/fastdiag-toolbox/dicube)
+
+### MedMask: High-Efficiency Segmentation Masks
+
+MedMask introduces the `.msk` format for segmentation masks, addressing the limitations of `nii.gz` in compression, semantic richness, and loading throughput.
+
+- Zstandard compression commonly exceeds a 50× reduction
+- Single-pass reading improves performance by roughly 16×
+- Built-in semantic mapping supports multi-organ groupings
+- Overlapping masks and multi-view alignment are first-class concepts
+
+[GitHub Repository](https://github.com/fastdiag-toolbox/medmask)
+
+### SpaceTransformer: Spatial Geometry Abstraction
+
+SpaceTransformer models shape, spacing, origin, and orientation as a unified Space abstraction. It separates transformation planning from execution to guarantee accurate 3D geometric operations.
+
+- Space-level planning enables chained transformations with just-in-time sampling during execution
+- Images, masks, and landmarks remain aligned, avoiding `align_corners` ambiguities
+- PyTorch backends offer GPU acceleration and integrate with common deep learning stacks
+
+[Core Library](https://github.com/fastdiag-toolbox/spacetransformer-core)  
+[PyTorch Extension](https://github.com/fastdiag-toolbox/spacetransformer-torch)
+
+## Installation
+
+```bash
+# Install the core libraries
+pip install dicube
+pip install medmask
+pip install spacetransformer-core
+pip install spacetransformer-torch  # Optional: GPU acceleration
+```
+
+## Getting Started
+
+Use the navigation on the left to explore design rationales, implementation details, and worked examples for each component. Reading the sections sequentially provides the quickest path to understanding how FastDiag Toolkit streamlines storage, compression, and spatial transformation in medical imaging workflows.
+
+---
+
+Reach out via the respective GitHub repositories for support or to contribute.

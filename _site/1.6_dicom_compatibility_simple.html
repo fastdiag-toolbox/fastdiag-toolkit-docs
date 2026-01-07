@@ -134,6 +134,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text">GitHub</span></a>
@@ -279,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Space概念详解</span></a>
+ <span class="menu-text">Space 概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -294,17 +302,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">该页面内容</h2>
    
   <ul>
-  <li><a href="#问题背景pacs系统集成需求" id="toc-问题背景pacs系统集成需求" class="nav-link active" data-scroll-target="#问题背景pacs系统集成需求">1. 问题背景：PACS系统集成需求</a></li>
+  <li><a href="#问题背景pacs-系统集成需求" id="toc-问题背景pacs-系统集成需求" class="nav-link active" data-scroll-target="#问题背景pacs-系统集成需求">1. 问题背景：PACS 系统集成需求</a></li>
   <li><a href="#流式读取机制技术实现与性能优势" id="toc-流式读取机制技术实现与性能优势" class="nav-link" data-scroll-target="#流式读取机制技术实现与性能优势">2. 流式读取机制：技术实现与性能优势</a>
   <ul class="collapse">
-  <li><a href="#基本使用接口" id="toc-基本使用接口" class="nav-link" data-scroll-target="#基本使用接口">2.1 基本使用接口</a></li>
-  <li><a href="#数据处理与可视化分析" id="toc-数据处理与可视化分析" class="nav-link" data-scroll-target="#数据处理与可视化分析">2.2 数据处理与可视化分析</a></li>
+  <li><a href="#基本使用接口" id="toc-基本使用接口" class="nav-link" data-scroll-target="#基本使用接口">2.1. 基本使用接口</a></li>
+  <li><a href="#数据处理与可视化分析" id="toc-数据处理与可视化分析" class="nav-link" data-scroll-target="#数据处理与可视化分析">2.2. 数据处理与可视化分析</a></li>
   </ul></li>
-  <li><a href="#编码兼容性挑战htj2k标准的生态现状" id="toc-编码兼容性挑战htj2k标准的生态现状" class="nav-link" data-scroll-target="#编码兼容性挑战htj2k标准的生态现状">3. 编码兼容性挑战：HTJ2K标准的生态现状</a>
+  <li><a href="#编码兼容性挑战htj2k-标准的生态现状" id="toc-编码兼容性挑战htj2k-标准的生态现状" class="nav-link" data-scroll-target="#编码兼容性挑战htj2k-标准的生态现状">3. 编码兼容性挑战：HTJ2K 标准的生态现状</a>
   <ul class="collapse">
-  <li><a href="#技术标准演进背景" id="toc-技术标准演进背景" class="nav-link" data-scroll-target="#技术标准演进背景">3.1 技术标准演进背景</a></li>
-  <li><a href="#当前兼容性状况分析" id="toc-当前兼容性状况分析" class="nav-link" data-scroll-target="#当前兼容性状况分析">3.2 当前兼容性状况分析</a></li>
-  <li><a href="#最大兼容性解决方案" id="toc-最大兼容性解决方案" class="nav-link" data-scroll-target="#最大兼容性解决方案">3.3 最大兼容性解决方案</a></li>
+  <li><a href="#技术标准演进背景" id="toc-技术标准演进背景" class="nav-link" data-scroll-target="#技术标准演进背景">3.1. 技术标准演进背景</a></li>
+  <li><a href="#当前兼容性状况分析" id="toc-当前兼容性状况分析" class="nav-link" data-scroll-target="#当前兼容性状况分析">3.2. 当前兼容性状况分析</a></li>
+  <li><a href="#最大兼容性解决方案" id="toc-最大兼容性解决方案" class="nav-link" data-scroll-target="#最大兼容性解决方案">3.3. 最大兼容性解决方案</a></li>
   </ul></li>
   <li><a href="#部署建议渐进式兼容性策略" id="toc-部署建议渐进式兼容性策略" class="nav-link" data-scroll-target="#部署建议渐进式兼容性策略">4. 部署建议：渐进式兼容性策略</a></li>
   </ul>
@@ -332,17 +340,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="问题背景pacs系统集成需求" class="level2">
-<h2 class="anchored" data-anchor-id="问题背景pacs系统集成需求">1. 问题背景：PACS系统集成需求</h2>
+<section id="问题背景pacs-系统集成需求" class="level2">
+<h2 class="anchored" data-anchor-id="问题背景pacs-系统集成需求">1. 问题背景：PACS 系统集成需求</h2>
 <p>DiCube作为高效的医学影像存储方案，需要与现有DICOM生态系统无缝集成，以确保PACS厂商能够顺利采用这一技术。</p>
 <p>为解决这一需求，DiCube提供了<code>DcbStreamingReader</code>组件，它能够将压缩的DCBS文件实时转换为标准DICOM格式，有效地模拟传统PACS后端的数据分发功能。这种设计使得下游应用可以透明地访问DiCube存储的数据，而无需修改现有的DICOM处理流程。</p>
 </section>
 <section id="流式读取机制技术实现与性能优势" class="level2">
 <h2 class="anchored" data-anchor-id="流式读取机制技术实现与性能优势">2. 流式读取机制：技术实现与性能优势</h2>
 <section id="基本使用接口" class="level3">
-<h3 class="anchored" data-anchor-id="基本使用接口">2.1 基本使用接口</h3>
+<h3 class="anchored" data-anchor-id="基本使用接口">2.1. 基本使用接口</h3>
 <p>DiCube的流式读取器提供了简洁的API接口，支持按帧索引动态生成DICOM数据：</p>
-<div id="2714b312" class="cell" data-execution_count="1">
+<div id="fc5667eb" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> DcbStreamingReader</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -360,14 +368,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    f.write(slice_0)</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"✅ 成功生成DICOM数据，大小: </span><span class="sc">{</span><span class="bu">len</span>(slice_0)<span class="sc">}</span><span class="ss"> 字节"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>✅ 成功生成DICOM数据，大小: 163032 字节</code></pre>
+<pre><code>✅ 成功生成DICOM数据，大小: 163034 字节</code></pre>
 </div>
 </div>
 </section>
 <section id="数据处理与可视化分析" class="level3">
-<h3 class="anchored" data-anchor-id="数据处理与可视化分析">2.2 数据处理与可视化分析</h3>
+<h3 class="anchored" data-anchor-id="数据处理与可视化分析">2.2. 数据处理与可视化分析</h3>
 <p>流式读取器生成的DICOM数据完全符合标准规范，可以直接被PyDICOM等主流库处理：</p>
-<div id="9869b41f" class="cell" data-execution_count="2">
+<div id="196b0311" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -422,41 +430,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>这种流式处理方式的核心优势在于<strong>按需转换</strong>：系统只在实际访问时才进行DCBS到DICOM的转换，避免了预先转换整个序列所带来的存储开销和延迟。</p>
 </section>
 </section>
-<section id="编码兼容性挑战htj2k标准的生态现状" class="level2">
-<h2 class="anchored" data-anchor-id="编码兼容性挑战htj2k标准的生态现状">3. 编码兼容性挑战：HTJ2K标准的生态现状</h2>
+<section id="编码兼容性挑战htj2k-标准的生态现状" class="level2">
+<h2 class="anchored" data-anchor-id="编码兼容性挑战htj2k-标准的生态现状">3. 编码兼容性挑战：HTJ2K 标准的生态现状</h2>
 <section id="技术标准演进背景" class="level3">
-<h3 class="anchored" data-anchor-id="技术标准演进背景">3.1 技术标准演进背景</h3>
-<p>DiCube采用的DCBS格式基于<strong>HTJ2K（High Throughput JPEG 2000）</strong>编码器，该技术于2023年正式被DICOM标准委员会认可并纳入官方规范。HTJ2K相比传统JPEG 2000具有显著的性能优势：</p>
+<h3 class="anchored" data-anchor-id="技术标准演进背景">3.1. 技术标准演进背景</h3>
+<p>DiCube 采用的 DCBS 格式基于 <strong>HTJ2K（High Throughput JPEG 2000）</strong> 编码器，该技术于 2023 年被 DICOM 标准委员会纳入官方规范。HTJ2K 相比传统 JPEG 2000 具有显著优势：</p>
 <ul>
-<li><strong>编码速度提升</strong>：相比标准JPEG 2000，编码效率提高约10-15倍</li>
-<li><strong>压缩质量保持</strong>：在相同压缩比下保持无损或近无损的图像质量</li>
-<li><strong>硬件友好性</strong>：更适合GPU并行加速和硬件实现</li>
+<li>编码速度提升：相比标准 JPEG 2000，编码效率提高约 10–15 倍</li>
+<li>压缩质量保持：在相同压缩比下保持无损或近无损的图像质量</li>
+<li>硬件友好性：更适合 GPU 并行与硬件实现</li>
 </ul>
 <p>然而，作为一个相对较新的标准，HTJ2K在现有医学影像生态系统中的支持程度存在显著差异。</p>
 </section>
 <section id="当前兼容性状况分析" class="level3">
-<h3 class="anchored" data-anchor-id="当前兼容性状况分析">3.2 当前兼容性状况分析</h3>
-<p>基于广泛的测试和调研，我们梳理了主要工具和平台对HTJ2K编码DICOM文件的支持状况：</p>
+<h3 class="anchored" data-anchor-id="当前兼容性状况分析">3.2. 当前兼容性状况分析</h3>
+<p>基于测试与调研，我们梳理了主要工具和平台对 HTJ2K 编码 DICOM 文件的支持状况：</p>
 <p><strong>✅ 已支持的工具链</strong></p>
 <ul>
-<li><strong>PyDICOM</strong> ≥3.0.0：需配合 <code>pylibjpeg-openjpeg</code> &gt;2.0 和 <code>pylibjpeg</code> &gt;2.0</li>
-<li><strong>Python-GDCM</strong> 3.0.26：原生支持HTJ2K解码</li>
-<li><strong>ITK-SNAP</strong> 4.4.0：医学影像可视化工具，支持HTJ2K格式</li>
+<li>PyDICOM ≥ 3.0.0：需配合 <code>pylibjpeg-openjpeg</code> &gt; 2.0 与 <code>pylibjpeg</code> &gt; 2.0</li>
+<li>Python-GDCM 3.0.26：原生支持 HTJ2K 解码</li>
+<li>ITK-SNAP 4.4.0：可视化工具，支持 HTJ2K</li>
 </ul>
 <p><strong>❌ 尚未支持的工具</strong></p>
 <ul>
-<li><strong>Horos</strong> 4.0.1：Mac平台流行的DICOM查看器</li>
-<li><strong>SimpleITK</strong> 2.5.2：影响部分Python科学计算工作流</li>
+<li>Horos 4.0.1：Mac 平台 DICOM 查看器</li>
+<li>SimpleITK 2.5.2：影响部分 Python 科学计算工作流</li>
 </ul>
 </section>
 <section id="最大兼容性解决方案" class="level3">
-<h3 class="anchored" data-anchor-id="最大兼容性解决方案">3.3 最大兼容性解决方案</h3>
-<p>针对兼容性挑战，DiCube提供了<strong>强制解压缩</strong>选项，通过<code>force_uncompressed=True</code>参数生成未压缩的DICOM文件：</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 生成最大兼容性的未压缩DICOM</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>uncompressed_dicom <span class="op">=</span> dcb_stream.get_dicom_for_frame(<span class="dv">0</span>, force_uncompressed<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<h3 class="anchored" data-anchor-id="最大兼容性解决方案">3.3. 最大兼容性解决方案</h3>
+<p>针对兼容性挑战，DiCube 提供“强制解压缩”选项：初始化 <code>DcbStreamingReader</code> 时传入 <code>force_uncompressed=True</code>，即可生成未压缩的 DICOM：</p>
+<div id="813a6ec0" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 生成最大兼容性的未压缩DICOM</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> DcbStreamingReader</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>dcb_stream_uncompressed <span class="op">=</span> DcbStreamingReader(dcb_file, force_uncompressed<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>uncompressed_dicom <span class="op">=</span> dcb_stream_uncompressed.get_dicom_for_frame(<span class="dv">0</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/liaofz/miniforge3/lib/python3.10/site-packages/dicube/dicom/dicom_builder.py:272: UserWarning:
+
+Failed to decompress pixel data: 'Dataset' object has no attribute 'file_meta'
+</code></pre>
+</div>
+</div>
 <p>这种方案的权衡分析：</p>
-<p><strong>优势：</strong> - <strong>广泛兼容</strong>：未压缩DICOM几乎被所有医学影像工具支持 - <strong>处理简单</strong>：无需考虑解码器依赖和版本问题 - <strong>传输可靠</strong>：在网络传输中不存在解码失败的风险</p>
-<p><strong>劣势：</strong> - <strong>文件体积</strong>：未压缩文件通常比HTJ2K压缩版本大5-10倍 - <strong>网络负载</strong>：增加PACS系统的存储和带宽压力 - <strong>传输延迟</strong>：大文件传输时间显著增加</p>
+<p><strong>优势：</strong> - 广泛兼容：未压缩 DICOM 几乎被所有医学影像工具支持 - 处理简单：无需考虑解码器依赖和版本问题 - 传输可靠：网络传输中不存在解码失败风险</p>
+<p><strong>劣势：</strong> - 文件体积：未压缩文件通常比 HTJ2K 压缩版本大 5–10 倍 - 网络负载：增加 PACS 系统的存储与带宽压力 - 传输延迟：大文件传输时间显著增加</p>
 </section>
 </section>
 <section id="部署建议渐进式兼容性策略" class="level2">

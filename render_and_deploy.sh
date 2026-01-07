@@ -56,11 +56,23 @@ preview() {
 # 构建模式
 build() {
     log_info "开始渲染 Quarto 项目..."
-    
+
+    # 避免环境变量 QUARTO_PYTHON 指向不存在的解释器导致大量警告
+    if [ -n "${QUARTO_PYTHON:-}" ] && [ ! -x "${QUARTO_PYTHON}" ]; then
+        log_warning "检测到 QUARTO_PYTHON 指向不存在的解释器：${QUARTO_PYTHON}，将改用系统 python3"
+        export QUARTO_PYTHON="$(command -v python3)"
+    fi
+
     # 清理旧的输出
     if [ -d "_site" ]; then
         log_info "清理旧的输出目录..."
         rm -rf _site
+    fi
+
+    # 可选：清理 freeze 缓存（当你修改了 execute/eval 配置但页面没有重新执行时很有用）
+    if [ "${CLEAN_FREEZE:-0}" = "1" ] && [ -d "_freeze" ]; then
+        log_info "清理 _freeze 缓存目录（CLEAN_FREEZE=1）..."
+        rm -rf _freeze
     fi
     
     # 渲染项目
@@ -69,10 +81,23 @@ build() {
     
     if [ -d "_site" ]; then
         log_success "渲染完成！输出位于 _site/ 目录"
-        log_info "生成的文件："
-        find _site -type f -name "*.html" | head -10
-        if [ $(find _site -type f -name "*.html" | wc -l) -gt 10 ]; then
-            echo "... 和其他 HTML 文件"
+        total_html=$(find _site -type f -name "*.html" | wc -l | tr -d ' ')
+        en_html=$(find _site -type f -name "*-en.html" | wc -l | tr -d ' ')
+        zh_html=$(( total_html - en_html ))
+
+        log_info "HTML 总数: ${total_html}（中文: ${zh_html}, English: ${en_html}）"
+        if [ -f "_site/index.html" ]; then
+            log_info "中文入口: _site/index.html"
+        fi
+        if [ -f "_site/index-en.html" ]; then
+            log_info "English 入口: _site/index-en.html"
+        fi
+
+        log_info "示例（中文）："
+        find _site -type f -name "*.html" ! -name "*-en.html" | sort | head -10
+        if [ "${en_html}" -gt 0 ]; then
+            log_info "示例（English）："
+            find _site -type f -name "*-en.html" | sort | head -10
         fi
     else
         log_error "渲染失败！"
@@ -100,6 +125,7 @@ deploy() {
     git add requirements.txt
     git add styles.css
     git add index.qmd
+    git add index-en.qmd
     
     # 添加渲染后的_site目录（这是最终的网站文件）
     if [ -d "_site" ]; then
@@ -204,4 +230,3 @@ main() {
 
 # 运行主函数
 main "$@"
-

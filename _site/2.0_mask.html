@@ -134,6 +134,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text">GitHub</span></a>
@@ -279,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3.1_space_concept_fundamentals.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Space概念详解</span></a>
+ <span class="menu-text">Space 概念详解</span></a>
   </div>
 </li>
       </ul>
@@ -296,15 +304,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#挑战一空间参考信息的缺失与不一致" id="toc-挑战一空间参考信息的缺失与不一致" class="nav-link active" data-scroll-target="#挑战一空间参考信息的缺失与不一致">挑战一：空间参考信息的缺失与不一致</a>
   <ul class="collapse">
-  <li><a href="#npz格式缺乏空间参考信息" id="toc-npz格式缺乏空间参考信息" class="nav-link" data-scroll-target="#npz格式缺乏空间参考信息">NPZ格式：缺乏空间参考信息</a></li>
-  <li><a href="#nifti格式坐标系统的不兼容" id="toc-nifti格式坐标系统的不兼容" class="nav-link" data-scroll-target="#nifti格式坐标系统的不兼容">NIfTI格式：坐标系统的不兼容</a></li>
+  <li><a href="#npz-格式缺乏空间参考信息" id="toc-npz-格式缺乏空间参考信息" class="nav-link" data-scroll-target="#npz-格式缺乏空间参考信息">NPZ 格式：缺乏空间参考信息</a></li>
+  <li><a href="#nifti-格式坐标系统不兼容" id="toc-nifti-格式坐标系统不兼容" class="nav-link" data-scroll-target="#nifti-格式坐标系统不兼容">NIfTI 格式：坐标系统不兼容</a></li>
   </ul></li>
   <li><a href="#挑战二语义信息的外部依赖管理" id="toc-挑战二语义信息的外部依赖管理" class="nav-link" data-scroll-target="#挑战二语义信息的外部依赖管理">挑战二：语义信息的外部依赖管理</a></li>
-  <li><a href="#挑战三针对稀疏数据的压缩效率不足" id="toc-挑战三针对稀疏数据的压缩效率不足" class="nav-link" data-scroll-target="#挑战三针对稀疏数据的压缩效率不足">挑战三：针对稀疏数据的压缩效率不足</a></li>
+  <li><a href="#挑战三稀疏数据的压缩效率不足" id="toc-挑战三稀疏数据的压缩效率不足" class="nav-link" data-scroll-target="#挑战三稀疏数据的压缩效率不足">挑战三：稀疏数据的压缩效率不足</a></li>
   <li><a href="#挑战四无法统一处理重叠与互斥的分割目标" id="toc-挑战四无法统一处理重叠与互斥的分割目标" class="nav-link" data-scroll-target="#挑战四无法统一处理重叠与互斥的分割目标">挑战四：无法统一处理重叠与互斥的分割目标</a>
   <ul class="collapse">
-  <li><a href="#方法1数值标签掩膜value-based-mask" id="toc-方法1数值标签掩膜value-based-mask" class="nav-link" data-scroll-target="#方法1数值标签掩膜value-based-mask">方法1：数值标签掩膜（Value-based Mask）</a></li>
-  <li><a href="#方法2位掩膜bitmask" id="toc-方法2位掩膜bitmask" class="nav-link" data-scroll-target="#方法2位掩膜bitmask">方法2：位掩膜（Bitmask）</a></li>
+  <li><a href="#方法-1数值标签掩膜value-based-mask" id="toc-方法-1数值标签掩膜value-based-mask" class="nav-link" data-scroll-target="#方法-1数值标签掩膜value-based-mask">方法 1：数值标签掩膜（Value-based Mask）</a></li>
+  <li><a href="#方法-2位掩膜bitmask" id="toc-方法-2位掩膜bitmask" class="nav-link" data-scroll-target="#方法-2位掩膜bitmask">方法 2：位掩膜（Bitmask）</a></li>
   <li><a href="#实际工程中的管理复杂性" id="toc-实际工程中的管理复杂性" class="nav-link" data-scroll-target="#实际工程中的管理复杂性">实际工程中的管理复杂性</a></li>
   </ul></li>
   <li><a href="#总结" id="toc-总结" class="nav-link" data-scroll-target="#总结">总结</a></li>
@@ -333,30 +341,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>在前一章节中，我们探讨了 DiCube 如何解决原始 DICOM 图像的存储与管理问题。本章将聚焦于医学影像分析流程中的另一个关键环节：<strong>分割掩膜（Segmentation Masks）</strong>的存储与管理。</p>
+<p>在前一章节中，我们探讨了 DiCube 如何解决原始 DICOM 图像的存储与管理问题。本章聚焦医学影像分析中的另一个关键环节：分割掩膜（Segmentation Masks）的存储与管理。</p>
 <p>分割掩膜是AI模型分析结果的直接体现，是后续进行量化计算、手术规划和疗效评估的数据基础。然而，当前行业内通用的存储方案（如 <code>.npz</code> 和 <code>.nii.gz</code>）是为通用数据场景设计的，并未针对医学掩膜的特性进行优化，由此引发了四项核心的技术挑战，对研发效率和系统稳健性构成了制约。</p>
 <section id="挑战一空间参考信息的缺失与不一致" class="level2">
 <h2 class="anchored" data-anchor-id="挑战一空间参考信息的缺失与不一致">挑战一：空间参考信息的缺失与不一致</h2>
 <p>精确的空间定位是所有医学图像分析的先决条件。如果分割结果无法与其对应的原始图像在空间上精确对齐，其价值将大打折扣。现有掩膜格式在此方面存在明显不足。</p>
-<section id="npz格式缺乏空间参考信息" class="level3">
-<h3 class="anchored" data-anchor-id="npz格式缺乏空间参考信息">NPZ格式：缺乏空间参考信息</h3>
+<section id="npz-格式缺乏空间参考信息" class="level3">
+<h3 class="anchored" data-anchor-id="npz-格式缺乏空间参考信息">NPZ 格式：缺乏空间参考信息</h3>
 <p>NPZ 是 NumPy 数组的压缩存档格式，其设计目标是存储纯粹的数组数据，因此<strong>不包含任何空间参考信息</strong>，如图像原点（Origin）、像素间距（Spacing）和方向（Direction）。当掩膜被存为 NPZ 文件时，它便成为一个与原始图像物理空间完全分离的独立数组。</p>
-<p>这导致了一个实际问题：对于一个仅包含微小病灶分割结果的掩膜，如果用NPZ存储，不仅可能需要存储一个与原始图像等大的稀疏数组（效率低下），而且后续无法通过文件自身信息将其自动、精确地叠加回原始CT图像上，需要额外的、手动的参数进行对齐。</p>
+<p>这导致一个实际问题：对于仅包含微小病灶的掩膜，若用 NPZ 存储，既可能需要存一个与原始图像等大的稀疏数组（效率低），也无法凭文件自身信息自动精准叠加回原始 CT 图像，需要额外手工参数对齐。</p>
 </section>
-<section id="nifti格式坐标系统的不兼容" class="level3">
-<h3 class="anchored" data-anchor-id="nifti格式坐标系统的不兼容">NIfTI格式：坐标系统的不兼容</h3>
+<section id="nifti-格式坐标系统不兼容" class="level3">
+<h3 class="anchored" data-anchor-id="nifti-格式坐标系统不兼容">NIfTI 格式：坐标系统不兼容</h3>
 <p>NIfTI 格式虽然保留了空间信息，但其生态系统普遍采用的 <strong>RAS+ 坐标系</strong>与医学影像的 DICOM 标准所规定的 <strong>LPS+ 坐标系</strong>存在根本性差异（X、Y轴方向相反）。这种不一致性带来了潜在的风险：</p>
 <ul>
-<li><strong>增加处理复杂性</strong>：在将 NIfTI 掩膜与 DICOM 图像对齐时，必须执行额外的坐标系转换步骤，增加了数据处理流程的复杂性。</li>
-<li><strong>潜在的对齐错误</strong>：坐标转换过程容易引入错误，尤其是在复杂的处理流程中，可能导致左右器官识别错误等问题。</li>
-<li><strong>增加开发认知负荷</strong>：团队成员必须持续关注并处理这种坐标系差异，增加了软件开发和维护的难度。</li>
+<li>增加处理复杂性：与 DICOM 对齐需额外坐标转换，流程更复杂</li>
+<li>潜在对齐错误：复杂流程更易引入左右颠倒等错误</li>
+<li>增加认知负荷：开发需时刻处理坐标差异，维护成本高</li>
 </ul>
 </section>
 </section>
 <section id="挑战二语义信息的外部依赖管理" class="level2">
 <h2 class="anchored" data-anchor-id="挑战二语义信息的外部依赖管理">挑战二：语义信息的外部依赖管理</h2>
 <p>分割掩膜不仅定义了目标的<strong>空间位置</strong>，还需定义其<strong>语义类别</strong>（例如，这是哪个器官）。现有格式缺乏内置的、标准化的语义信息管理机制，导致标签的定义必须在文件外部进行管理。</p>
-<div id="3add6cf1" class="cell" data-execution_count="1">
+<div id="fe4dff07" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 传统方法：通过外部代码或配置文件关联像素值与语义</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>organ_mapping <span class="op">=</span> {</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: <span class="st">"liver"</span>,</span>
@@ -373,12 +381,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>版本管理复杂</strong>：当标签定义需要更新时（如增减类别），需要协调修改所有相关的外部配置文件和代码库，增加了版本控制的复杂性。</li>
 </ul>
 </section>
-<section id="挑战三针对稀疏数据的压缩效率不足" class="level2">
-<h2 class="anchored" data-anchor-id="挑战三针对稀疏数据的压缩效率不足">挑战三：针对稀疏数据的压缩效率不足</h2>
+<section id="挑战三稀疏数据的压缩效率不足" class="level2">
+<h2 class="anchored" data-anchor-id="挑战三稀疏数据的压缩效率不足">挑战三：稀疏数据的压缩效率不足</h2>
 <p>医学分割掩膜是典型的高度稀疏数据，通常超过99%的像素为背景值（0）。通用压缩算法未能有效利用这一特性，导致压缩效率不理想。</p>
 <ol type="1">
-<li><strong>通用算法的局限性</strong>：Gzip 等基于 LZ77 的算法主要通过查找重复字节序列进行压缩，虽然能处理连续的零，但其效率不如为稀疏数据优化的特定算法（如游程编码 RLE）。</li>
-<li><strong>忽略空间相关性</strong>：掩膜中的目标区域通常是具有空间连续性的团块，这一特征也未被通用压缩算法充分利用。</li>
+<li>通用算法的局限：Gzip 等基于 LZ77 的算法主要通过查找重复序列压缩，能处理连续零，但不如面向稀疏数据的特定算法（如 RLE）</li>
+<li>忽略空间相关性：掩膜目标区域常呈空间团块性，通用算法未充分利用</li>
 </ol>
 <p>其结果是，尽管文件经过压缩，但存储体积仍有很大的优化空间，这会增加存储成本和网络传输时间。</p>
 </section>
@@ -393,11 +401,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>整体肺</strong>：1个标签，<strong>与上述所有结构重叠</strong>。</li>
 </ol>
 <p>使用标准的数组结构来存储这种混合关系，会面临一个根本性的设计权衡。</p>
-<section id="方法1数值标签掩膜value-based-mask" class="level3">
-<h3 class="anchored" data-anchor-id="方法1数值标签掩膜value-based-mask">方法1：数值标签掩膜（Value-based Mask）</h3>
+<section id="方法-1数值标签掩膜value-based-mask" class="level3">
+<h3 class="anchored" data-anchor-id="方法-1数值标签掩膜value-based-mask">方法 1：数值标签掩膜（Value-based Mask）</h3>
 <p>每个像素存储一个整数，代表其所属的单一类别。</p>
 <p><strong>优点</strong>：存储效率高，一个 <code>uint8</code> 数组即可表示多达255个互斥类别。 <strong>缺点</strong>：设计上无法表示重叠。一个像素只能属于一个类别。</p>
-<div id="dea9b876" class="cell" data-execution_count="2">
+<div id="85764e6e" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 示例：构建互不重叠的肺叶掩膜</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>lung_lobe_mask <span class="op">=</span> np.zeros((<span class="dv">64</span>, <span class="dv">256</span>, <span class="dv">256</span>), dtype<span class="op">=</span>np.uint8)</span>
@@ -413,11 +421,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><strong>局限性</strong>：无法在同一数组中表示一个跨越区域 <code>1</code> 和 <code>2</code> 的病灶，因为赋值会覆盖已有的肺叶信息。</p>
 </section>
-<section id="方法2位掩膜bitmask" class="level3">
-<h3 class="anchored" data-anchor-id="方法2位掩膜bitmask">方法2：位掩膜（Bitmask）</h3>
+<section id="方法-2位掩膜bitmask" class="level3">
+<h3 class="anchored" data-anchor-id="方法-2位掩膜bitmask">方法 2：位掩膜（Bitmask）</h3>
 <p>使用二进制的每一位（bit）代表一个目标。</p>
 <p><strong>优点</strong>：通过按位或（<code>OR</code>）运算，允许一个像素同时属于多个类别。 <strong>缺点</strong>：可表示的目标数量有硬性上限，存储效率较低。</p>
-<div id="f42c0b71" class="cell" data-execution_count="3">
+<div id="c16ad647" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 示例：使用位掩膜表示重叠</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bit_mask <span class="op">=</span> np.zeros((<span class="dv">64</span>, <span class="dv">256</span>, <span class="dv">256</span>), dtype<span class="op">=</span>np.uint8)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -439,7 +447,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="实际工程中的管理复杂性" class="level3">
 <h3 class="anchored" data-anchor-id="实际工程中的管理复杂性">实际工程中的管理复杂性</h3>
 <p>由于上述底层数据结构的限制，目前处理复杂分割任务的普遍做法是：为每个分割目标存储一个独立的掩膜文件。</p>
-<div id="cc81a6b0" class="cell" data-execution_count="4">
+<div id="4555bef7" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>

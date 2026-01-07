@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.21">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Metadata Storage Mechanism – FastDiag Toolkit 文档</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ea1d7ac60288e0f1efdbc993fd8432ae.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-af53e07c3e3c7930d59d423e0ac82114.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">FastDiag Toolkit 文档</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="搜索"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">首页</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">中文</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./index-en.html"> 
+<span class="menu-text">English</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text">GitHub</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation-en.html">DiCube</a></li><li class="breadcrumb-item"><a href="./1.2_meta_storage-en.html">Metadata Storage Mechanism</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">DiCube</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.0_motivation-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Rationale and Motivation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.1_vs_nifti-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Compared With NIfTI</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.2_meta_storage-en.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Metadata Storage Mechanism</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.3_dicom_status-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM Series Status</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.4_sort_method-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Slice Sorting Methods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.5_axis_order-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3D Axis Order Convention</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1.6_dicom_compatibility_simple-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DICOM Compatibility</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">MedMask</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.0_mask-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Segmentation Mask Pain Points</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.1_mask_compression-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Efficient Compression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.2_mask_label_mapping-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Semantic Mapping System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2.3_mask_archive-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MaskArchive</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">SpaceTransformer</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="展开或折叠此栏">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.0_spacetransformer_motivation-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SpaceTransformer Motivation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3.1_space_concept_fundamentals-en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Space Fundamentals</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">该页面内容</h2>
+   
+  <ul>
+  <li><a href="#legacy-dicom-pattern-redundant-headers" id="toc-legacy-dicom-pattern-redundant-headers" class="nav-link active" data-scroll-target="#legacy-dicom-pattern-redundant-headers">1. Legacy DICOM Pattern: Redundant Headers</a></li>
+  <li><a href="#embracing-dicom-json" id="toc-embracing-dicom-json" class="nav-link" data-scroll-target="#embracing-dicom-json">2. Embracing DICOM JSON</a></li>
+  <li><a href="#dicommeta-split-shared-vs-perslice" id="toc-dicommeta-split-shared-vs-perslice" class="nav-link" data-scroll-target="#dicommeta-split-shared-vs-perslice">3. DicomMeta: Split Shared vs Per‑Slice</a></li>
+  <li><a href="#extreme-compression-json-zstandard" id="toc-extreme-compression-json-zstandard" class="nav-link" data-scroll-target="#extreme-compression-json-zstandard">4. Extreme Compression: JSON + Zstandard</a></li>
+  <li><a href="#developer-ergonomics-commontags" id="toc-developer-ergonomics-commontags" class="nav-link" data-scroll-target="#developer-ergonomics-commontags">5. Developer Ergonomics: CommonTags</a></li>
+  <li><a href="#performance-leap" id="toc-performance-leap" class="nav-link" data-scroll-target="#performance-leap">6. Performance Leap</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">7. Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1.0_motivation-en.html">DiCube</a></li><li class="breadcrumb-item"><a href="./1.2_meta_storage-en.html">Metadata Storage Mechanism</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Metadata Storage Mechanism</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="legacy-dicom-pattern-redundant-headers" class="level2">
+<h2 class="anchored" data-anchor-id="legacy-dicom-pattern-redundant-headers">1. Legacy DICOM Pattern: Redundant Headers</h2>
+<p>DICOM’s one‑file‑per‑slice model leads to heavy repetition of series‑level metadata across hundreds of files. Only a few fields vary per slice (e.g., <code>InstanceNumber</code>, <code>ImagePositionPatient</code>). This bloats storage and hurts I/O when scanning entire series for a single field.</p>
+<div id="e2c0f5d0" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pydicom, os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>dicom_dir <span class="op">=</span> <span class="st">"dicube-testdata/dicom/sample_200"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dicom_files <span class="op">=</span> <span class="bu">list</span>(Path(dicom_dir).glob(<span class="st">"*"</span>))[:<span class="dv">2</span>]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>ds1 <span class="op">=</span> pydicom.dcmread(dicom_files[<span class="dv">0</span>], stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ds2 <span class="op">=</span> pydicom.dcmread(dicom_files[<span class="dv">1</span>], stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PatientName same:"</span>, ds1.PatientName <span class="op">==</span> ds2.PatientName)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"SeriesInstanceUID same:"</span>, ds1.SeriesInstanceUID <span class="op">==</span> ds2.SeriesInstanceUID)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"InstanceNumber same:"</span>, ds1.InstanceNumber <span class="op">==</span> ds2.InstanceNumber)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PatientName same: True
+SeriesInstanceUID same: True
+InstanceNumber same: False</code></pre>
+</div>
+</div>
+</section>
+<section id="embracing-dicom-json" class="level2">
+<h2 class="anchored" data-anchor-id="embracing-dicom-json">2. Embracing DICOM JSON</h2>
+<p>DICOM PS3.18 defines a JSON model for headers—human‑readable and tool‑friendly. DiCube adopts it internally to maximize interoperability and future‑proofing.</p>
+<div id="89d2ad56" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> pydicom.dcmread(dicom_files[<span class="dv">0</span>], stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>dicom_json_str <span class="op">=</span> ds.to_json()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> json.loads(dicom_json_str)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tag <span class="kw">in</span> [<span class="st">"00100010"</span>,<span class="st">"00080021"</span>,<span class="st">"00200013"</span>]:  <span class="co"># PatientName, SeriesDate, InstanceNumber</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> tag <span class="kw">in</span> data:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        vr <span class="op">=</span> data[tag][<span class="st">"vr"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        value <span class="op">=</span> data[tag].get(<span class="st">"Value"</span>, [<span class="st">"N/A"</span>])[<span class="dv">0</span>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Tag </span><span class="sc">{</span>tag<span class="sc">}</span><span class="ss"> (VR: </span><span class="sc">{</span>vr<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span>value<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Tag 00100010 (VR: PN): {'Alphabetic': 'Anonymous'}
+Tag 00080021 (VR: DA): 20241120
+Tag 00200013 (VR: IS): 73</code></pre>
+</div>
+</div>
+</section>
+<section id="dicommeta-split-shared-vs-perslice" class="level2">
+<h2 class="anchored" data-anchor-id="dicommeta-split-shared-vs-perslice">3. DicomMeta: Split Shared vs Per‑Slice</h2>
+<p>DiCube’s <code>DicomMeta</code> separates shared vs per‑slice fields to remove redundancy and enable O(1) shared lookups and fast vectorized per‑slice queries.</p>
+<div id="a2c6791d" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dicube</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dicube.dicom <span class="im">import</span> CommonTags</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>dcb_image <span class="op">=</span> dicube.load_from_dicom_folder(dicom_dir)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>dicube.save(dcb_image, <span class="st">"temp_demo.dcbs"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>meta <span class="op">=</span> dicube.load_meta(<span class="st">"temp_demo.dcbs"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>meta.display()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>patient_name <span class="op">=</span> meta.get_shared_value(CommonTags.PatientName)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PatientName:"</span>, patient_name, <span class="st">"(shared)"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"InstanceNumber count:"</span>, <span class="bu">len</span>(instance_numbers))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Shared Metadata:
+        Tag                                 Name                                                          Value
+(0010,0010)                          PatientName                                    {'Alphabetic': 'Anonymous'}
+(0010,0020)                            PatientID                                                        ID12345
+(0008,0020)                            StudyDate                                                       20230720
+(0008,1030)                     StudyDescription                                                       31111568
+(0008,103E)                    SeriesDescription                                             MonoE 90keV[HU] 90
+(0008,0060)                             Modality                                                             CT
+(0008,0005)                 SpecificCharacterSet                                                     ISO_IR 100
+(0008,0008)                            ImageType                       [DERIVED, SECONDARY, AXIAL, MONO_ENERGY]
+(0008,0012)                 InstanceCreationDate                                                       20241120
+(0008,0016)                          SOPClassUID                                      1.2.840.10008.5.1.4.1.1.2
+(0008,0021)                           SeriesDate                                                       20241120
+(0008,0022)                      AcquisitionDate                                                       20230720
+(0008,0023)                          ContentDate                                                       20230720
+(0008,002A)                  AcquisitionDateTime                                          20230720104604.080000
+(0008,0030)                            StudyTime                                                  103922.235000
+(0008,0031)                           SeriesTime                                                  202944.289009
+(0008,0032)                      AcquisitionTime                                                         104604
+(0008,0050)                      AccessionNumber                                                           None
+(0008,0064)                       ConversionType                                                            WSD
+(0008,0070)                         Manufacturer                                                        Philips
+(0008,0080)                      InstitutionName                                                   Hospital XYZ
+(0008,0081)                   InstitutionAddress                                                    123 Fake St
+(0008,0090)               ReferringPhysicianName                                 {'Alphabetic': 'Dr. John Doe'}
+(0008,1010)                          StationName                                                           None
+(0008,1040)          InstitutionalDepartmentName                                                           None
+(0008,1080)        AdmittingDiagnosesDescription                                                           None
+(0008,1090)                ManufacturerModelName                                                    Spectral CT
+(0008,3010)                  IrradiationEventUID 1.3.46.670589.33.1.63825446729785071000004.5383234939564892192
+(0010,0030)                     PatientBirthDate                                                       19000101
+(0010,0040)                           PatientSex                                                              O
+(0010,1010)                           PatientAge                                                           045Y
+(0018,0010)                   ContrastBolusAgent                                                         Iodine
+(0018,0015)                     BodyPartExamined                                                          HEART
+(0018,0022)                          ScanOptions                                                          HELIX
+(0018,0050)                       SliceThickness                                                            0.9
+(0018,0060)                                  KVP                                                          120.0
+(0018,0090)               DataCollectionDiameter                                                          500.0
+(0018,1000)                   DeviceSerialNumber                                                          10071
+(0018,1020)                     SoftwareVersions                                                    [4.1.0.0, ]
+(0018,1030)                         ProtocolName                                 HX Coronary CTA HR&lt;75 /Cardiac
+(0018,1040)                   ContrastBolusRoute                                                             IV
+(0018,1041)                  ContrastBolusVolume                                                            0.0
+(0018,1044)               ContrastBolusTotalDose                                                            0.0
+(0018,1046)                     ContrastFlowRate                                                           None
+(0018,1047)                 ContrastFlowDuration                                                           None
+(0018,1049) ContrastBolusIngredientConcentration                                                            0.0
+(0018,1088)                            HeartRate                                                           None
+(0018,1100)               ReconstructionDiameter                                                          220.0
+(0018,1110)             DistanceSourceToDetector                                                         1040.0
+(0018,1111)              DistanceSourceToPatient                                                          570.0
+(0018,1120)                   GantryDetectorTilt                                                            0.0
+(0018,1130)                          TableHeight                                                          161.3
+(0018,1150)                         ExposureTime                                                           1359
+(0018,1151)                      XRayTubeCurrent                                                            359
+(0018,1152)                             Exposure                                                            488
+(0018,1160)                           FilterType                                                             CB
+(0018,1210)                    ConvolutionKernel                                                             CB
+(0018,5100)                      PatientPosition                                                            FFS
+(0018,9302)                      AcquisitionType                                                         SPIRAL
+(0018,9305)                       RevolutionTime                                                          0.272
+(0018,9306)               SingleCollimationWidth                                                          0.625
+(0018,9307)                TotalCollimationWidth                                                           80.0
+(0018,9309)                           TableSpeed                                                           58.8
+(0018,9310)                 TableFeedPerRotation                                                           16.0
+(0018,9311)                    SpiralPitchFactor                                                            0.2
+(0018,9323)               ExposureModulationType                                                            ACS
+(0018,9324)                  EstimatedDoseSaving                                                           None
+(0018,9334)                      FluoroscopyFlag                                                             NO
+(0018,9345)                              CTDIvol                                                           37.8
+(0020,000D)                     StudyInstanceUID   1.3.46.670589.50.2.37266317681035895631.31745749383280305035
+(0020,000E)                    SeriesInstanceUID    1.3.46.670589.50.2.5382016093075676224.32125520682478807182
+(0020,0010)                              StudyID                                                           8802
+(0020,0011)                         SeriesNumber                                                          20214
+(0020,0012)                    AcquisitionNumber                                                              5
+(0020,0037)              ImageOrientationPatient                                 [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+(0020,0052)                  FrameOfReferenceUID 1.3.46.670589.33.1.63825446449932213200002.5629594368916637476
+(0020,1040)           PositionReferenceIndicator                                                           None
+(0020,4000)                        ImageComments                                             MonoE 90keV[HU] 90
+(0028,0002)                      SamplesPerPixel                                                              1
+(0028,0004)            PhotometricInterpretation                                                    MONOCHROME2
+(0028,0010)                                 Rows                                                            512
+(0028,0011)                              Columns                                                            512
+(0028,0030)                         PixelSpacing                                         [0.4296875, 0.4296875]
+(0028,0100)                        BitsAllocated                                                             16
+(0028,0101)                           BitsStored                                                             16
+(0028,0102)                              HighBit                                                             15
+(0028,0103)                  PixelRepresentation                                                              0
+(0028,1050)                         WindowCenter                                                   [90.0, 90.0]
+(0028,1051)                          WindowWidth                                                 [750.0, 750.0]
+(0028,1052)                     RescaleIntercept                                                        -1024.0
+(0028,1053)                         RescaleSlope                                                            1.0
+(0028,1054)                          RescaleType                                                             HU
+(0028,2110)                LossyImageCompression                                                             00
+(0032,1032)                  RequestingPhysician                                                           None
+(00E1,0010)                                                                                            ELSCINT1
+(00E1,1002)                                                                                               Adult
+(00E1,1036)                                                                                                 YES
+(00E1,1040)                                                                                     MonoE 90keV[HU]
+(00E1,1042)                                                                              Noah_HP_Manual_SPTable
+(00E1,1046)                                                                                                None
+(00E1,1050)                                                                                               3.622
+(00E1,1063)                                                                                    MANDARIN_CHINESE
+(00E1,10A0)                                                            Patient Data was modified on 2024?11?20?
+(00E1,10E1)                                                                                                   6
+(01E1,0010)                                                                                            ELSCINT1
+(01E1,1017)                                         1.3.46.670589.50.2.2479212041345812297.27881271853652245233
+(01E1,1023)                                                                                                  No
+(01E1,1053)                                                                                                None
+(01F1,0010)                                                                                            ELSCINT1
+(01F1,1001)                                                                                              SPIRAL
+(01F1,1002)                                                                                            STANDARD
+(01F1,1004)                                                                                              NORMAL
+(01F1,1008)                                                                                               104.4
+(01F1,100C)                                                                                      [0.068, 0.036]
+(01F1,100E)                                                                                                 0.0
+(01F1,100F)                                                                                                 OUT
+(01F1,1026)                                                                                                 0.2
+(01F1,1027)                                                                                               0.272
+(01F1,1032)                                                                                       RIGHT_ON_LEFT
+(01F1,1039)                                                                                                 ECG
+(01F1,1041)                                                                                                 75%
+(01F1,1044)                                                                                                None
+(01F1,1045)                                                                                                  64
+(01F1,1046)                                                                                               0.625
+(01F1,1047)                                                                                                  3D
+(01F1,1049)                                                                                                None
+(01F1,104A)                                                                                                NONE
+(01F1,104B)                                                                                           128x0.625
+(01F1,104D)                                                                                       YES (CARDIAC)
+(01F1,104E)                                                                                             Cardiac
+(01F1,104F)                                                                                                  31
+(01F1,1054)                                                                                                  32
+(01F1,1055)                                                                                    27.0607663040348
+(01F7,0010)                                                                                            ELSCINT1
+(01F7,1014)                                                                                                None
+(01F7,1019)                                                                                                None
+(01F7,1029)                                                                                                None
+(01F7,1031)                                                                                                None
+(01F7,1077)                                                                                                None
+(01F7,1078)                                                                                                None
+(01F7,1081)                                                                                                None
+(01F7,108B)                                                                                                None
+(01F7,1095)                                                                                                None
+(01F7,1097)                                                                                                None
+(01F7,1099)                                                                                                None
+(01F7,109B)                                                                                                None
+(01F7,109E)                                                                                                None
+(01F7,10C1)                                                                                                None
+(01F7,10C2)                                                                                                None
+(01F7,10C3)                                                                                                None
+(01F7,10CB)                                                                                                90.0
+(01F7,10CD)                                                                                                 YES
+(01F7,10D0)                                                                                                None
+(01F7,10D1)                                                                                                None
+(01F7,10D2)                                                                                                None
+(01F7,10D4)                                                                                                body
+(01F7,10D5)                                                                                                None
+(01F7,10D6)                                                                                                   5
+(01F7,10D7)                                                                                                None
+(07A1,0010)                                                                                            ELSCINT1
+(07A1,1010)                                                                                               4.0.0
+(1001,0010)                                                                              Philips Imaging DD 124
+(1001,0011)                                                                              Philips Imaging DD 001
+(1001,1118)                                                                                                 YES
+(2001,0010)                                                                              Philips Imaging DD 001
+(2001,106E)                                                                                            SCSeries
+(2005,0010)                                                                           Philips MR Imaging DD 005
+(2005,0011)                                                                           Philips MR Imaging DD 004
+(2005,0012)                                                                           Philips MR Imaging DD 003
+(2005,1026)                                                                                                   N
+(2005,1182)                                                                                                   0
+(2005,1213)                                                                                                   0
+
+Non-Shared Metadata:
+                (0020,0013)    (0020,1041)                 (0020,0032)           (0008,0013)                                                   (0008,0018)  (0008,0033)                          (0018,9318)    (0018,9327)  (00E1,10C4)  (01F7,1027)                                                                                                                                      (01F7,10CC)                             (1001,1003)
+Tag             (0020,0013)    (0020,1041)                 (0020,0032)           (0008,0013)                                                   (0008,0018)  (0008,0033)                          (0018,9318)    (0018,9327)  (00E1,10C4)  (01F7,1027)                                                                                                                                      (01F7,10CC)                             (1001,1003)
+Name         InstanceNumber  SliceLocation        ImagePositionPatient  InstanceCreationTime                                                SOPInstanceUID  ContentTime    ReconstructionTargetCenterPatient  TablePosition                                                                                                                                                                                                                   
+Dataset_0                 1       -1371.75  [-102.08, -31.26, 1371.75]         202944.307946    1.3.46.670589.50.2.1881579110924413767.2507494869181507701   104604.937  [-0.068, 93.73599999999999, 2743.5]         721.75       721.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(1,0)subvol(1,0)  MR Import Filter 9/11/2024 10:39:59 PM
+Dataset_1                 2        -1371.3   [-102.08, -31.26, 1371.3]         202944.314926  1.3.46.670589.50.2.35721399143651105609.24968344664115237489   104604.944  [-0.068, 93.73599999999999, 2742.6]     722.200012   722.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_2                 3       -1370.85  [-102.08, -31.26, 1370.85]         202944.317912   1.3.46.670589.50.2.8789317754255285067.23081326131168745474   104604.952  [-0.068, 93.73599999999999, 2741.7]     722.650024   722.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_3                 4        -1370.4   [-102.08, -31.26, 1370.4]         202944.320903  1.3.46.670589.50.2.18669684383987645770.29880994014088560851   104604.960  [-0.068, 93.73599999999999, 2740.8]     723.099976   723.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_4                 5       -1369.95  [-102.08, -31.26, 1369.95]         202944.323896   1.3.46.670589.50.2.2882641883710023247.22761359293705351605   104604.967  [-0.068, 93.73599999999999, 2739.9]     723.549988   723.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_5                 6        -1369.5   [-102.08, -31.26, 1369.5]         202944.326883    1.3.46.670589.50.2.537526400662512962.28124135962015285099   104604.975  [-0.068, 93.73599999999999, 2739.0]          724.0        724.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_6                 7       -1369.05  [-102.08, -31.26, 1369.05]         202944.328880   1.3.46.670589.50.2.38525026053482635342.2485010123835666701   104604.983  [-0.068, 93.73599999999999, 2738.1]     724.450012   724.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_7                 8        -1368.6   [-102.08, -31.26, 1368.6]         202944.331865  1.3.46.670589.50.2.14498080441156526668.23204457564223125097   104604.990  [-0.068, 93.73599999999999, 2737.2]     724.900024   724.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_8                 9       -1368.15  [-102.08, -31.26, 1368.15]         202944.335852   1.3.46.670589.50.2.4028538749459669057.24933309493507334305   104604.998  [-0.068, 93.73599999999999, 2736.3]     725.349976   725.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_9                10        -1367.7   [-102.08, -31.26, 1367.7]         202944.338843  1.3.46.670589.50.2.28711831953619332680.22747989282102013363   104605.006  [-0.068, 93.73599999999999, 2735.4]     725.799988   725.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_10               11       -1367.25  [-102.08, -31.26, 1367.25]         202944.341833    1.3.46.670589.50.2.42742310733576484417.302211981169669052   104605.014  [-0.068, 93.73599999999999, 2734.5]         726.25       726.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_11               12        -1366.8   [-102.08, -31.26, 1366.8]         202944.343829    1.3.46.670589.50.2.818035494244150599.26461679241234279800   104605.021  [-0.068, 93.73599999999999, 2733.6]     726.700012   726.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_12               13       -1366.35  [-102.08, -31.26, 1366.35]         202944.346816  1.3.46.670589.50.2.11175331902977939789.25000696192939990054   104605.029  [-0.068, 93.73599999999999, 2732.7]     727.150024   727.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_13               14        -1365.9   [-102.08, -31.26, 1365.9]         202944.349806   1.3.46.670589.50.2.19145860261463789126.2172275137314738258   104605.037  [-0.068, 93.73599999999999, 2731.8]     727.599976   727.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_14               15       -1365.45  [-102.08, -31.26, 1365.45]         202944.352796   1.3.46.670589.50.2.3474340299541519426.26123409782206202112   104605.044  [-0.068, 93.73599999999999, 2730.9]     728.049988   728.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:39:59 PM
+Dataset_15               16        -1365.0   [-102.08, -31.26, 1365.0]         202944.356786   1.3.46.670589.50.2.3145507384937819460.28736036911768858832   104605.052  [-0.068, 93.73599999999999, 2730.0]          728.5        728.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_16               17       -1364.55  [-102.08, -31.26, 1364.55]         202944.358776  1.3.46.670589.50.2.33520882772653497415.22164274502430963933   104605.060  [-0.068, 93.73599999999999, 2729.1]     728.950012   728.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_17               18        -1364.1   [-102.08, -31.26, 1364.1]         202944.361766  1.3.46.670589.50.2.39904464152523108160.27654372753159686712   104605.068  [-0.068, 93.73599999999999, 2728.2]     729.400024   729.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_18               19       -1363.65  [-102.08, -31.26, 1363.65]         202944.364755    1.3.46.670589.50.2.4162642840370907972.2751014168124679299   104605.075  [-0.068, 93.73599999999999, 2727.3]     729.849976   729.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_19               20        -1363.2   [-102.08, -31.26, 1363.2]         202944.368742    1.3.46.670589.50.2.3520501671890697281.2198189180933487009   104605.083  [-0.068, 93.73599999999999, 2726.4]     730.299988   730.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_20               21       -1362.75  [-102.08, -31.26, 1362.75]         202944.371733  1.3.46.670589.50.2.38838436363005208643.29429751954165345142   104605.091  [-0.068, 93.73599999999999, 2725.5]         730.75       730.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_21               22        -1362.3   [-102.08, -31.26, 1362.3]         202944.374723  1.3.46.670589.50.2.19790223862128516686.24004072123596768947   104605.098  [-0.068, 93.73599999999999, 2724.6]     731.200012   731.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_22               23       -1361.85  [-102.08, -31.26, 1361.85]         202944.377712  1.3.46.670589.50.2.38384420134198217807.24901860612753601276   104605.106  [-0.068, 93.73599999999999, 2723.7]     731.650024   731.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_23               24        -1361.4   [-102.08, -31.26, 1361.4]         202944.380703  1.3.46.670589.50.2.13988458773088610890.26270840142276533369   104605.114  [-0.068, 93.73599999999999, 2722.8]     732.099976   732.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_24               25       -1360.95  [-102.08, -31.26, 1360.95]         202944.386682  1.3.46.670589.50.2.29874135333976679753.30101939221087907731   104605.121  [-0.068, 93.73599999999999, 2721.9]     732.549988   732.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_25               26        -1360.5   [-102.08, -31.26, 1360.5]         202944.394656   1.3.46.670589.50.2.2517720122575099723.21648816312142063122   104605.129  [-0.068, 93.73599999999999, 2721.0]          733.0        733.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_26               27       -1360.05  [-102.08, -31.26, 1360.05]         202944.396653  1.3.46.670589.50.2.28834477103151143239.23675564683532779167   104605.137  [-0.068, 93.73599999999999, 2720.1]     733.450012   733.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_27               28        -1359.6   [-102.08, -31.26, 1359.6]         202944.400636  1.3.46.670589.50.2.14770051801058197574.31550421101024182255   104605.144  [-0.068, 93.73599999999999, 2719.2]     733.900024   733.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_28               29       -1359.15  [-102.08, -31.26, 1359.15]         202944.403626   1.3.46.670589.50.2.1637684601179615048.31978496763692194713   104605.152  [-0.068, 93.73599999999999, 2718.3]     734.349976   734.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:39:59 PM
+Dataset_29               30        -1358.7   [-102.08, -31.26, 1358.7]         202944.406616  1.3.46.670589.50.2.22907237351087620931.26482103603152131214   104605.160  [-0.068, 93.73599999999999, 2717.4]     734.799988   734.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_30               31       -1358.25  [-102.08, -31.26, 1358.25]         202944.408613  1.3.46.670589.50.2.23545346223075884616.30472950653813260901   104605.167  [-0.068, 93.73599999999999, 2716.5]         735.25       735.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_31               32        -1357.8   [-102.08, -31.26, 1357.8]         202944.411599  1.3.46.670589.50.2.13039769912633275212.25503874602606992538   104605.175  [-0.068, 93.73599999999999, 2715.6]     735.700012   735.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_32               33       -1357.35  [-102.08, -31.26, 1357.35]         202944.414590  1.3.46.670589.50.2.34142106921013941836.21789504503825411425   104605.183  [-0.068, 93.73599999999999, 2714.7]     736.150024   736.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_33               34        -1356.9   [-102.08, -31.26, 1356.9]         202944.417579   1.3.46.670589.50.2.7444960951866650700.23274109453714377838   104605.191  [-0.068, 93.73599999999999, 2713.8]     736.599976   736.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_34               35       -1356.45  [-102.08, -31.26, 1356.45]         202944.420570    1.3.46.670589.50.2.608113865456718145.29557067033605916937   104605.198  [-0.068, 93.73599999999999, 2712.9]     737.049988   737.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:00 PM
+Dataset_35               36        -1356.0   [-102.08, -31.26, 1356.0]         202944.423563   1.3.46.670589.50.2.2139329972022183746.28100104742658937957   104605.206  [-0.068, 93.73599999999999, 2712.0]          737.5        737.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_36               37       -1355.55  [-102.08, -31.26, 1355.55]         202944.429540   1.3.46.670589.50.2.1325257796320374607.29210806051110662913   104605.214  [-0.068, 93.73599999999999, 2711.1]     737.950012   737.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_37               38        -1355.1   [-102.08, -31.26, 1355.1]         202944.431533  1.3.46.670589.50.2.31053468801141740355.25915358591648271034   104605.221  [-0.068, 93.73599999999999, 2710.2]     738.400024   738.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_38               39       -1354.65  [-102.08, -31.26, 1354.65]         202944.441499  1.3.46.670589.50.2.32406761151315628104.21679589224050184276   104605.229  [-0.068, 93.73599999999999, 2709.3]     738.849976   738.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_39               40        -1354.2   [-102.08, -31.26, 1354.2]         202944.444489  1.3.46.670589.50.2.11729766592564690249.31937865511723303641   104605.237  [-0.068, 93.73599999999999, 2708.4]     739.299988   739.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_40               41       -1353.75  [-102.08, -31.26, 1353.75]         202944.447480  1.3.46.670589.50.2.19128938762745574478.26084267841659422513   104605.244  [-0.068, 93.73599999999999, 2707.5]         739.75       739.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_41               42        -1353.3   [-102.08, -31.26, 1353.3]         202944.450470      1.3.46.670589.50.2.9579915128632133.25971655883358142962   104605.252  [-0.068, 93.73599999999999, 2706.6]     740.200012   740.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_42               43       -1352.85  [-102.08, -31.26, 1352.85]         202944.453460      1.3.46.670589.50.2.77815846236629574.2285790074676204849   104605.260  [-0.068, 93.73599999999999, 2705.7]     740.650024   740.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_43               44        -1352.4   [-102.08, -31.26, 1352.4]         202944.456455  1.3.46.670589.50.2.31190304712339958340.31659747702825744811   104605.267  [-0.068, 93.73599999999999, 2704.8]     741.099976   741.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_44               45       -1351.95  [-102.08, -31.26, 1351.95]         202944.461437   1.3.46.670589.50.2.5545379061324578380.24948609772945500259   104605.275  [-0.068, 93.73599999999999, 2703.9]     741.549988   741.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_45               46        -1351.5   [-102.08, -31.26, 1351.5]         202944.464427   1.3.46.670589.50.2.3444839864640050502.28366435461862118558   104605.283  [-0.068, 93.73599999999999, 2703.0]          742.0        742.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_46               47       -1351.05  [-102.08, -31.26, 1351.05]         202944.467413  1.3.46.670589.50.2.12383102362904014666.21769974191287950195   104605.291  [-0.068, 93.73599999999999, 2702.1]     742.450012   742.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_47               48        -1350.6   [-102.08, -31.26, 1350.6]         202944.470403  1.3.46.670589.50.2.15784408592712384330.27859551453048532958   104605.298  [-0.068, 93.73599999999999, 2701.2]     742.900024   742.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_48               49       -1350.15  [-102.08, -31.26, 1350.15]         202944.472396   1.3.46.670589.50.2.5840737721629939014.30138206622609146281   104605.306  [-0.068, 93.73599999999999, 2700.3]     743.349976   743.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_49               50        -1349.7   [-102.08, -31.26, 1349.7]         202944.475390   1.3.46.670589.50.2.13617490931079190855.2661636005406387566   104605.314  [-0.068, 93.73599999999999, 2699.4]     743.799988   743.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_50               51       -1349.25  [-102.08, -31.26, 1349.25]         202944.478378  1.3.46.670589.50.2.23405758041385828938.28054086131934980985   104605.321  [-0.068, 93.73599999999999, 2698.5]         744.25       744.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_51               52        -1348.8   [-102.08, -31.26, 1348.8]         202944.481370     1.3.46.670589.50.2.1641851554559033924.287738689872555441   104605.329  [-0.068, 93.73599999999999, 2697.6]     744.700012   744.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_52               53       -1348.35  [-102.08, -31.26, 1348.35]         202944.483363  1.3.46.670589.50.2.32688233032542835531.28203653712259846294   104605.337  [-0.068, 93.73599999999999, 2696.7]     745.150024   745.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_53               54        -1347.9   [-102.08, -31.26, 1347.9]         202944.487346   1.3.46.670589.50.2.3509870361279112012.30265821514179655516   104605.345  [-0.068, 93.73599999999999, 2695.8]     745.599976   745.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_54               55       -1347.45  [-102.08, -31.26, 1347.45]         202944.491333  1.3.46.670589.50.2.20397105963092202312.23984413662887483638   104605.352  [-0.068, 93.73599999999999, 2694.9]     746.049988   746.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_55               56        -1347.0   [-102.08, -31.26, 1347.0]         202944.493326    1.3.46.670589.50.2.39010196091576029251.274837657019541656   104605.360  [-0.068, 93.73599999999999, 2694.0]          746.5        746.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_56               57       -1346.55  [-102.08, -31.26, 1346.55]         202944.496316    1.3.46.670589.50.2.5048733482838732879.2745523687403650455   104605.367  [-0.068, 93.73599999999999, 2693.1]     746.950012   746.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:50:10 isp9_compatible edge(0,0)subvol(0,1)  MR Import Filter 9/11/2024 10:40:01 PM
+Dataset_57               58        -1346.1   [-102.08, -31.26, 1346.1]         202944.499307  1.3.46.670589.50.2.38973201072869533772.29413871023816339774   104605.375  [-0.068, 93.73599999999999, 2692.2]     747.400024   747.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(1,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_58               59       -1345.65  [-102.08, -31.26, 1345.65]         202944.502296   1.3.46.670589.50.2.2877687643583571533.25326827201626478271   104605.383  [-0.068, 93.73599999999999, 2691.3]     747.849976   747.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_59               60        -1345.2   [-102.08, -31.26, 1345.2]         202944.505286  1.3.46.670589.50.2.10712915423151865412.26214522752449349203   104605.391  [-0.068, 93.73599999999999, 2690.4]     748.299988   748.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_60               61       -1344.75  [-102.08, -31.26, 1344.75]         202944.508276   1.3.46.670589.50.2.37183327363488976453.2475281078609651821   104605.398  [-0.068, 93.73599999999999, 2689.5]         748.75       748.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_61               62        -1344.3   [-102.08, -31.26, 1344.3]         202944.511267  1.3.46.670589.50.2.31341849681844700737.26779576234285234906   104605.406  [-0.068, 93.73599999999999, 2688.6]     749.200012   749.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_62               63       -1343.85  [-102.08, -31.26, 1343.85]         202944.513263   1.3.46.670589.50.2.14743352631064844367.2877201512806891356   104605.414  [-0.068, 93.73599999999999, 2687.7]     749.650024   749.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_63               64        -1343.4   [-102.08, -31.26, 1343.4]         202944.516250  1.3.46.670589.50.2.26176216924122517837.25278308781901153441   104605.421  [-0.068, 93.73599999999999, 2686.8]     750.099976   750.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_64               65       -1342.95  [-102.08, -31.26, 1342.95]         202944.519240   1.3.46.670589.50.2.3039775751610097731.31161502581180888146   104605.429  [-0.068, 93.73599999999999, 2685.9]     750.549988   750.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_65               66        -1342.5   [-102.08, -31.26, 1342.5]         202944.522229  1.3.46.670589.50.2.33494887932991130445.31066656952887976194   104605.437  [-0.068, 93.73599999999999, 2685.0]          751.0        751.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_66               67       -1342.05  [-102.08, -31.26, 1342.05]         202944.525221   1.3.46.670589.50.2.4283507089895224654.25120369653377430964   104605.444  [-0.068, 93.73599999999999, 2684.1]     751.450012   751.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_67               68        -1341.6   [-102.08, -31.26, 1341.6]         202944.528211  1.3.46.670589.50.2.33095675803601316431.29234665691555237658   104605.452  [-0.068, 93.73599999999999, 2683.2]     751.900024   751.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_68               69       -1341.15  [-102.08, -31.26, 1341.15]         202944.530204    1.3.46.670589.50.2.131314116548301896.25856215233718643823   104605.460  [-0.068, 93.73599999999999, 2682.3]     752.349976   752.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_69               70        -1340.7   [-102.08, -31.26, 1340.7]         202944.533194    1.3.46.670589.50.2.9032234901835324736.2567973322618820214   104605.468  [-0.068, 93.73599999999999, 2681.4]     752.799988   752.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_70               71       -1340.25  [-102.08, -31.26, 1340.25]         202944.537181    1.3.46.670589.50.2.28964665632645037125.258007921398742605   104605.475  [-0.068, 93.73599999999999, 2680.5]         753.25       753.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_71               72        -1339.8   [-102.08, -31.26, 1339.8]         202944.541224  1.3.46.670589.50.2.19143605842063418432.29240951733332439030   104605.483  [-0.068, 93.73599999999999, 2679.6]     753.700012   753.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_72               73       -1339.35  [-102.08, -31.26, 1339.35]         202944.544222     1.3.46.670589.50.2.35126862618312268.29537632962531288174   104605.491  [-0.068, 93.73599999999999, 2678.7]     754.150024   754.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_73               74        -1338.9   [-102.08, -31.26, 1338.9]         202944.547207  1.3.46.670589.50.2.15338811662540969797.22106917272639534813   104605.498  [-0.068, 93.73599999999999, 2677.8]     754.599976   754.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:02 PM
+Dataset_74               75       -1338.45  [-102.08, -31.26, 1338.45]         202944.549140  1.3.46.670589.50.2.22060190731351349066.24712459382644089933   104605.506  [-0.068, 93.73599999999999, 2676.9]     755.049988   755.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_75               76        -1338.0   [-102.08, -31.26, 1338.0]         202944.553126   1.3.46.670589.50.2.10120452012856116552.2635943537177069149   104605.514  [-0.068, 93.73599999999999, 2676.0]          755.5        755.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_76               77       -1337.55  [-102.08, -31.26, 1337.55]         202944.556117   1.3.46.670589.50.2.4125451320581616454.26999744141574613848   104605.521  [-0.068, 93.73599999999999, 2675.1]     755.950012   755.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_77               78        -1337.1   [-102.08, -31.26, 1337.1]         202944.559106  1.3.46.670589.50.2.31201191702904157764.29020233953666852344   104605.529  [-0.068, 93.73599999999999, 2674.2]     756.400024   756.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_78               79       -1336.65  [-102.08, -31.26, 1336.65]         202944.562101  1.3.46.670589.50.2.35337407763590771532.26296529093252488682   104605.537  [-0.068, 93.73599999999999, 2673.3]     756.849976   756.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_79               80        -1336.2   [-102.08, -31.26, 1336.2]         202944.565087   1.3.46.670589.50.2.18402716561848084302.3118588432955643073   104605.544  [-0.068, 93.73599999999999, 2672.4]     757.299988   757.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_80               81       -1335.75  [-102.08, -31.26, 1335.75]         202944.568077    1.3.46.670589.50.2.2276178992212230977.2672151761395527993   104605.552  [-0.068, 93.73599999999999, 2671.5]         757.75       757.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_81               82        -1335.3   [-102.08, -31.26, 1335.3]         202944.572063   1.3.46.670589.50.2.3233985560374003274.31939149661207500934   104605.560  [-0.068, 93.73599999999999, 2670.6]     758.200012   758.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_82               83       -1334.85  [-102.08, -31.26, 1334.85]         202944.575053  1.3.46.670589.50.2.13986389523695597633.21780542852373689838   104605.568  [-0.068, 93.73599999999999, 2669.7]     758.650024   758.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_83               84        -1334.4   [-102.08, -31.26, 1334.4]         202944.578043  1.3.46.670589.50.2.39027857322977557323.26202058953055165377   104605.575  [-0.068, 93.73599999999999, 2668.8]     759.099976   759.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_84               85       -1333.95  [-102.08, -31.26, 1333.95]         202944.580037   1.3.46.670589.50.2.6729522773928479814.25754110293081861047   104605.583  [-0.068, 93.73599999999999, 2667.9]     759.549988   759.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_85               86        -1333.5   [-102.08, -31.26, 1333.5]         202944.584023   1.3.46.670589.50.2.1797911292232859724.24391926252004069600   104605.591  [-0.068, 93.73599999999999, 2667.0]          760.0        760.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_86               87       -1333.05  [-102.08, -31.26, 1333.05]         202944.588014     1.3.46.670589.50.2.805135472689964612.2259626228425660348   104605.598  [-0.068, 93.73599999999999, 2666.1]     760.450012   760.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_87               88        -1332.6   [-102.08, -31.26, 1332.6]         202944.591000    1.3.46.670589.50.2.3070178017390688846.2162872311645214363   104605.606  [-0.068, 93.73599999999999, 2665.2]     760.900024   760.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_88               89       -1332.15  [-102.08, -31.26, 1332.15]         202944.593990  1.3.46.670589.50.2.17372168801275958857.30588854972785154558   104605.614  [-0.068, 93.73599999999999, 2664.3]     761.349976   761.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_89               90        -1331.7   [-102.08, -31.26, 1331.7]         202944.596980  1.3.46.670589.50.2.14996475021260779848.26834826081669185277   104605.622  [-0.068, 93.73599999999999, 2663.4]     761.799988   761.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_90               91       -1331.25  [-102.08, -31.26, 1331.25]         202944.599971     1.3.46.670589.50.2.97298795476133442.31542712303365059448   104605.629  [-0.068, 93.73599999999999, 2662.5]         762.25       762.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_91               92        -1330.8   [-102.08, -31.26, 1330.8]         202944.602961   1.3.46.670589.50.2.26969265593628864329.2826899571234234571   104605.637  [-0.068, 93.73599999999999, 2661.6]     762.700012   762.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_92               93       -1330.35  [-102.08, -31.26, 1330.35]         202944.605954  1.3.46.670589.50.2.25870617103800193860.26401852102463950537   104605.644  [-0.068, 93.73599999999999, 2660.7]     763.150024   763.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_93               94        -1329.9   [-102.08, -31.26, 1329.9]         202944.608943  1.3.46.670589.50.2.39878130183059639619.28419907701111518919   104605.652  [-0.068, 93.73599999999999, 2659.8]     763.599976   763.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_94               95       -1329.45  [-102.08, -31.26, 1329.45]         202944.611934     1.3.46.670589.50.2.315577785985390912.3208486305465999828   104605.660  [-0.068, 93.73599999999999, 2658.9]     764.049988   764.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_95               96        -1329.0   [-102.08, -31.26, 1329.0]         202944.614920   1.3.46.670589.50.2.29824219953646149194.2782691394301447090   104605.668  [-0.068, 93.73599999999999, 2658.0]          764.5        764.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_96               97       -1328.55  [-102.08, -31.26, 1328.55]         202944.618907  1.3.46.670589.50.2.37714681462827801920.26349339163011170873   104605.675  [-0.068, 93.73599999999999, 2657.1]     764.950012   764.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_97               98        -1328.1   [-102.08, -31.26, 1328.1]         202944.622897   1.3.46.670589.50.2.39719953892354288719.2935958825806994195   104605.683  [-0.068, 93.73599999999999, 2656.2]     765.400024   765.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_98               99       -1327.65  [-102.08, -31.26, 1327.65]         202944.625887  1.3.46.670589.50.2.40865162911725953090.22268474364246096563   104605.691  [-0.068, 93.73599999999999, 2655.3]     765.849976   765.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_99              100        -1327.2   [-102.08, -31.26, 1327.2]         202944.627877   1.3.46.670589.50.2.3751784895207456588.30315490653169659246   104605.698  [-0.068, 93.73599999999999, 2654.4]     766.299988   766.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:03 PM
+Dataset_100             101       -1326.75  [-102.08, -31.26, 1326.75]         202944.630866   1.3.46.670589.50.2.6459573033938848329.30990842433442677664   104605.706  [-0.068, 93.73599999999999, 2653.5]         766.75       766.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_101             102        -1326.3   [-102.08, -31.26, 1326.3]         202944.633858  1.3.46.670589.50.2.12445697872428031554.30710688283487405174   104605.714  [-0.068, 93.73599999999999, 2652.6]     767.200012   767.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_102             103       -1325.85  [-102.08, -31.26, 1325.85]         202944.636846  1.3.46.670589.50.2.36172352722862608460.22657502523406072581   104605.721  [-0.068, 93.73599999999999, 2651.7]     767.650024   767.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_103             104        -1325.4   [-102.08, -31.26, 1325.4]         202944.639838  1.3.46.670589.50.2.26992253641526833739.28972431371388322931   104605.729  [-0.068, 93.73599999999999, 2650.8]     768.099976   768.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_104             105       -1324.95  [-102.08, -31.26, 1324.95]         202944.642831   1.3.46.670589.50.2.34164084261057892680.2181364023109640488   104605.737  [-0.068, 93.73599999999999, 2649.9]     768.549988   768.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_105             106        -1324.5   [-102.08, -31.26, 1324.5]         202944.645817  1.3.46.670589.50.2.29998894672807797838.23806779761747355658   104605.745  [-0.068, 93.73599999999999, 2649.0]          769.0        769.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_106             107       -1324.05  [-102.08, -31.26, 1324.05]         202944.652793  1.3.46.670589.50.2.34762479712965456708.31741213392332656840   104605.752  [-0.068, 93.73599999999999, 2648.1]     769.450012   769.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:18 isp9_compatible edge(0,0)subvol(0,1)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_107             108        -1323.6   [-102.08, -31.26, 1323.6]         202944.656784   1.3.46.670589.50.2.2466219994616663113.22503813881629856040   104605.760  [-0.068, 93.73599999999999, 2647.2]     769.900024   769.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(1,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_108             109       -1323.15  [-102.08, -31.26, 1323.15]         202944.658773   1.3.46.670589.50.2.27583694953098994511.2434434804987346045   104605.768  [-0.068, 93.73599999999999, 2646.3]     770.349976   770.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_109             110        -1322.7   [-102.08, -31.26, 1322.7]         202944.662760   1.3.46.670589.50.2.4156663147684664386.25797419752660157337   104605.775  [-0.068, 93.73599999999999, 2645.4]     770.799988   770.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_110             111       -1322.25  [-102.08, -31.26, 1322.25]         202944.665750   1.3.46.670589.50.2.1892151844616063301.25903155212533469261   104605.783  [-0.068, 93.73599999999999, 2644.5]         771.25       771.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_111             112        -1321.8   [-102.08, -31.26, 1321.8]         202944.669737   1.3.46.670589.50.2.4098193763524872013.31913600433558318774   104605.791  [-0.068, 93.73599999999999, 2643.6]     771.700012   771.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_112             113       -1321.35  [-102.08, -31.26, 1321.35]         202944.672727    1.3.46.670589.50.2.400182987395357507.27523557293648061286   104605.798  [-0.068, 93.73599999999999, 2642.7]     772.150024   772.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_113             114        -1320.9   [-102.08, -31.26, 1320.9]         202944.675717   1.3.46.670589.50.2.3200805619269596741.24840351844048599277   104605.806  [-0.068, 93.73599999999999, 2641.8]     772.599976   772.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_114             115       -1320.45  [-102.08, -31.26, 1320.45]         202944.678706  1.3.46.670589.50.2.16141321032548683073.23440513762043484845   104605.814  [-0.068, 93.73599999999999, 2640.9]     773.049988   773.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_115             116        -1320.0   [-102.08, -31.26, 1320.0]         202944.681697   1.3.46.670589.50.2.6804581812555172173.22227684032853575320   104605.822  [-0.068, 93.73599999999999, 2640.0]          773.5        773.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_116             117       -1319.55  [-102.08, -31.26, 1319.55]         202944.685683  1.3.46.670589.50.2.18870077691232796229.25099157483818253734   104605.829  [-0.068, 93.73599999999999, 2639.1]     773.950012   773.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_117             118        -1319.1   [-102.08, -31.26, 1319.1]         202944.689671  1.3.46.670589.50.2.29462221064126397007.23966810104097178654   104605.837  [-0.068, 93.73599999999999, 2638.2]     774.400024   774.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_118             119       -1318.65  [-102.08, -31.26, 1318.65]         202944.692660    1.3.46.670589.50.2.2646958254250736193.2777563780821395039   104605.845  [-0.068, 93.73599999999999, 2637.3]     774.849976   774.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_119             120        -1318.2   [-102.08, -31.26, 1318.2]         202944.695654   1.3.46.670589.50.2.4078236116347171659.27613127822909630525   104605.852  [-0.068, 93.73599999999999, 2636.4]     775.299988   775.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_120             121       -1317.75  [-102.08, -31.26, 1317.75]         202944.698640    1.3.46.670589.50.2.122574952235758914.28595721402703914107   104605.860  [-0.068, 93.73599999999999, 2635.5]         775.75       775.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_121             122        -1317.3   [-102.08, -31.26, 1317.3]         202944.702627  1.3.46.670589.50.2.35564570633448517450.28160323072978403714   104605.868  [-0.068, 93.73599999999999, 2634.6]     776.200012   776.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_122             123       -1316.85  [-102.08, -31.26, 1316.85]         202944.706613     1.3.46.670589.50.2.819248467732407371.2185624503676601810   104605.875  [-0.068, 93.73599999999999, 2633.7]     776.650024   776.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_123             124        -1316.4   [-102.08, -31.26, 1316.4]         202944.710602  1.3.46.670589.50.2.21724756062863234378.21987556393930437454   104605.883  [-0.068, 93.73599999999999, 2632.8]     777.099976   777.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_124             125       -1315.95  [-102.08, -31.26, 1315.95]         202944.713590  1.3.46.670589.50.2.23671279052076599873.24084909304008440426   104605.891  [-0.068, 93.73599999999999, 2631.9]     777.549988   777.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_125             126        -1315.5   [-102.08, -31.26, 1315.5]         202944.716580   1.3.46.670589.50.2.6290884584132483657.26049283932982180002   104605.899  [-0.068, 93.73599999999999, 2631.0]          778.0        778.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_126             127       -1315.05  [-102.08, -31.26, 1315.05]         202944.720570   1.3.46.670589.50.2.8827167773017685056.25712991061868753919   104605.906  [-0.068, 93.73599999999999, 2630.1]     778.450012   778.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_127             128        -1314.6   [-102.08, -31.26, 1314.6]         202944.725550   1.3.46.670589.50.2.1121812156869668939.25444322033991279259   104605.914  [-0.068, 93.73599999999999, 2629.2]     778.900024   778.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_128             129       -1314.15  [-102.08, -31.26, 1314.15]         202944.728545  1.3.46.670589.50.2.40822147754129352010.26565435252987680969   104605.922  [-0.068, 93.73599999999999, 2628.3]     779.349976   779.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_129             130        -1313.7   [-102.08, -31.26, 1313.7]         202944.731534  1.3.46.670589.50.2.19789636641041060427.21813505853643394280   104605.929  [-0.068, 93.73599999999999, 2627.4]     779.799988   779.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_130             131       -1313.25  [-102.08, -31.26, 1313.25]         202944.736513  1.3.46.670589.50.2.24868141541256918859.29829337173081143096   104605.937  [-0.068, 93.73599999999999, 2626.5]         780.25       780.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_131             132        -1312.8   [-102.08, -31.26, 1312.8]         202944.739505   1.3.46.670589.50.2.8797892111540402248.26716663103185110424   104605.945  [-0.068, 93.73599999999999, 2625.6]     780.700012   780.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_132             133       -1312.35  [-102.08, -31.26, 1312.35]         202944.742493     1.3.46.670589.50.2.33689626608125261.23376229562969535504   104605.952  [-0.068, 93.73599999999999, 2624.7]     781.150024   781.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_133             134        -1311.9   [-102.08, -31.26, 1311.9]         202944.745483    1.3.46.670589.50.2.2698612841483936325.2707756400268872360   104605.960  [-0.068, 93.73599999999999, 2623.8]     781.599976   781.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_134             135       -1311.45  [-102.08, -31.26, 1311.45]         202944.749470   1.3.46.670589.50.2.28588804092186092099.3047642722304696154   104605.968  [-0.068, 93.73599999999999, 2622.9]     782.049988   782.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_135             136        -1311.0   [-102.08, -31.26, 1311.0]         202944.752460   1.3.46.670589.50.2.34591189162524399938.2642631208203813215   104605.975  [-0.068, 93.73599999999999, 2622.0]          782.5        782.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_136             137       -1310.55  [-102.08, -31.26, 1310.55]         202944.755450  1.3.46.670589.50.2.24908237161157794122.27027016602066595007   104605.983  [-0.068, 93.73599999999999, 2621.1]     782.950012   782.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_137             138        -1310.1   [-102.08, -31.26, 1310.1]         202944.758440  1.3.46.670589.50.2.36649292764222517324.28052016611756486646   104605.991  [-0.068, 93.73599999999999, 2620.2]     783.400024   783.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_138             139       -1309.65  [-102.08, -31.26, 1309.65]         202944.762156   1.3.46.670589.50.2.32023286272237508430.2163244558304397300   104605.998  [-0.068, 93.73599999999999, 2619.3]     783.849976   783.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_139             140        -1309.2   [-102.08, -31.26, 1309.2]         202944.765128  1.3.46.670589.50.2.30383268632384480324.27924279141566752892   104606.006  [-0.068, 93.73599999999999, 2618.4]     784.299988   784.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_140             141       -1308.75  [-102.08, -31.26, 1308.75]         202944.769110  1.3.46.670589.50.2.16975916911934847298.24012603081700105225   104606.014  [-0.068, 93.73599999999999, 2617.5]         784.75       784.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_141             142        -1308.3   [-102.08, -31.26, 1308.3]         202944.773097     1.3.46.670589.50.2.709677656663500613.2908583019617755996   104606.022  [-0.068, 93.73599999999999, 2616.6]     785.200012   785.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_142             143       -1307.85  [-102.08, -31.26, 1307.85]         202944.776090  1.3.46.670589.50.2.24830279051588191055.28888981363376083299   104606.029  [-0.068, 93.73599999999999, 2615.7]     785.650024   785.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_143             144        -1307.4   [-102.08, -31.26, 1307.4]         202944.779077  1.3.46.670589.50.2.13072265944208416590.27347662333866466103   104606.037  [-0.068, 93.73599999999999, 2614.8]     786.099976   786.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_144             145       -1306.95  [-102.08, -31.26, 1306.95]         202944.782071  1.3.46.670589.50.2.10300778014042385984.28326732294217354644   104606.045  [-0.068, 93.73599999999999, 2613.9]     786.549988   786.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_145             146        -1306.5   [-102.08, -31.26, 1306.5]         202944.787050  1.3.46.670589.50.2.13450746442463069007.24981103282862497588   104606.052  [-0.068, 93.73599999999999, 2613.0]          787.0        787.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_146             147       -1306.05  [-102.08, -31.26, 1306.05]         202944.790040    1.3.46.670589.50.2.2100447643577889096.2748458639131065246   104606.060  [-0.068, 93.73599999999999, 2612.1]     787.450012   787.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_147             148        -1305.6   [-102.08, -31.26, 1305.6]         202944.793029  1.3.46.670589.50.2.15733055323648378945.28928960042818815244   104606.068  [-0.068, 93.73599999999999, 2611.2]     787.900024   787.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_148             149       -1305.15  [-102.08, -31.26, 1305.15]         202944.796024   1.3.46.670589.50.2.33595640114176505412.2995482972227385256   104606.076  [-0.068, 93.73599999999999, 2610.3]     788.349976   788.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_149             150        -1304.7   [-102.08, -31.26, 1304.7]         202944.799011     1.3.46.670589.50.2.22552828290527556.30335793031366063638   104606.083  [-0.068, 93.73599999999999, 2609.4]     788.799988   788.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_150             151       -1304.25  [-102.08, -31.26, 1304.25]         202944.802996  1.3.46.670589.50.2.38261117663057406789.24415750432557216733   104606.091  [-0.068, 93.73599999999999, 2608.5]         789.25       789.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_151             152        -1303.8   [-102.08, -31.26, 1303.8]         202944.805987  1.3.46.670589.50.2.33978901911734849605.29043900141172871223   104606.099  [-0.068, 93.73599999999999, 2607.6]     789.700012   789.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_152             153       -1303.35  [-102.08, -31.26, 1303.35]         202944.808977   1.3.46.670589.50.2.7844639372820316493.31192649152827522069   104606.106  [-0.068, 93.73599999999999, 2606.7]     790.150024   790.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_153             154        -1302.9   [-102.08, -31.26, 1302.9]         202944.811971    1.3.46.670589.50.2.5244302461605832777.3048233495977910062   104606.114  [-0.068, 93.73599999999999, 2605.8]     790.599976   790.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_154             155       -1302.45  [-102.08, -31.26, 1302.45]         202944.813960   1.3.46.670589.50.2.5312135692556539723.23427904334293318844   104606.122  [-0.068, 93.73599999999999, 2604.9]     791.049988   791.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:05 PM
+Dataset_155             156        -1302.0   [-102.08, -31.26, 1302.0]         202944.816950   1.3.46.670589.50.2.12918973923535758659.2390422648968192028   104606.130  [-0.068, 93.73599999999999, 2604.0]          791.5        791.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_156             157       -1301.55  [-102.08, -31.26, 1301.55]         202944.819941  1.3.46.670589.50.2.31023875581023120200.29040808051557943348   104606.137  [-0.068, 93.73599999999999, 2603.1]     791.950012   791.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:24 isp9_compatible edge(0,0)subvol(0,1)  MR Import Filter 9/11/2024 10:40:04 PM
+Dataset_157             158        -1301.1   [-102.08, -31.26, 1301.1]         202944.822930  1.3.46.670589.50.2.25512203223674405956.29516816891901030313   104606.145  [-0.068, 93.73599999999999, 2602.2]     792.400024   792.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(1,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_158             159       -1300.65  [-102.08, -31.26, 1300.65]         202944.825920  1.3.46.670589.50.2.27676430991547857485.24059314961266654523   104606.152  [-0.068, 93.73599999999999, 2601.3]     792.849976   792.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_159             160        -1300.2   [-102.08, -31.26, 1300.2]         202944.828910   1.3.46.670589.50.2.2875500856239373888.28668186952067607160   104606.160  [-0.068, 93.73599999999999, 2600.4]     793.299988   793.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_160             161       -1299.75  [-102.08, -31.26, 1299.75]         202944.830903  1.3.46.670589.50.2.32083570212391169864.21620613481040516728   104606.168  [-0.068, 93.73599999999999, 2599.5]         793.75       793.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_161             162        -1299.3   [-102.08, -31.26, 1299.3]         202944.833894    1.3.46.670589.50.2.2119746151766561346.3065804926585672579   104606.176  [-0.068, 93.73599999999999, 2598.6]     794.200012   794.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_162             163       -1298.85  [-102.08, -31.26, 1298.85]         202944.837880   1.3.46.670589.50.2.8555325142844670285.27611786241085410420   104606.183  [-0.068, 93.73599999999999, 2597.7]     794.650024   794.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_163             164        -1298.4   [-102.08, -31.26, 1298.4]         202944.840870  1.3.46.670589.50.2.24016375621453168705.22127295803920929089   104606.191  [-0.068, 93.73599999999999, 2596.8]     795.099976   795.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_164             165       -1297.95  [-102.08, -31.26, 1297.95]         202944.843860   1.3.46.670589.50.2.14122154163101473099.2945644139190043340   104606.198  [-0.068, 93.73599999999999, 2595.9]     795.549988   795.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_165             166        -1297.5   [-102.08, -31.26, 1297.5]         202944.845853  1.3.46.670589.50.2.38915498173220111937.21832518722397436331   104606.206  [-0.068, 93.73599999999999, 2595.0]          796.0        796.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_166             167       -1297.05  [-102.08, -31.26, 1297.05]         202944.848843  1.3.46.670589.50.2.20355150232768524865.29002583293374146363   104606.214  [-0.068, 93.73599999999999, 2594.1]     796.450012   796.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_167             168        -1296.6   [-102.08, -31.26, 1296.6]         202944.852830  1.3.46.670589.50.2.29580344642974068299.21500991642850868922   104606.222  [-0.068, 93.73599999999999, 2593.2]     796.900024   796.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_168             169       -1296.15  [-102.08, -31.26, 1296.15]         202944.855820  1.3.46.670589.50.2.28183318072220371012.22291523923590949124   104606.229  [-0.068, 93.73599999999999, 2592.3]     797.349976   797.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_169             170        -1295.7   [-102.08, -31.26, 1295.7]         202944.858810   1.3.46.670589.50.2.2749726055651153734.32071777543757534930   104606.237  [-0.068, 93.73599999999999, 2591.4]     797.799988   797.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_170             171       -1295.25  [-102.08, -31.26, 1295.25]         202944.860804    1.3.46.670589.50.2.709469836799352142.24146916511877377695   104606.245  [-0.068, 93.73599999999999, 2590.5]         798.25       798.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_171             172        -1294.8   [-102.08, -31.26, 1294.8]         202944.863805  1.3.46.670589.50.2.14319102253121366592.23192864734096958973   104606.253  [-0.068, 93.73599999999999, 2589.6]     798.700012   798.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_172             173       -1294.35  [-102.08, -31.26, 1294.35]         202944.866798     1.3.46.670589.50.2.613724579319702852.2699485627443631095   104606.260  [-0.068, 93.73599999999999, 2588.7]     799.150024   799.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_173             174        -1293.9   [-102.08, -31.26, 1293.9]         202944.869785  1.3.46.670589.50.2.37931660243737798470.31280001251035122650   104606.268  [-0.068, 93.73599999999999, 2587.8]     799.599976   799.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_174             175       -1293.45  [-102.08, -31.26, 1293.45]         202944.872775   1.3.46.670589.50.2.25684073602765880896.2292685904706791858   104606.275  [-0.068, 93.73599999999999, 2586.9]     800.049988   800.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_175             176        -1293.0   [-102.08, -31.26, 1293.0]         202944.875764  1.3.46.670589.50.2.13886924032808316748.25348243493874588176   104606.283  [-0.068, 93.73599999999999, 2586.0]          800.5        800.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_176             177       -1292.55  [-102.08, -31.26, 1292.55]         202944.877761   1.3.46.670589.50.2.37904360963031407948.2758872427620620134   104606.291  [-0.068, 93.73599999999999, 2585.1]     800.950012   800.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_177             178        -1292.1   [-102.08, -31.26, 1292.1]         202944.880748   1.3.46.670589.50.2.31987507272111209537.2294361487827209983   104606.299  [-0.068, 93.73599999999999, 2584.2]     801.400024   801.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_178             179       -1291.65  [-102.08, -31.26, 1291.65]         202944.883738   1.3.46.670589.50.2.1406097504164174921.25616858733420838279   104606.306  [-0.068, 93.73599999999999, 2583.3]     801.849976   801.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_179             180        -1291.2   [-102.08, -31.26, 1291.2]         202944.886728    1.3.46.670589.50.2.1336253973680733764.2174997045642896263   104606.314  [-0.068, 93.73599999999999, 2582.4]     802.299988   802.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_180             181       -1290.75  [-102.08, -31.26, 1290.75]         202944.889721    1.3.46.670589.50.2.42209061343171000900.233373516957218421   104606.322  [-0.068, 93.73599999999999, 2581.5]         802.75       802.75         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_181             182        -1290.3   [-102.08, -31.26, 1290.3]         202944.892712   1.3.46.670589.50.2.3514985489534391360.22699095811140684542   104606.329  [-0.068, 93.73599999999999, 2580.6]     803.200012   803.200012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_182             183       -1289.85  [-102.08, -31.26, 1289.85]         202944.894705   1.3.46.670589.50.2.7750704204076689480.32049731993800422930   104606.337  [-0.068, 93.73599999999999, 2579.7]     803.650024   803.650024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_183             184        -1289.4   [-102.08, -31.26, 1289.4]         202944.897695  1.3.46.670589.50.2.20022865302022364743.22439884863678308411   104606.345  [-0.068, 93.73599999999999, 2578.8]     804.099976   804.099976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_184             185       -1288.95  [-102.08, -31.26, 1288.95]         202944.900681  1.3.46.670589.50.2.29845821671185525832.27131016773886641124   104606.353  [-0.068, 93.73599999999999, 2577.9]     804.549988   804.549988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_185             186        -1288.5   [-102.08, -31.26, 1288.5]         202944.903671  1.3.46.670589.50.2.30368315524111623237.31239146961571303626   104606.360  [-0.068, 93.73599999999999, 2577.0]          805.0        805.0         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_186             187       -1288.05  [-102.08, -31.26, 1288.05]         202944.906665    1.3.46.670589.50.2.1471354685674020175.2869029983751204387   104606.368  [-0.068, 93.73599999999999, 2576.1]     805.450012   805.450012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_187             188        -1287.6   [-102.08, -31.26, 1287.6]         202944.909651   1.3.46.670589.50.2.29715734701680831818.2709395311629506546   104606.376  [-0.068, 93.73599999999999, 2575.2]     805.900024   805.900024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_188             189       -1287.15  [-102.08, -31.26, 1287.15]         202944.912646   1.3.46.670589.50.2.1418392352663518279.29181496623827615078   104606.383  [-0.068, 93.73599999999999, 2574.3]     806.349976   806.349976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_189             190        -1286.7   [-102.08, -31.26, 1286.7]         202944.921612  1.3.46.670589.50.2.27619167602051447629.30673080553354324300   104606.391  [-0.068, 93.73599999999999, 2573.4]     806.799988   806.799988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_190             191       -1286.25  [-102.08, -31.26, 1286.25]         202944.924601   1.3.46.670589.50.2.2607952324281162308.21661813323921905294   104606.399  [-0.068, 93.73599999999999, 2572.5]         807.25       807.25         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_191             192        -1285.8   [-102.08, -31.26, 1285.8]         202944.926598   1.3.46.670589.50.2.34915121324249299011.3145105055882593752   104606.406  [-0.068, 93.73599999999999, 2571.6]     807.700012   807.700012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_192             193       -1285.35  [-102.08, -31.26, 1285.35]         202944.929589   1.3.46.670589.50.2.5604276131572879949.24452085643763102348   104606.414  [-0.068, 93.73599999999999, 2570.7]     808.150024   808.150024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_193             194        -1284.9   [-102.08, -31.26, 1284.9]         202944.932578   1.3.46.670589.50.2.6591290463726346057.21938960593517249872   104606.422  [-0.068, 93.73599999999999, 2569.8]     808.599976   808.599976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_194             195       -1284.45  [-102.08, -31.26, 1284.45]         202944.935564  1.3.46.670589.50.2.20082091841370943821.25331897972040824663   104606.429  [-0.068, 93.73599999999999, 2568.9]     809.049988   809.049988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_195             196        -1284.0   [-102.08, -31.26, 1284.0]         202944.938555  1.3.46.670589.50.2.35180862943710998350.22727482841478396089   104606.437  [-0.068, 93.73599999999999, 2568.0]          809.5        809.5         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:06 PM
+Dataset_196             197       -1283.55  [-102.08, -31.26, 1283.55]         202944.940554   1.3.46.670589.50.2.27103396084248005443.2281023376645068575   104606.445  [-0.068, 93.73599999999999, 2567.1]     809.950012   809.950012         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_197             198        -1283.1   [-102.08, -31.26, 1283.1]         202944.943538  1.3.46.670589.50.2.16278189971217472065.21592036754119550864   104606.453  [-0.068, 93.73599999999999, 2566.2]     810.400024   810.400024         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:08 PM
+Dataset_198             199       -1282.65  [-102.08, -31.26, 1282.65]         202944.946528   1.3.46.670589.50.2.36470875972426223943.3072596830716477713   104606.460  [-0.068, 93.73599999999999, 2565.3]     810.849976   810.849976         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+Dataset_199             200        -1282.2   [-102.08, -31.26, 1282.2]         202944.949518   1.3.46.670589.50.2.6764151184066527051.23245424683217897352   104606.468  [-0.068, 93.73599999999999, 2564.4]     811.299988   811.299988         None  5.1: Build:1 29-Dec-2016 11:34 COMB_SCATT(250)_PE(250)_N_B_U_C cns:T, CFGs:7 created: 20-Jul-2023 10:53:26 isp9_compatible edge(0,0)subvol(0,0)  MR Import Filter 9/11/2024 10:40:07 PM
+PatientName: {'Alphabetic': 'Anonymous'} (shared)
+InstanceNumber count: 200</code></pre>
+</div>
+</div>
+</section>
+<section id="extreme-compression-json-zstandard" class="level2">
+<h2 class="anchored" data-anchor-id="extreme-compression-json-zstandard">4. Extreme Compression: JSON + Zstandard</h2>
+<p>Structured, repetitive text (JSON) compresses extremely well with Zstandard (zstd).</p>
+<div id="05348f06" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zstandard <span class="im">as</span> zstd</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>all_files <span class="op">=</span> <span class="bu">list</span>(Path(dicom_dir).glob(<span class="st">"*"</span>))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>dicom_header_total_size <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> all_files:</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    total_size <span class="op">=</span> os.path.getsize(f)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    ds <span class="op">=</span> pydicom.dcmread(f)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    pixel_size <span class="op">=</span> ds.pixel_array.nbytes <span class="cf">if</span> <span class="bu">hasattr</span>(ds,<span class="st">'pixel_array'</span>) <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    dicom_header_total_size <span class="op">+=</span> (total_size <span class="op">-</span> pixel_size)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>meta_json_str <span class="op">=</span> meta.to_json()</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>compressed <span class="op">=</span> zstd.ZstdCompressor(level<span class="op">=</span><span class="dv">9</span>).compress(meta_json_str.encode(<span class="st">'utf-8'</span>))</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"DICOM header total (est.):"</span>, dicom_header_total_size<span class="op">/</span><span class="dv">1024</span>, <span class="st">"KB"</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"DiCube meta (zstd):"</span>, <span class="bu">len</span>(compressed)<span class="op">/</span><span class="dv">1024</span>, <span class="st">"KB"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DICOM header total (est.): 2280.900390625 KB
+DiCube meta (zstd): 25.701171875 KB</code></pre>
+</div>
+</div>
+</section>
+<section id="developer-ergonomics-commontags" class="level2">
+<h2 class="anchored" data-anchor-id="developer-ergonomics-commontags">5. Developer Ergonomics: CommonTags</h2>
+<p>Semantic tag enums replace error‑prone hex codes and improve readability.</p>
+<div id="86c7a3e1" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>positions <span class="op">=</span> meta.get_values(CommonTags.ImagePositionPatient)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Instance range:"</span>, <span class="bu">min</span>(instance_numbers), <span class="st">"-"</span>, <span class="bu">max</span>(instance_numbers))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Z range:"</span>, positions[<span class="dv">0</span>][<span class="dv">2</span>], <span class="st">"→"</span>, positions[<span class="op">-</span><span class="dv">1</span>][<span class="dv">2</span>])</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Instance range: 1 - 200
+Z range: 1371.75 → 1282.2</code></pre>
+</div>
+</div>
+</section>
+<section id="performance-leap" class="level2">
+<h2 class="anchored" data-anchor-id="performance-leap">6. Performance Leap</h2>
+<p>Vectorized metadata access vs file‑by‑file parsing delivers order‑of‑magnitude wins.</p>
+<div id="6fca7b9f" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>dicom_instance_numbers <span class="op">=</span> []</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> all_files:</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    ds <span class="op">=</span> pydicom.dcmread(f, stop_before_pixels<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    dicom_instance_numbers.append(<span class="bu">int</span>(ds.InstanceNumber))</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>dicom_ms <span class="op">=</span> (time.time()<span class="op">-</span>start)<span class="op">*</span><span class="dv">1000</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> time.time()<span class="op">;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>dicube_instance_numbers <span class="op">=</span> meta.get_values(CommonTags.InstanceNumber)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>dicube_ms <span class="op">=</span> (time.time()<span class="op">-</span>start)<span class="op">*</span><span class="dv">1000</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DICOM: </span><span class="sc">{</span>dicom_ms<span class="sc">:.2f}</span><span class="ss"> ms, DiCube: </span><span class="sc">{</span>dicube_ms<span class="sc">:.2f}</span><span class="ss"> ms, Speedup: </span><span class="sc">{</span>dicom_ms<span class="op">/</span>dicube_ms<span class="sc">:.1f}</span><span class="ss">×"</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>os.remove(<span class="st">"temp_demo.dcbs"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DICOM: 152.64 ms, DiCube: 0.03 ms, Speedup: 4777.7×</code></pre>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">7. Summary</h2>
+<ul>
+<li>Remove redundancy by splitting shared/per‑slice; JSON + zstd yields tiny headers</li>
+<li>Millisecond‑level access for common queries; ideal for listing, previews, and AI</li>
+<li>Standards‑aligned (DICOM JSON), future‑proof and interoperable</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2024 FastDiag Toolkit. 基于 <a href="https://quarto.org/">Quarto</a> 构建</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/fastdiag-toolbox/fastdiag-toolkit-docs">GitHub</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

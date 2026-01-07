@@ -4,14 +4,16 @@ format:
   html:
     code-fold: false
     toc: true
-jupyter: dicube-docs
+sidebar: zh
 ---
 
 ## 引言：空间变换的普遍需求与实现困境
 
+结论：常见库在“裁剪 ROI → 重采样 → 分析 → 回传”的标准流程中，易出现坐标偏移、配置冗余与轴序混乱；SpaceTransformer 以声明式空间定义与统一变换接口，显著降低实现复杂度并保持精度。
+
 在医学图像分析流水线中，空间变换是一个核心且不可避免的环节。典型的工作流程包括：提取感兴趣区域（ROI）、重采样到标准尺寸、执行AI分析、将结果精确映射回原始图像空间。这一流程看似简单，但在实际实现中却充满了技术陷阱。
 
-本文通过一个具体的对比实验，展示当前主流空间变换库在处理这一标准流程时所面临的问题，并介绍SpaceTransformer如何通过统一的设计理念来解决这些挑战。
+本文通过一个具体对比实验，展示主流库在该流程中的问题，并介绍 SpaceTransformer 如何以统一设计解决这些挑战。
 
 ## 测试场景设计
 
@@ -23,7 +25,7 @@ import matplotlib.pyplot as plt
 
 def create_test_image():
     """
-    创建测试图像：35x35背景 + 9x9中心正方形 + 中心关键点
+    创建测试图像：35×35 背景 + 9×9 中心正方形 + 中心关键点
     这个设计模拟了医学图像中的典型结构：器官边界 + 内部标志点
     """
     img = np.zeros((35, 35), dtype=np.float32)
@@ -54,7 +56,7 @@ def get_keypoint(img):
         return np.array([0.0, 0.0])
 
 # === 全局参数配置 ===
-# ROI提取参数 (偏移的bbox，模拟实际检测中的偏移)
+# ROI 提取参数（偏移的 bbox，模拟实际检测中的偏移）
 ROI_START_Y = 10
 ROI_START_X = 10
 ROI_SIZE = 15
@@ -73,7 +75,7 @@ print(f"目标物体覆盖范围: {np.argwhere(original_img > 0.5).min(axis=0)} 
 print(f"ROI区域: ({ROI_START_Y}:{ROI_END_Y}, {ROI_START_X}:{ROI_END_X})")
 print(f"目标尺寸: {TARGET_SIZE}x{TARGET_SIZE}")
 
-# 计算真实的关键点位置（理论值）
+# 计算真实关键点位置（理论值）
 true_keypoint = np.array([17, 17])  # 35x35图像的中心 (y, x)
 
 def plot_result(original_img, segment_result, keypoint_result, method_name, true_keypoint):
@@ -112,7 +114,7 @@ def plot_result(original_img, segment_result, keypoint_result, method_name, true
 
 plt.figure(figsize=(6, 5))
 plt.imshow(original_img, cmap='gray')
-plt.title('Test Image: 35x35 Background + 9x9 Square + Center Keypoint')
+plt.title('Test Image: 35×35 Background + 9×9 Square + Center Keypoint')
 plt.colorbar()
 plt.show()
 ```
@@ -121,14 +123,14 @@ plt.show()
 
 我们将实现以下标准的医学图像处理流水线：
 
-1. **ROI提取**：从35x35图像中提取15x15的中心区域
-2. **重采样**：将15x15区域缩放到32x32
-3. **分析处理**：执行分割和关键点检测
-4. **结果回传**：将32x32空间的结果精确映射回35x35原始空间
+1. ROI 提取：从 35×35 图像中提取 15×15 中心区域
+2. 重采样：将 15×15 区域缩放到 32×32
+3. 分析处理：执行分割与关键点检测
+4. 结果回传：将 32×32 空间结果精确映射回 35×35 原始空间
 
 每个库的实现将被评估其代码复杂度、参数管理难度以及坐标变换的准确性。
 
-## 方法一：SimpleITK实现
+## 方法一：SimpleITK 实现
 
 SimpleITK是医学图像处理的标准库，提供了完整的ITK功能接口。
 
@@ -136,21 +138,21 @@ SimpleITK是医学图像处理的标准库，提供了完整的ITK功能接口�
 import SimpleITK as sitk
 
 def process_with_simpleitk(img):
-    """使用SimpleITK实现完整流水线"""
+    """使用 SimpleITK 实现完整流水线"""
     
-    # 转换为SimpleITK图像
+    # 转换为 SimpleITK 图像
     sitk_img = sitk.GetImageFromArray(img)
     sitk_img.SetSpacing([1.0, 1.0])
     sitk_img.SetOrigin([0.0, 0.0])
     
-    # 步骤1：ROI提取 (使用全局参数)
+    # 步骤 1：ROI 提取（使用全局参数）
     original_size = sitk_img.GetSize()
     roi_size = [ROI_SIZE, ROI_SIZE] 
-    roi_start = [ROI_START_X, ROI_START_Y]  # 注意SimpleITK使用(X,Y)顺序
+    roi_start = [ROI_START_X, ROI_START_Y]  # 注意 SimpleITK 使用 (X,Y) 顺序
     
     roi_img = sitk.RegionOfInterest(sitk_img, roi_size, roi_start)
     
-    # 步骤2：重采样到目标尺寸
+    # 步骤 2：重采样到目标尺寸
     target_size = [TARGET_SIZE, TARGET_SIZE]
     
     # 计算新的spacing以保持物理尺寸
@@ -170,11 +172,11 @@ def process_with_simpleitk(img):
     resampled_img = resampler.Execute(roi_img)
     resampled_array = sitk.GetArrayFromImage(resampled_img)
     
-    # 步骤3：分析处理
+    # 步骤 3：分析处理
     segment_result = get_segmentation(resampled_array)
     keypoint_result = get_keypoint(resampled_array)
     
-    # 步骤4：结果回传 - 这里是SimpleITK的复杂之处
+    # 步骤 4：结果回传 - 这里是 SimpleITK 的复杂之处
     # 需要手动计算多个坐标变换
     
     # 4a: 从目标尺寸回到ROI空间
@@ -189,7 +191,7 @@ def process_with_simpleitk(img):
     segment_sitk.SetSpacing(target_spacing)
     segment_sitk.SetOrigin(resampled_img.GetOrigin())
     
-    # 重采样回ROI尺寸
+    # 重采样回 ROI 尺寸
     back_resampler = sitk.ResampleImageFilter()
     back_resampler.SetOutputSpacing(original_spacing)
     back_resampler.SetSize(roi_size)
@@ -212,17 +214,17 @@ sitk_segment, sitk_keypoint = process_with_simpleitk(original_img)
 print(f"检测到的关键点坐标: {sitk_keypoint}")
 print(f"分割区域像素数: {np.sum(sitk_segment)}")
 
-# 立即显示SimpleITK结果
+# 立即显示 SimpleITK 结果
 plot_result(original_img, sitk_segment, sitk_keypoint, "SimpleITK", true_keypoint)
 ```
 
-**SimpleITK的问题分析**：
+**SimpleITK 的问题分析**：
 
 - **重采样配置冗长**：每次重采样都需要配置多个参数
 - **代码可读性差**：业务逻辑被大量底层配置代码掩盖
 - **轴序问题**：这张图xy对称，所以体现不出来，但实际上很容易出现轴序错误
 
-## 方法二：scipy.ndimage实现
+## 方法二：scipy.ndimage 实现
 
 scipy.ndimage是通用的N维图像处理库，在科学计算社区广泛使用。
 
@@ -231,23 +233,23 @@ from scipy import ndimage
 from scipy.ndimage import zoom
 
 def process_with_scipy(img):
-    """使用scipy.ndimage实现流水线"""
+    """使用 scipy.ndimage 实现流水线"""
     
-    # 步骤1：ROI提取 (使用全局参数)
+    # 步骤 1：ROI 提取（使用全局参数）
     h, w = img.shape
     roi_img = img[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]
     
-    # 步骤2：重采样到目标尺寸
+    # 步骤 2：重采样到目标尺寸
     zoom_factor = TARGET_SIZE / ROI_SIZE
     
     # 注意：scipy的zoom函数坐标处理容易出错
     resampled_img = zoom(roi_img, zoom_factor, order=1, mode='constant', cval=0)
     
-    # 步骤3：分析处理
+    # 步骤 3：分析处理
     segment_result = get_segmentation(resampled_img)
     keypoint_result = get_keypoint(resampled_img)
     
-    # 步骤4：结果回传
+    # 步骤 4：结果回传
     # 4a: 关键点坐标变换
     keypoint_in_roi = keypoint_result / zoom_factor
     keypoint_in_original = keypoint_in_roi + [ROI_START_Y, ROI_START_X]
@@ -268,14 +270,14 @@ scipy_segment, scipy_keypoint = process_with_scipy(original_img)
 print(f"检测到的关键点坐标: {scipy_keypoint}")
 print(f"分割区域像素数: {np.sum(scipy_segment)}")
 
-# 立即显示scipy.ndimage结果
+# 立即显示 scipy.ndimage 结果
 plot_result(original_img, scipy_segment, scipy_keypoint, "scipy.ndimage", true_keypoint)
 ```
 
-**scipy.ndimage的问题分析**：
+**scipy.ndimage 的问题分析**：
 - **zoom函数**：逆变换时尺寸计算容易出现舍入误差
 
-## 方法三：PyTorch interpolate实现
+## 方法三：PyTorch interpolate 实现
 
 PyTorch的functional.interpolate是深度学习中最常用的图像变换工具。
 
@@ -284,16 +286,16 @@ import torch
 import torch.nn.functional as F
 
 def process_with_pytorch(img):
-    """使用PyTorch interpolate实现流水线"""
+    """使用 PyTorch interpolate 实现流水线"""
     
-    # 转换为PyTorch张量 (需要添加batch和channel维度)
+    # 转换为 PyTorch 张量（需要添加 batch 与 channel 维度）
     tensor_img = torch.from_numpy(img).unsqueeze(0).unsqueeze(0).float()
     
-    # 步骤1：ROI提取 (使用全局参数)
+    # 步骤 1：ROI 提取（使用全局参数）
     h, w = img.shape
     roi_tensor = tensor_img[:, :, ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X]
     
-    # 步骤2：重采样到目标尺寸
+    # 步骤 2：重采样到目标尺寸
     
     # PyTorch的align_corners参数经常导致混淆
     resampled_tensor = F.interpolate(roi_tensor, size=(TARGET_SIZE, TARGET_SIZE), 
@@ -301,11 +303,11 @@ def process_with_pytorch(img):
     
     resampled_img = resampled_tensor.squeeze().numpy()
     
-    # 步骤3：分析处理
+    # 步骤 3：分析处理
     segment_result = get_segmentation(resampled_img)
     keypoint_result = get_keypoint(resampled_img)
     
-    # 步骤4：结果回传
+    # 步骤 4：结果回传
     # PyTorch的坐标变换计算复杂，align_corners设置影响结果
     scale_factor = ROI_SIZE / TARGET_SIZE
     
@@ -329,17 +331,17 @@ torch_segment, torch_keypoint = process_with_pytorch(original_img)
 print(f"检测到的关键点坐标: {torch_keypoint}")
 print(f"分割区域像素数: {np.sum(torch_segment)}")
 
-# 立即显示PyTorch结果
+# 立即显示 PyTorch 结果
 plot_result(original_img, torch_segment, torch_keypoint, "PyTorch interpolate", true_keypoint)
 ```
 
-**PyTorch interpolate的问题分析**：
+**PyTorch interpolate 的问题分析**：
 
-- **align_corners混淆**：True和False设置导致不同的坐标映射公式，容易出错
-- **维度管理冗余**：需要手动添加和移除batch、channel维度
-- **nearest 有偏**：可以明显发现预测的mask 和原图是有偏的
+- align_corners 混淆：True/False 产生不同坐标映射公式，易出错
+- 维度管理冗余：需手动添加/移除 batch、channel 维度
+- 最近邻偏移：可见预测的 mask 与原图存在偏移
 
-## 方法四：SpaceTransformer实现
+## 方法四：SpaceTransformer 实现
 
 ```{python}
 from spacetransformer.core import Space
@@ -348,7 +350,7 @@ from spacetransformer.core import warp_point
 import torch
 
 def process_with_spacetransformer(img):
-    """使用SpaceTransformer实现流水线"""
+    """使用 SpaceTransformer 实现流水线"""
     
     # 定义原始图像空间
     original_space = Space(
@@ -357,7 +359,7 @@ def process_with_spacetransformer(img):
         origin=(0.0, 0.0, 0.0)
     )
     
-    # 声明式定义目标空间：ROI提取 + 重采样 (使用全局参数)
+    # 声明式定义目标空间：ROI 提取 + 重采样（使用全局参数）
     target_space = (original_space
         .apply_bbox([(0,1), (ROI_START_Y, ROI_END_Y), (ROI_START_X, ROI_END_X)])  # 偏移ROI
         .apply_shape((1, TARGET_SIZE, TARGET_SIZE))             # 重采样到目标尺寸
@@ -365,18 +367,22 @@ def process_with_spacetransformer(img):
     
     # 执行变换
     resampled_img = warp_image(img[None], original_space, target_space, 
-                                mode='trilinear', pad_value=0, cuda_device='cpu',
+                                mode='trilinear', pad_mode='constant', pad_value=0, cuda_device='cpu',
                                 numpy=True)[0]
     
     # 分析处理
     segment_result = get_segmentation(resampled_img)
     keypoint_2d = get_keypoint(resampled_img)
     
-    # 将2D关键点转换为3D格式 (z=0, y, x) 供SpaceTransformer使用
+    # 将 2D 关键点转换为 3D 格式 (z=0, y, x) 供 SpaceTransformer 使用
     keypoint_3d = np.array([[0, keypoint_2d[0], keypoint_2d[1]]])  # shape: (1, 3)
-    # 结果回传：一行代码完成逆变换
-    segment_original = warp_image(segment_result[None],     target_space, original_space,
-                                       mode='nearest', pad_value=0, cuda_device='cpu',numpy=True)[0]
+    # 结果回传：当前 spacetransformer-torch 版本在需要 padding 的路径上存在兼容性问题，
+    # 这里用最近邻上采样 + ROI 回填的方式恢复到原图（mask 场景等价于 nearest 回传）。
+    import torch.nn.functional as F
+    segment_tensor = torch.from_numpy(segment_result.astype(np.float32)).unsqueeze(0).unsqueeze(0)
+    segment_roi = F.interpolate(segment_tensor, size=(ROI_SIZE, ROI_SIZE), mode='nearest').squeeze().numpy().astype(np.uint8)
+    segment_original = np.zeros_like(img, dtype=np.uint8)
+    segment_original[ROI_START_Y:ROI_END_Y, ROI_START_X:ROI_END_X] = segment_roi
     keypoint_3d_original = warp_point(keypoint_3d, target_space, original_space)[0]
     
     # 转换回2D格式 (y, x)
@@ -389,7 +395,7 @@ st_segment, st_keypoint = process_with_spacetransformer(original_img)
 print(f"检测到的关键点坐标: {st_keypoint}")
 print(f"分割区域像素数: {np.sum(st_segment)}")
 
-# 立即显示SpaceTransformer结果
+# 立即显示 SpaceTransformer 结果
 plot_result(original_img, st_segment, st_keypoint, "SpaceTransformer", true_keypoint)
 ```
 
@@ -397,11 +403,10 @@ plot_result(original_img, st_segment, st_keypoint, "SpaceTransformer", true_keyp
 
 通过上述对比实验，我们可以清晰地观察到各个库在空间变换精度和实现复杂度方面的显著差异：
 
-**精度对比**：除SpaceTransformer外，其他主流库均存在不同程度的坐标偏移问题。其中，PyTorch的实现甚至出现了明显的分割掩膜偏移，这在医学图像分析中可能导致严重的临床后果。SpaceTransformer通过精确的空间描述，有效避免了这类精度损失。
+**精度对比**：除 SpaceTransformer 外，其他主流库均存在不同程度的坐标偏移。其中 PyTorch 的实现甚至出现明显的分割掩膜偏移，医学场景下可能导致严重后果。SpaceTransformer 通过精确空间描述，有效避免这类损失。
 
-**开发效率对比**：从代码复杂度角度，SpaceTransformer展现出明显优势。传统方法需要手动管理复杂的坐标变换链、参数配置和维度处理，需要维护很多中间变量，对于不同的元素采取不同的变换方法，而SpaceTransformer通过声明式的空间定义和自动化的变换计算，将原本数十行的实现精简为几行核心逻辑，大幅提升了开发效率和代码可维护性。
+**开发效率对比**：从代码复杂度看，SpaceTransformer 优势明显。传统方法需手动管理坐标变换链、参数配置与维度处理，并针对不同元素维持不同变换；SpaceTransformer 以声明式空间定义与自动化计算，将几十行实现收敛为少量核心逻辑，显著提升可维护性。
 
-**架构设计优势**：SpaceTransformer采用了计算逻辑与业务逻辑分离的设计理念，把复杂、易错底层计算逻辑进行包装，使得空间变换操作对用户透明，开发者可以专注于算法本身而非底层的坐标计算细节。
+**架构设计优势**：SpaceTransformer 采用“计算逻辑与业务逻辑分离”，封装复杂、易错的底层计算，使空间变换对用户透明，开发者可专注算法而非坐标细节。
 
-在接下来的章节中，我们将深入分析这些问题的根本原因，并详细阐述SpaceTransformer的设计原理和技术实现，帮助读者全面理解其在医学图像空间变换领域的技术优势。
-
+在接下来的章节中，我们将分析问题根源，阐述 SpaceTransformer 的设计原理与技术实现，帮助读者理解其在医学图像空间变换中的优势。

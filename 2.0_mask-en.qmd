@@ -1,0 +1,96 @@
+---
+title: "Segmentation Mask Pain Points"
+format:
+  html:
+    code-fold: false
+    toc: true
+sidebar: en
+---
+
+DiCube solved raw DICOM storage; this chapter focuses on segmentation masks. Blocking issues in today’s mask formats (`.npz`, `.nii.gz`) include missing spatial context, decentralized semantics, inefficient compression, and poor handling of overlapping vs mutually exclusive structures.
+
+## Challenge 1: Missing / Inconsistent Spatial Reference
+
+- **NPZ**: stores pure arrays with no origin/spacing/orientation. A sparse lesion mask still needs a full‑size array and cannot auto‑align back to the source image.
+- **NIfTI**: carries space info but often interpreted in RAS+, conflicting with DICOM’s LPS+. Extra transforms are required, risking mistakes and cognitive overhead.
+
+## Challenge 2: External Semantic Management
+
+Masks must map pixel values to organ/lesion names. Existing workflows rely on external configs or filenames.
+
+```{python}
+organ_mapping = {
+    1: "liver",
+    2: "kidney_left",
+    3: "kidney_right",
+    4: "spleen",
+}
+```
+
+Issues:
+- Non self‑describing data
+- Hard to sync across teams (annotation/ML/UI)
+- Painful versioning when labels change
+
+## Challenge 3: Inefficient Compression For Sparse Data
+
+>99% of voxels are background. Generic codecs (gzip/DEFLATE) do not exploit sparsity or spatial continuity. Files remain large and slow to transmit.
+
+## Challenge 4: Overlap vs Exclusivity
+
+Clinical masks often mix:
+
+1. Lobes (5 mutually exclusive labels)
+2. Segments (18 mutually exclusive but overlap lobes)
+3. Lesions (N labels overlapping everything)
+4. Whole lung (1 label overlapping all)
+
+### Method 1: Value‑Based Mask
+
+Single `uint8` array, one label per voxel.
+
+```{python}
+import numpy as np
+lung_lobe_mask = np.zeros((64,256,256), dtype=np.uint8)
+lung_lobe_mask[10:30, 50:150, 60:160] = 1  # Left upper lobe
+lung_lobe_mask[30:50, 50:150, 60:160] = 2  # Left lower lobe
+print("Labels:", np.unique(lung_lobe_mask))
+```
+
+Pros: compact. Cons: cannot represent overlaps.
+
+### Method 2: Bitmask
+
+Treat each bit as a label.
+
+```{python}
+bit_mask = np.zeros((64,256,256), dtype=np.uint8)
+left_upper = np.zeros_like(bit_mask); left_upper[10:30, 50:150, 60:160] = 1
+bit_mask |= (left_upper << 0)
+lesion = np.zeros_like(bit_mask); lesion[15:35, 60:140, 70:150] = 1
+bit_mask |= (lesion << 2)
+print("Max overlapping labels:", bit_mask.dtype.itemsize * 8)
+```
+
+Pros: supports overlap. Cons: limited to number of bits (8 for `uint8`, 64 for `uint64`). Not scalable for >100 structures.
+
+### Real‑World Impact
+
+Resulting workaround: store each organ as a separate file (`*.nii.gz`). A whole‑body case may contain dozens of files—fragmented and hard to manage.
+
+```{python}
+from pathlib import Path
+mask_dir = 'dicube-testdata/mask/s0000'
+mask_files = list(Path(mask_dir).glob('*.nii.gz'))
+print("Files per study:", len(mask_files))
+print("Total size (MB):", sum(f.stat().st_size for f in mask_files)/1024/1024)
+```
+
+## Summary
+
+| Challenge        | Symptom                                   | Impact                                     |
+| ---------------- | ----------------------------------------- | ------------------------------------------ |
+| Spatial reference| NPZ: none; NIfTI: RAS+/LPS+ mismatch       | Added complexity and risk                  |
+| Semantics        | External configs / filenames               | Poor self‑consistency; versioning burden   |
+| Compression      | Generic codecs ignore sparsity             | Large storage + slow transfer              |
+| Overlap vs exclusivity | Arrays can’t encode both simultaneously | Forces many files / fragile management     |
