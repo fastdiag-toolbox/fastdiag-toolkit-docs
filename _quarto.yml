@@ -92,7 +92,7 @@ execute:
   cache: false
   daemon: false
   keep-md: false
-  eval: false
+  eval: true
 
 filters:
   - quarto

@@ -69,10 +69,23 @@ build() {
     
     if [ -d "_site" ]; then
         log_success "渲染完成！输出位于 _site/ 目录"
-        log_info "生成的文件："
-        find _site -type f -name "*.html" | head -10
-        if [ $(find _site -type f -name "*.html" | wc -l) -gt 10 ]; then
-            echo "... 和其他 HTML 文件"
+        total_html=$(find _site -type f -name "*.html" | wc -l | tr -d ' ')
+        en_html=$(find _site -type f -name "*-en.html" | wc -l | tr -d ' ')
+        zh_html=$(( total_html - en_html ))
+
+        log_info "HTML 总数: ${total_html}（中文: ${zh_html}, English: ${en_html}）"
+        if [ -f "_site/index.html" ]; then
+            log_info "中文入口: _site/index.html"
+        fi
+        if [ -f "_site/index-en.html" ]; then
+            log_info "English 入口: _site/index-en.html"
+        fi
+
+        log_info "示例（中文）："
+        find _site -type f -name "*.html" ! -name "*-en.html" | sort | head -10
+        if [ "${en_html}" -gt 0 ]; then
+            log_info "示例（English）："
+            find _site -type f -name "*-en.html" | sort | head -10
         fi
     else
         log_error "渲染失败！"
@@ -100,6 +113,7 @@ deploy() {
     git add requirements.txt
     git add styles.css
     git add index.qmd
+    git add index-en.qmd
     
     # 添加渲染后的_site目录（这是最终的网站文件）
     if [ -d "_site" ]; then
@@ -204,4 +218,3 @@ main() {
 
 # 运行主函数
 main "$@"
-
